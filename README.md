@@ -1,2 +1,2 @@
-This is my blog with Hexo.
+This is my blog by Hexo.  
 [ihac.xyz](ihac.xyz)
