@@ -7,12 +7,12 @@ title: Coding
 subtitle: Thoughts, stories and ideas
 description:
 author: Xiao An
-language:
+language: en
 timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: https://ihac.xyz
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
