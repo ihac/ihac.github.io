@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、Bazaar、Darcs。  Git历史 2002年开始，Linux内核社区使用BitKeeper对代码进行版本控制。 2005年，Linux">
+<meta name="description" content="这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于Pro Git、Stack Overflow。 版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、">
 <meta name="keywords" content="Study Notes,Git">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git技术笔记">
 <meta property="og:url" content="https://ihac.xyz/2017/05/11/Git技术笔记/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、Bazaar、Darcs。  Git历史 2002年开始，Linux内核社区使用BitKeeper对代码进行版本控制。 2005年，Linux">
+<meta property="og:description" content="这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于Pro Git、Stack Overflow。 版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://git-scm.com/book/en/v2/images/interesting-rebase-1.png">
 <meta property="og:image" content="https://git-scm.com/book/en/v2/images/interesting-rebase-2.png">
-<meta property="og:updated_time" content="2018-03-14T08:54:47.000Z">
+<meta property="og:updated_time" content="2018-03-16T02:15:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git技术笔记">
-<meta name="twitter:description" content="版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、Bazaar、Darcs。  Git历史 2002年开始，Linux内核社区使用BitKeeper对代码进行版本控制。 2005年，Linux">
+<meta name="twitter:description" content="这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于Pro Git、Stack Overflow。 版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercurial、">
 <meta name="twitter:image" content="https://git-scm.com/book/en/v2/images/interesting-rebase-1.png">
 
 
@@ -303,7 +303,8 @@
       
 
       
-        <h2 id="版本控制系统的演变"><a href="#版本控制系统的演变" class="headerlink" title="版本控制系统的演变"></a>版本控制系统的演变</h2><ul>
+        <p>这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于<a href="https://git-scm.com/book/en/v2" target="_blank" rel="noopener">Pro Git</a>、<a href="https://stackoverflow.com/questions/tagged/git" target="_blank" rel="noopener">Stack Overflow</a>。</p>
+<h2 id="版本控制系统的演变"><a href="#版本控制系统的演变" class="headerlink" title="版本控制系统的演变"></a>版本控制系统的演变</h2><ul>
 <li>保存文件修改记录 –&gt; 本地版本控制系统，如RCS。</li>
 <li>与其他开发者合作 –&gt; 中心化版本控制系统，如CVS、Subversion、Perforce。</li>
 <li>去除单点故障 –&gt; 分布式版本控制系统，如Git、Mercurial、Bazaar、Darcs。</li>
@@ -342,19 +343,18 @@
 </li>
 <li><p>检查文件状态</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git status [-s]</span><br><span class="line"> M README</span><br><span class="line">MM Rakefile</span><br><span class="line">A  lib/git.rb</span><br><span class="line">M  lib/simplegit.rb</span><br><span class="line">?? LICENSE.txt</span><br></pre></td></tr></table></figure>
+<p> 当使用<code>-s</code>简化输出时，文件状态用两列字符来表示，其中左列表示staging area的状态，右列表示working tree的状态。对于字符而言，<code>??</code>表示untracked文件，<code>M</code>表示modified文件，<code>A</code>表示added文件。</p>
+<p> 因此可以看出，<code>README</code>已被修改，但是并没有添加到staging area中，而<code>Rakefile</code>在修改并添加到staging area后，再次被修改。</p>
 </li>
-</ol>
-<p>当使用<code>-s</code>简化输出时，文件状态用两列字符来表示，其中左列表示staging area的状态，右列表示working tree的状态。对于字符而言，<code>??</code>表示untracked文件，<code>M</code>表示modified文件，<code>A</code>表示added文件。</p>
-<p>因此可以看出，<code>README</code>已被修改，但是并没有添加到staging area中，而<code>Rakefile</code>在修改并添加到staging area后，再次被修改。</p>
-<ol>
-<li><p>忽略文件<br> 规则如下：</p>
+<li><p>忽略文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># ignore all .a files</span><br><span class="line">*.a</span><br><span class="line"># but do track lib.a, even though you&apos;re ignoring .a files above</span><br><span class="line">!lib.a</span><br><span class="line"># only ignore the TODO file in the current directory, not subdir/TODO</span><br><span class="line">/TODO</span><br><span class="line"># ignore all files in the build/ directory</span><br><span class="line">build/</span><br><span class="line"># ignore doc/notes.txt, but not doc/server/arch.txt</span><br><span class="line">doc/*.txt</span><br><span class="line"># ignore all .pdf files in the doc/ directory and any of its subdirectories</span><br><span class="line">doc/**/*.pdf</span><br></pre></td></tr></table></figure>
+<p> 规则如下：</p>
 <ul>
 <li>匹配符</li>
 <li><code>#</code>表示注释</li>
 <li><code>!</code>取反</li>
 <li><code>/</code>+pattern用于防止递归匹配</li>
-<li>pattern+<code>/</code>用于表示目录<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># ignore all .a files</span><br><span class="line">*.a</span><br><span class="line"># but do track lib.a, even though you&apos;re ignoring .a files above</span><br><span class="line">!lib.a</span><br><span class="line"># only ignore the TODO file in the current directory, not subdir/TODO</span><br><span class="line">/TODO</span><br><span class="line"># ignore all files in the build/ directory</span><br><span class="line">build/</span><br><span class="line"># ignore doc/notes.txt, but not doc/server/arch.txt</span><br><span class="line">doc/*.txt</span><br><span class="line"># ignore all .pdf files in the doc/ directory and any of its subdirectories</span><br><span class="line">doc/**/*.pdf</span><br></pre></td></tr></table></figure>
-</li>
+<li>pattern+<code>/</code>用于表示目录</li>
 </ul>
 </li>
 <li><p>查看修改内容</p>
@@ -371,10 +371,8 @@
 </li>
 <li><p>查看提交历史</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">log</span> [-p] [-&lt;num&gt;] [--<span class="built_in">stat</span>] [--pretty=&lt;format&gt;] [--graph]</span><br><span class="line"><span class="comment"># -p对提交内容进行diff</span></span><br><span class="line"><span class="comment"># --stat查看统计内容</span></span><br></pre></td></tr></table></figure>
+<p> 使用<code>git log -S symbol_name</code>查看对该符号进行过修改的提交记录</p>
 </li>
-</ol>
-<p>使用<code>git log -S symbol_name</code>查看对该符号进行过修改的提交记录</p>
-<ol>
 <li><p>重新提交，覆盖上一次commit</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git commit --amend</span><br></pre></td></tr></table></figure>
 </li>
@@ -411,17 +409,15 @@
 <li><p>为之前的提交历史添加标签</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git tag -a v1.2 &lt;checksum&gt;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>提交标签</p>
+<li><p>提交标签<br><code>git push</code>默认不会上传标签，必须显式地说明。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin [tagname]</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">$ git push origin --tags</span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<p><code>git push</code>默认不会上传标签，必须显式地说明。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin [tagname]</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">$ git push origin --tags</span><br></pre></td></tr></table></figure></p>
-<ol>
-<li>将工作目录切换到特定标签下<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 需要新建一个分支</span></span><br><span class="line">$ git checkout -b version2 v2.0.0</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+<li><p>将工作目录切换到特定标签下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 需要新建一个分支</span></span><br><span class="line">$ git checkout -b version2 v2.0.0</span><br></pre></td></tr></table></figure>
 <p>需要注意的是，当该分支有了新的修改及提交后，原标签不会同步这一改动。</p>
-<ol>
-<li>命令别名<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.co checkout</span><br><span class="line">$ git config --global alias.br branch</span><br><span class="line">$ git config --global alias.unstage <span class="string">'reset HEAD --'</span></span><br><span class="line"><span class="comment"># use '!' to run an external command</span></span><br><span class="line">$ git config --global alias.visual <span class="string">'!gitk'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>命令别名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.co checkout</span><br><span class="line">$ git config --global alias.br branch</span><br><span class="line">$ git config --global alias.unstage <span class="string">'reset HEAD --'</span></span><br><span class="line"><span class="comment"># use '!' to run an external command</span></span><br><span class="line">$ git config --global alias.visual <span class="string">'!gitk'</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><ol>
@@ -475,16 +471,16 @@
 </li>
 <li><p>rebase</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git rebase &lt;branch&gt;</span><br><span class="line"><span class="comment"># 将当前分支rebase到&lt;branch&gt;上</span></span><br><span class="line">git rebase &lt;base_branch&gt; &lt;topic_branch&gt;</span><br><span class="line"><span class="comment"># 将&lt;topic_branch&gt;分支rebase到&lt;base_branch&gt;上</span></span><br><span class="line">git rebase --onto &lt;base_branch&gt; &lt;new_branch1&gt; &lt;new_branch2&gt;</span><br><span class="line"><span class="comment"># 以&lt;base_branch&gt;作为base，将&lt;new_branch2&gt;从&lt;new_branch1&gt;分叉后的所有commit重新apply一遍，具体应用见下</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
 <p>初始状态<br><img src="https://git-scm.com/book/en/v2/images/interesting-rebase-1.png" alt="before"><br>rebase命令：<code>$ git rebase --onto master server client</code><br>结果：<br><img src="https://git-scm.com/book/en/v2/images/interesting-rebase-2.png" alt=""></p>
-<ol>
+</li>
 <li><p>自动rebase</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git pull --rebase</span><br><span class="line"><span class="comment"># 采用rebase，而非merge</span></span><br><span class="line"><span class="comment"># == git fetch + git rebase &lt;remote&gt;/&lt;branch&gt;</span></span><br><span class="line">git config --global pull.rebase <span class="literal">true</span></span><br><span class="line"><span class="comment"># 设置默认采用rebase</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>注意事项<br><strong>Never rebase anything you’ve pushed somewhere</strong>.<br>If you treat rebasing as a way to clean up and work with commits before you push them, and if you <strong>only rebase commits that have never been available publicly</strong>, then you’ll be fine. If you rebase commits that have already been pushed publicly, and people may have based work on those commits, then you may be in for some frustrating trouble, and the scorn of your teammates.</p>
 </li>
 </ol>
+<hr>
+<p><em>To Be Continued</em></p>
 
       
     </div>
