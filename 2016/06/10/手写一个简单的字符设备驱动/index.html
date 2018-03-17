@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Embedded,Device Driver,C," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在嵌入式Linux中，操作GPIO并不是一件难事，我们可以通过虚拟文件系统或者其他相关库轻易地控制一个引脚的电平。不过当我们需要利用GPIO来控制一个设备时，一切就不再是那么简单了，因为控制引脚电平是一种非常low-level的原始操作，而控制设备行为是一种high-level的语义操作，这之间的巨大鸿沟显示不是普通用户所能填平的，此时就需要程序员出马了。在计算机领域有这么一句话：计算机学科的">
+<meta name="keywords" content="Embedded,Device Driver,C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写一个简单的字符设备驱动">
+<meta property="og:url" content="https://ihac.xyz/2016/06/10/手写一个简单的字符设备驱动/index.html">
+<meta property="og:site_name" content="Coding">
+<meta property="og:description" content="在嵌入式Linux中，操作GPIO并不是一件难事，我们可以通过虚拟文件系统或者其他相关库轻易地控制一个引脚的电平。不过当我们需要利用GPIO来控制一个设备时，一切就不再是那么简单了，因为控制引脚电平是一种非常low-level的原始操作，而控制设备行为是一种high-level的语义操作，这之间的巨大鸿沟显示不是普通用户所能填平的，此时就需要程序员出马了。在计算机领域有这么一句话：计算机学科的">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://static.zybuluo.com/hac/1gfykd2bttaxsx8fnrcfoo6l/Selection_119.png">
+<meta property="og:image" content="http://static.zybuluo.com/hac/yurvfwi9mh7opnonh7nz5xgx/Selection_120.png">
+<meta property="og:image" content="http://static.zybuluo.com/hac/xj3azhhls81m6faag21tgnrw/Selection_121.png">
+<meta property="og:image" content="http://static.zybuluo.com/hac/yqtyupvirhre9xk37u72d6te/Selection_122.png">
+<meta property="og:image" content="http://static.zybuluo.com/hac/jubd5ilx8qe145f97gau1fw2/IMG_20160604_220535.jpg">
+<meta property="og:image" content="http://static.zybuluo.com/hac/leqf0qcqa7ye7eep86j6yw1p/VID2.gif">
+<meta property="og:image" content="http://static.zybuluo.com/hac/b7e3erklgu3j81ct8tl8gogj/VID1.gif">
+<meta property="og:updated_time" content="2018-03-17T02:10:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写一个简单的字符设备驱动">
+<meta name="twitter:description" content="在嵌入式Linux中，操作GPIO并不是一件难事，我们可以通过虚拟文件系统或者其他相关库轻易地控制一个引脚的电平。不过当我们需要利用GPIO来控制一个设备时，一切就不再是那么简单了，因为控制引脚电平是一种非常low-level的原始操作，而控制设备行为是一种high-level的语义操作，这之间的巨大鸿沟显示不是普通用户所能填平的，此时就需要程序员出马了。在计算机领域有这么一句话：计算机学科的">
+<meta name="twitter:image" content="http://static.zybuluo.com/hac/1gfykd2bttaxsx8fnrcfoo6l/Selection_119.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://ihac.xyz/2016/06/10/手写一个简单的字符设备驱动/"/>
+
+
+
+
+
+  <title>手写一个简单的字符设备驱动 | Coding</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Thoughts, stories and ideas</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2016/06/10/手写一个简单的字符设备驱动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xiao An">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手写一个简单的字符设备驱动</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-06-10T09:52:10+08:00">
+                2016-06-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　在嵌入式Linux中，操作GPIO并不是一件难事，我们可以通过虚拟文件系统或者其他相关库轻易地控制一个引脚的电平。不过当我们需要利用GPIO来控制一个设备时，一切就不再是那么简单了，因为控制引脚电平是一种非常<code>low-level</code>的原始操作，而控制设备行为是一种<code>high-level</code>的语义操作，这之间的巨大鸿沟显示不是普通用户所能填平的，此时就需要程序员出马了。在计算机领域有这么一句话：<code>计算机学科的所有问题都能通过增加一层额外的抽象层来解决</code>，上述问题也不例外，我们可以在用户与设备之间建立一个抽象层，它向用户提供浅显易懂的语义操作，而对下层设备的控制仍是通过GPIO原始操作来完成，这对用户而言是透明的，所以他们不会再因繁琐的GPIO操作而烦恼，上述问题也即得到了解决。<br><a id="more"></a><br>　　这里提到的抽象层正是本文将要实现的字符设备驱动程序。</p>
+<pre><code>设备：
+- Rraspberry Pi I
+- MAX7219驱动的8x8 LED矩阵
+</code></pre><blockquote>
+<p>Start from here</p>
+</blockquote>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>　　在编写设备驱动程序之前，我们需要先把底层GPIO操作打通。这里我们通过sysfs目录中的特殊文件来控制GPIO引脚。<br>　　进入<code>/sys/class/gpio/</code>目录，我们需要关注该目录下的两个文件，分别为<code>export</code>和<code>unexport</code>，向<code>export</code>文件中写入引脚编号表示启用该引脚，向<code>unexport</code>文件中写入引脚编号表示停用该引脚。如下所示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi /sys/class/gpio $ l</span><br><span class="line">total 0</span><br><span class="line">-rwxrwx--- 1 root gpio 4096 Jun  4 11:17 <span class="built_in">export</span></span><br><span class="line">lrwxrwxrwx 1 root gpio    0 Jun  4 11:17 gpiochip0 -&gt; ../../devices/soc/20200000.gpio/gpio/gpiochip0</span><br><span class="line">-rwxrwx--- 1 root gpio 4096 Jun  4 13:05 unexport</span><br><span class="line">pi@raspberrypi /sys/class/gpio $ <span class="built_in">echo</span> 8 &gt; <span class="built_in">export</span></span><br><span class="line">pi@raspberrypi /sys/class/gpio $ <span class="built_in">echo</span> 10 &gt; <span class="built_in">export</span></span><br><span class="line">pi@raspberrypi /sys/class/gpio $ l</span><br><span class="line">total 0</span><br><span class="line">-rwxrwx--- 1 root gpio 4096 Jun  4 13:05 <span class="built_in">export</span></span><br><span class="line">lrwxrwxrwx 1 root gpio    0 Jun  4 13:05 gpio10 -&gt; ../../devices/soc/20200000.gpio/gpio/gpio10</span><br><span class="line">lrwxrwxrwx 1 root gpio    0 Jun  4 13:05 gpio8 -&gt; ../../devices/soc/20200000.gpio/gpio/gpio8</span><br><span class="line">lrwxrwxrwx 1 root gpio    0 Jun  4 11:17 gpiochip0 -&gt; ../../devices/soc/20200000.gpio/gpio/gpiochip0</span><br><span class="line">-rwxrwx--- 1 root gpio 4096 Jun  4 13:05 unexport</span><br><span class="line">pi@raspberrypi /sys/class/gpio $</span><br></pre></td></tr></table></figure></p>
+<p>　　注意到，当我们启用GPIO8和GPIO10两个引脚时，目录下出现了两个链接文件，分别链接到两个引脚的控制目录，我们可以<code>cd</code>进入控制目录，对引脚进行控制：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi /sys/class/gpio $ <span class="built_in">cd</span> gpio8</span><br><span class="line">pi@raspberrypi /sys/class/gpio/gpio8 $ l</span><br><span class="line">total 0</span><br><span class="line">-rw-r--r-- 1 root root 4096 Jun  4 13:07 active_low</span><br><span class="line">lrwxrwxrwx 1 root root    0 Jun  4 13:07 device -&gt; ../../../20200000.gpio</span><br><span class="line">-rw-r--r-- 1 root root 4096 Jun  4 13:07 direction</span><br><span class="line">-rw-r--r-- 1 root root 4096 Jun  4 13:07 edge</span><br><span class="line">drwxr-xr-x 2 root root    0 Jun  4 13:07 power</span><br><span class="line">lrwxrwxrwx 1 root root    0 Jun  4 13:05 subsystem -&gt; ../../../../../class/gpio</span><br><span class="line">-rw-r--r-- 1 root root 4096 Jun  4 13:05 uevent</span><br><span class="line">-rw-r--r-- 1 root root 4096 Jun  4 13:07 value</span><br><span class="line">pi@raspberrypi /sys/class/gpio/gpio8 $</span><br></pre></td></tr></table></figure></p>
+<p>　　其中<code>direction</code>文件表示引脚的模式，可以通过写入<code>in</code>或<code>out</code>来将引脚改为输入模式或输出模式，<code>value</code>文件表示引脚当前值，在输出模式下，我们可以通过写入<code>0</code>或<code>1</code>来控制引脚电平。<br>　　以上即是操作GPIO所需要的全部预备知识，下面我们来了解一下如何驱动MAX7219芯片。<br><img src="http://static.zybuluo.com/hac/1gfykd2bttaxsx8fnrcfoo6l/Selection_119.png" alt="Selection_119.png-42.3kB"><br>　　上图为MAX7219的引脚图，可以看到，主控板只需要控制三个引脚，分别为CLK、LOAD/CS以及DIN，其中CLK为时钟信号，DIN为数据串行输入，LOAD/CS为数据载入信号，它们的时序图如下所示：<br><img src="http://static.zybuluo.com/hac/yurvfwi9mh7opnonh7nz5xgx/Selection_120.png" alt="Selection_120.png-34.7kB"><br>　　根据这张时序图，我们可以总结出以下几点信息：</p>
+<ol>
+<li>MAX7219一次载入16位数据；</li>
+<li>当LOAD/CS信号拉低时，芯片开始载入数据，当LOAD/CS信号拉高时，数据载入完成；</li>
+<li>DIN上的每一位数据在CLK的上升沿被锁存；</li>
+<li>数据从最高位到最低位依次被锁存。</li>
+</ol>
+<p>　　其中16位数据格式如下所示，注意第8位到第11位表示寄存器地址，第0位到第7位表示送入该寄存器的数值：<br><img src="http://static.zybuluo.com/hac/xj3azhhls81m6faag21tgnrw/Selection_121.png" alt="Selection_121.png-6.9kB"><br>　　知道这些信息还不够，因为我们还不知道到底要送入什么数据。下面就对MAX7219芯片的内部寄存器以及各自的作用做简单介绍。<br><img src="http://static.zybuluo.com/hac/yqtyupvirhre9xk37u72d6te/Selection_122.png" alt="Selection_122.png-75.1kB"><br>　　忽略0号寄存器，因为它不干任何事。1号寄存器到8号寄存器，即Digit 0到Digit 7，用于控制LED点阵的显示，具体来说，几号寄存器就控制第几列的LED，而寄存器内存放的8位数值就决定了该列LED的显示状态，举个例子，假设5号寄存器存放着0x41，那么对应到8x8 LED点阵中就以为着第5列中，第1、7行的LED被点亮，其余行的LED全部熄灭。Decode Mode寄存器用于控制数据的译码方式，我们这里不采用译码，所以将该寄存器置0即可。Intensity寄存器表示LED点阵的亮度，实践证明，为了保护眼睛，还是将这个寄存器的值调至0或1吧，否则非常刺眼。Scan Limit寄存器可以理解为有几行LED被使用，0表示只使用1行，7表示使用全部8行，所以我们将该寄存器置为7，因为我们需要使用8x8 LED点阵中的所有灯。Shutdown寄存器只有两种值，0或1，我们将其置为1，表示正常操作模式。最后的Display Test寄存器非常关键，它也只有两个值，0或1，0表示正常操作模式，而1表示显示测试模式，在显示测试模式下，所有LED都被点亮，只有将该寄存器置为0，我们才能正常控制LED的亮灭。<br>　　以上即为驱动MAX7219的所有预备知识，下面我们开始编写程序来驱动MAX7219芯片，从而控制8x8 LED点阵的图形字符显示。</p>
+<h2 id="通过GPIO控制LED点阵"><a href="#通过GPIO控制LED点阵" class="headerlink" title="通过GPIO控制LED点阵"></a>通过GPIO控制LED点阵</h2><p>　　首先，我们实现一个数据载入函数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// writeData() &amp; writeByte()</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">writeByte</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> c)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">writeData</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> addr, <span class="keyword">unsigned</span> <span class="keyword">char</span> data)</span> </span>&#123;</span><br><span class="line">    write(pinCS, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">    writeByte(addr);</span><br><span class="line">    writeByte(data); <span class="comment">// 先送地址，再送数据</span></span><br><span class="line">    write(pinCS, <span class="string">"1"</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">writeByte</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">        write(pinCLK, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (c &amp; <span class="number">0x80</span>) <span class="comment">// 先送最高位</span></span><br><span class="line">            write(pinDIN, <span class="string">"1"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            write(pinDIN, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">        write(pinCLK, <span class="string">"1"</span>, <span class="number">1</span>); <span class="comment">// 时钟上升沿锁存数据</span></span><br><span class="line">        c &lt;&lt;= <span class="number">1</span>; <span class="comment">// 循环左移</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　结合MAX7219芯片的驱动方式，上述两个函数应该比较容易理解。实现了上述数据载入函数后，我们对MAX7219芯片的控制就变得非常容易了，直接调用<code>writeData</code>函数向寄存器中写数据即可。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main()</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    pinCS = open(<span class="string">"/sys/class/gpio/gpio8/value"</span>, O_RDWR);</span><br><span class="line">    pinDIN = open(<span class="string">"/sys/class/gpio/gpio10/value"</span>, O_RDWR);</span><br><span class="line">    pinCLK = open(<span class="string">"/sys/class/gpio/gpio11/value"</span>, O_RDWR);</span><br><span class="line"></span><br><span class="line">    pinCS_MODE = open(<span class="string">"/sys/class/gpio/gpio8/direction"</span>, O_RDWR); # GPIO8对应CS引脚</span><br><span class="line">    pinDIN_MODE = open(<span class="string">"/sys/class/gpio/gpio10/direction"</span>, O_RDWR); # GPIO10对应DIN引脚</span><br><span class="line">    pinCLK_MODE = open(<span class="string">"/sys/class/gpio/gpio11/direction"</span>, O_RDWR); # GPIO11对应CLK引脚</span><br><span class="line">    write(pinCS_MODE, <span class="string">"out"</span>, <span class="number">3</span>);</span><br><span class="line">    write(pinDIN_MODE, <span class="string">"out"</span>, <span class="number">3</span>);</span><br><span class="line">    write(pinCLK_MODE, <span class="string">"out"</span>, <span class="number">3</span>); <span class="comment">// 改为输出模式</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置控制寄存器，参见预备知识</span></span><br><span class="line">    writeData(<span class="number">0x09</span>, <span class="number">0x00</span>);</span><br><span class="line">    writeData(<span class="number">0x0a</span>, <span class="number">0x00</span>);</span><br><span class="line">    writeData(<span class="number">0x0b</span>, <span class="number">0x07</span>);</span><br><span class="line">    writeData(<span class="number">0x0c</span>, <span class="number">0x01</span>);</span><br><span class="line">    writeData(<span class="number">0x0f</span>, <span class="number">0x00</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123; <span class="comment">// 输出一个'桃心'</span></span><br><span class="line">        writeData(<span class="number">0x01</span>, <span class="number">0x00</span>);</span><br><span class="line">        writeData(<span class="number">0x02</span>, <span class="number">0x6c</span>);</span><br><span class="line">        writeData(<span class="number">0x03</span>, <span class="number">0x92</span>);</span><br><span class="line">        writeData(<span class="number">0x04</span>, <span class="number">0x82</span>);</span><br><span class="line">        writeData(<span class="number">0x05</span>, <span class="number">0x44</span>);</span><br><span class="line">        writeData(<span class="number">0x06</span>, <span class="number">0x28</span>);</span><br><span class="line">        writeData(<span class="number">0x07</span>, <span class="number">0x10</span>);</span><br><span class="line">        writeData(<span class="number">0x08</span>, <span class="number">0x00</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　为了看到上述代码的运行效果，首先将MAX7219的VCC引脚连接到5V正极，GND引脚接地，CLK引脚接到树莓派板卡的GPIO11，DIN接到GPIO10，LOAD/CS引脚接到GPIO8，再利用export启用GPIO8、GPIO10、GPIO11三个引脚。编译上述代码，然后以<code>root</code>权限运行程序(只有root能读写direction、value文件)，当然，也可以通过<code>chmod</code>命令修改direction、value文件的权限，再以普通用户的身份运行程序。LED点阵显示效果如下所示：</p>
+<p><img src="http://static.zybuluo.com/hac/jubd5ilx8qe145f97gau1fw2/IMG_20160604_220535.jpg" alt="IMG_20160604_220535.jpg-131.6kB"></p>
+<h2 id="设计字符设备驱动程序"><a href="#设计字符设备驱动程序" class="headerlink" title="设计字符设备驱动程序"></a>设计字符设备驱动程序</h2><p>　　通过前面的实验，我们应该能够熟练操作GPIO来控制LED点阵的显示了，现在我们开始为设备编写驱动程序，为用户提供更为抽象的控制接口。我们的目标是，用户能够通过write函数写入一串字符串，然后LED点阵将该字符串以每个字符停留500ms的速度依此显示。<br>　　在编写代码之前，我们需要了解一些设备驱动程序的基本知识。我们知道Linux对设备的操作是通过调用驱动程序来实现的，但驱动程序那么多，Linux怎么知道设备对应的驱动是哪个？其实，设备与驱动之间的map关系是通过一个<code>Major number</code>和<code>Minor number</code>来实现的，我们可以通过<code>ls -l /dev</code>查看设备的<code>Major number</code>和<code>Minor number</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi ~/Documents/Driver $ ls -l /dev/mmcblk0*</span><br><span class="line">brw-rw---T 1 root floppy 179, 0 Jun  4 11:17 /dev/mmcblk0 <span class="comment"># 179为Major number 0为Minor number</span></span><br><span class="line">brw-rw---T 1 root floppy 179, 1 Jun  4 11:17 /dev/mmcblk0p1</span><br><span class="line">brw-rw---T 1 root floppy 179, 2 Jun  4 11:17 /dev/mmcblk0p2</span><br></pre></td></tr></table></figure></p>
+<p><code>Major number</code>用于区分不同类型的设备，而<code>Minor number</code>用于区分同一类型的不同设备，所以<code>Major number</code>才是真正将设备和驱动map到一起的关键数。<br>那我们怎么才能为设备驱动程序注册一个<code>Major number</code>呢？这里就要引入两个函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为字符设备驱动程序注册Major number</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">register_chrdev</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> major,<span class="keyword">const</span> <span class="keyword">char</span> *name,struct file_operations *fops)</span></span>;</span><br><span class="line"><span class="comment">// 取消之前的注册</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unregister_chrdev</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> major, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>　　我们可以通过<code>register_chrdev</code>这个函数来为字符设备驱动程序注册一个<code>Major number</code>，这个函数调用需要三个参数，分别为我们指定的<code>Major number</code>、设备名字以及文件操作结构，前面两个参数好理解，最后的文件操作结构又是啥呢？ 其实，<code>file_operations</code>这个结构就是用来指明操作设备会调用哪些函数，具体如下所示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> = &#123;</span></span><br><span class="line">    .read = dev_read, <span class="comment">// 读取设备时调用dev_read函数</span></span><br><span class="line">    .open = dev_open, <span class="comment">// 打开设备时调用dev_open函数</span></span><br><span class="line">    .write = dev_write, <span class="comment">// 写设备时调用dev_write函数</span></span><br><span class="line">    .release = dev_rls <span class="comment">// 关闭设备时调用dev_rls函数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>　　此时，相信你已经对字符设备驱动程序的框架有一定的理解了，这里简单总结一下，我们需要为几个常见的文件操作，比如打开、读写以及关闭，设计对应的操作函数，使用结构<code>file_operations</code>存放这些函数地址，然后利用<code>register_chrdev</code>函数为驱动注册一个<code>Major number</code>，这个数不能与现有的驱动冲突(可以通过<code>cat /proc/devices</code>查看当前所有设备驱动的<code>Major number</code>)！之后我们利用<code>mknod</code>命令创建一个<code>Major number</code>相同的设备文件，当我们操作该设备文件时，Linux就会找到我们的驱动程序，并根据<code>file_operations</code>结构找到相应的处理函数，执行该函数来完成这次操作。明白了这些原理，接下来就是真正地代码实现了。<br>　　首先我们会遇到一个问题，<code>register_chrdev</code>和<code>unregister_chrdev</code>函数只能在内核态调用，用户态下是不可能注册驱动程序的，此时我们该怎么处理呢？有没有办法让自己的程序进入内核态运行？答案是肯定的，我们可以使用装载内核模块来实现对设备驱动程序的注册(这里我假设你已经对内核模块有一定的了解，甚至有过一些实践，如果你没有接触过内核模块，建议搜索相关资料先了解一下)，代码框架如下所示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">fops</span> = &#123;</span></span><br><span class="line">    .read = dev_read,</span><br><span class="line">    .open = dev_open,</span><br><span class="line">    .write = dev_write,</span><br><span class="line">    .release = dev_rls</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">dev_open</span><span class="params">(struct inode *i, struct file *f)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">dev_read</span><span class="params">(struct file *f, <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> len, <span class="keyword">loff_t</span> *off)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">dev_write</span><span class="params">(struct file *f, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> len, <span class="keyword">loff_t</span> *off)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">dev_rls</span><span class="params">(struct inode *i, struct file *f)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">init_module</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123; <span class="comment">// 装载模块时会执行这个函数</span></span><br><span class="line">    <span class="keyword">int</span> t = register_chrdev(<span class="number">218</span>, <span class="string">"ledDev"</span>, &amp;fops); <span class="comment">// 为驱动注册Major number为218</span></span><br><span class="line">    <span class="keyword">if</span> (t &lt; <span class="number">0</span>)</span><br><span class="line">        printk(KERN_ALERT <span class="string">"Device registration failed.\n"</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        printk(KERN_ALERT <span class="string">"Device registered.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cleanup_module</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123; <span class="comment">// 卸载模块时会执行这个函数</span></span><br><span class="line">    unregister_chrdev(<span class="number">218</span>, <span class="string">"ledDev"</span>);</span><br><span class="line">    printk(KERN_ALERT <span class="string">"Device unregistered.\n"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　有了这个框架，想必你已经有一些具体的实现思路了。对于我们的LED点阵设备，我们不需要读，只需要实现写操作，而写操作在之前的GPIO控制部分中已经有所涉及，看来我们离最终的目标已经不远了。不过，还有一个严峻的问题摆在我们面前，我们之前实现的控制LED点阵显示字符涉及到了大量文件I/O，然而Linux在内核态是无法使用libc的，而且Linux Kernel开发者一再说明，永远不要在内核代码中读写文件，因为这可能会给系统带来无穷的麻烦(如果你想了解更多，请参阅<a href="http://www.linuxjournal.com/article/8110?page=0,0" target="_blank" rel="noopener">这篇文档</a>)，事实确实如此，因为我最初版本的驱动程序就直接导致了系统崩溃，后来调试过程中也多次造成了<code>segment overflow</code>错误。然而，本次实验对LED点阵的控制必须要通过操纵value文件来实现，我们也只好强撸一把了。这里直接贴出我设计的文件I/O函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">struct file *<span class="title">openFile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">fil</span> = <span class="title">NULL</span>;</span></span><br><span class="line">    <span class="keyword">mm_segment_t</span> old_fs;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"&gt;&gt;&gt; openFile triggered.\n"</span>);</span><br><span class="line"></span><br><span class="line">    old_fs = get_fs();</span><br><span class="line">    set_fs(get_ds());</span><br><span class="line">    fil = filp_open(path, O_RDWR, <span class="number">0664</span>);</span><br><span class="line">    set_fs(old_fs);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> fil;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">writeFile</span><span class="params">(struct file *fil, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">mm_segment_t</span> old_fs;</span><br><span class="line">    <span class="keyword">loff_t</span> off = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//printk(KERN_ALERT "&gt;&gt;&gt; writeFile triggered.\n");</span></span><br><span class="line">    old_fs = get_fs();</span><br><span class="line">    set_fs(get_ds());</span><br><span class="line">    ret = vfs_write(fil, buf, len, &amp;off);</span><br><span class="line">    set_fs(old_fs);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">closeFile</span><span class="params">(struct file *fil)</span> </span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"&gt;&gt;&gt; closeFile triggered.\n"</span>);</span><br><span class="line">    filp_close(fil, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　注意到，我们使用到了<code>set_fs()</code>来解决地址空间的不对应问题，这里我其实也没理解透，所以不敢多做解释，有兴趣的同学可以参阅<a href="http://www.linuxjournal.com/article/8110?page=0,1" target="_blank" rel="noopener">这篇文档</a>。<br>　　如上，我们实现了在内核态对文件进行读写操作的封装函数，现在可以正式写LED点阵的控制代码了！首先是打开设备文件时的操作：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// open device</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">dev_open</span><span class="params">(struct inode *i, struct file *f)</span> </span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"### dev_open.\n"</span>);</span><br><span class="line">    exportPin(); <span class="comment">// 启用8、10、11引脚</span></span><br><span class="line">    setDirection(); <span class="comment">// 设置为输出模式</span></span><br><span class="line">    openPin(); <span class="comment">// 打开value文件</span></span><br><span class="line">    pinInit(); <span class="comment">// 初始化，设置控制寄存器</span></span><br><span class="line"></span><br><span class="line">    times++;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"Device opened %d times\n"</span>, times);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">exportPin</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">f</span>;</span></span><br><span class="line">    printk(KERN_ALERT <span class="string">"Start export pin.\n"</span>);</span><br><span class="line">    f = openFile(<span class="string">"/sys/class/gpio/export"</span>);</span><br><span class="line">    <span class="keyword">if</span> (f == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        printk(KERN_ALERT <span class="string">"Cannot open /sys/class/gpio/export\n"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    writeFile(f, <span class="string">"8"</span>, <span class="number">1</span>);</span><br><span class="line">    writeFile(f, <span class="string">"10"</span>, <span class="number">2</span>);</span><br><span class="line">    writeFile(f, <span class="string">"11"</span>, <span class="number">2</span>);</span><br><span class="line">    closeFile(f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setDirection</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">f</span>;</span></span><br><span class="line"></span><br><span class="line">    printk(KERN_ALERT <span class="string">"Start set direction.\n"</span>);</span><br><span class="line">    f = openFile(<span class="string">"/sys/class/gpio/gpio8/direction"</span>);</span><br><span class="line">    <span class="keyword">if</span> (f == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        printk(KERN_ALERT <span class="string">"Cannot open /sys/class/gpio/gpio8/direction.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    writeFile(f, <span class="string">"out"</span>, <span class="number">3</span>);</span><br><span class="line">    closeFile(f);</span><br><span class="line">    <span class="comment">// 这里省去对gpio10、gpio11的设置，因为和gpio8设置完全一样</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">openPin</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"Start open pin.\n"</span>);</span><br><span class="line">    pinCS = openFile(<span class="string">"/sys/class/gpio/gpio8/value"</span>);</span><br><span class="line">    pinDIN = openFile(<span class="string">"/sys/class/gpio/gpio10/value"</span>);</span><br><span class="line">    pinCLK = openFile(<span class="string">"/sys/class/gpio/gpio11/value"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pinInit</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"Start init pin.\n"</span>);</span><br><span class="line">    __writeData(<span class="number">0x09</span>, <span class="number">0x00</span>);</span><br><span class="line">    __writeData(<span class="number">0x0a</span>, <span class="number">0x00</span>);</span><br><span class="line">    __writeData(<span class="number">0x0b</span>, <span class="number">0x07</span>);</span><br><span class="line">    __writeData(<span class="number">0x0c</span>, <span class="number">0x01</span>);</span><br><span class="line">    __writeData(<span class="number">0x0f</span>, <span class="number">0x00</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这部分和之前通过GPIO操作LED点阵的步骤基本一致，应该不难理解。最后还剩一个关键的工作——写设备，即向设备写入字符串，然后控制LED点阵依次显示各个字符，每个字符停留500ms：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> ssize_t <span class="title">dev_write</span><span class="params">(struct file *f, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> len, <span class="keyword">loff_t</span> *off)</span> </span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">"### dev_write.\n"</span>);</span><br><span class="line">    writeString(buf, len);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeString</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *str, <span class="keyword">size_t</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">        writeChar(<span class="number">0xFF</span>);</span><br><span class="line">        set_current_state(TASK_INTERRUPTIBLE); <span class="comment">// 设置为可中断切换</span></span><br><span class="line">        schedule_timeout(<span class="number">0.05</span>*HZ); <span class="comment">// 50ms</span></span><br><span class="line">        writeChar(str[i]);</span><br><span class="line">        set_current_state(TASK_INTERRUPTIBLE);</span><br><span class="line">        schedule_timeout(<span class="number">0.5</span>*HZ); <span class="comment">// 500ms</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeChar</span><span class="params">(<span class="keyword">char</span> c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">        <span class="comment">// 采用CP437字体，这里不贴出字体映射表，直接提供下载</span></span><br><span class="line">        __writeData(i+<span class="number">1</span>, font[(<span class="keyword">unsigned</span> <span class="keyword">int</span>)c][i]); <span class="comment">// 这里的__writeData等同于前面设计的writeData</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __writeData(<span class="keyword">unsigned</span> <span class="keyword">char</span> addr, <span class="keyword">unsigned</span> <span class="keyword">char</span> b) &#123;</span><br><span class="line">    writeFile(pinCS, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">    __writeByte(addr);</span><br><span class="line">    __writeByte(b);</span><br><span class="line">    writeFile(pinCS, <span class="string">"1"</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __writeByte(<span class="keyword">unsigned</span> <span class="keyword">char</span> b) &#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">        writeFile(pinCLK, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (b &amp; <span class="number">0x80</span>)</span><br><span class="line">            writeFile(pinDIN, <span class="string">"1"</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            writeFile(pinDIN, <span class="string">"0"</span>, <span class="number">1</span>);</span><br><span class="line">        writeFile(pinCLK, <span class="string">"1"</span>, <span class="number">1</span>);</span><br><span class="line">        b &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　注意到，我们在输出字符串时，为每个字符分配了500ms的停留时长，这里用到了<code>schedule_timeout</code>这个函数，它配合前面的<code>set_current_state(TASK_INTERRUPTIBLE)</code>可以实现500ms的延时，同时，在这段延时过程中，进程可以被中断，防止write函数独占CPU。(<a href="http://xiaoan.org/share/font.c" target="_blank" rel="noopener">点击这里</a>下载字体映射表，将font变量移植到驱动程序代码中)<br>　　最后贴出Makefile文件：<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 代码文件名为leddev.c</span></span><br><span class="line">obj-m += leddev.o</span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	make -C /lib/modules/<span class="variable">$(<span class="built_in">shell</span> uname -r)</span>/build M=<span class="variable">$(PWD)</span> modules</span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	make -C /lib/modules/<span class="variable">$(<span class="built_in">shell</span> uname -r)</span>/build M=<span class="variable">$(PWD)</span> clean</span><br></pre></td></tr></table></figure></p>
+<p>　　编译完成后，装载内核模块，然后直接使用libc函数<code>open</code>、<code>write</code>对设备文件进行读写测试，这里我输出了<code>Hello, World!</code>字符串，如下所示(若无法观看动态图，请点击<a href="http://static.zybuluo.com/hac/leqf0qcqa7ye7eep86j6yw1p/VID2.gif" target="_blank" rel="noopener">链接</a>)：<br><img src="http://static.zybuluo.com/hac/leqf0qcqa7ye7eep86j6yw1p/VID2.gif" alt="VID2.gif-4751.5kB"></p>
+<p>　　之前的设计中，我们将字符串分解成多个字符，其中每个字符停留500ms，依次显示，这样能够较为明显地表现出一个字符串。然而，我认为这种停顿输出的表现形式仍不够直观，滚动输出才最适合字符串，查阅资料可以发现，网上其他人对于LED点阵的实现也大多都是基于滚动输出的，因为这样的呈现效果更为直接、美观。下面，我们就对前面的设计进行简单修改，使其能够支持字符串的滚动输出。<br>　　如果你对我的驱动程序框架比较熟悉，那么你会发现，我们仅需要对<code>writeChar</code>和<code>writeString</code>两个函数进行简单修改，即可替换字符串输出模式。这里直接贴代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeChar</span><span class="params">(<span class="keyword">char</span> c, <span class="keyword">int</span> start, <span class="keyword">int</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (; offset &lt; <span class="number">8</span> &amp;&amp; start &lt; <span class="number">8</span>;) &#123;</span><br><span class="line">        __writeData(++offset, font[(<span class="keyword">unsigned</span> <span class="keyword">int</span>)c][start++]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeString</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *str, <span class="keyword">size_t</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; len + <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">            writeChar(<span class="number">0xFF</span>, j, <span class="number">0</span>); <span class="comment">// 先输出空白字符</span></span><br><span class="line">            writeChar(str[<span class="number">0</span>], <span class="number">0</span>, <span class="number">8</span>-j); <span class="comment">// 逐步滚入第一个字符</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (i &lt; len) &#123;</span><br><span class="line">            writeChar(str[i<span class="number">-1</span>], j, <span class="number">0</span>); <span class="comment">// 前一个字符持续左移，改变的是字体起始列号</span></span><br><span class="line">            writeChar(str[i], <span class="number">0</span>, <span class="number">8</span>-j); <span class="comment">// 后一个字符跟进，改变的是LED点阵偏移列号</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (i == len) &#123;</span><br><span class="line">            writeChar(str[i<span class="number">-1</span>], j, <span class="number">0</span>); <span class="comment">// 最后一个字符滚出</span></span><br><span class="line">            writeChar(<span class="number">0xFF</span>, <span class="number">0</span>, <span class="number">8</span>-j); <span class="comment">// 补上空白字符</span></span><br><span class="line">        &#125;</span><br><span class="line">        j++;</span><br><span class="line">        <span class="keyword">if</span> (j == <span class="number">9</span>) &#123;</span><br><span class="line">            i++;</span><br><span class="line">            j = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        set_current_state(TASK_INTERRUPTIBLE);</span><br><span class="line">        schedule_timeout(<span class="number">0.1</span>*HZ); <span class="comment">// 每过0.1秒更新一次</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　修改后的两个函数逻辑变得更加复杂了，可能有些难以理解，我简单解释一下。首先是<code>writeChar</code>函数，此时它会接收三个参数，分别是显示字符、起始位置、偏移位置。我们知道，字体和LED点阵其实都是8x8的矩阵，这里的起始位置<code>start</code>表示的就是显示字符字体的起始列号，而偏移位置表示的是LED点阵的偏移列号。用实际例子来解释更为直观：对于传入参数<code>c = &#39;a&#39;, start = 3, offset = 4</code>，此时<code>writeChar</code>函数的行为就是从LED点阵的第<code>5</code>(offset+1)列输出字符<code>&#39;a&#39;</code>对应字体的第<code>3</code>(start)列，同理LED点阵第<code>6</code>列输出字体的第<code>4</code>列，以此类推，直到LED点阵列号超过8或者字体列号超过7时才停止输出，而对于LED点阵前面四列，我们这里不做处理。可能有人不理解为什么offset对应的是<code>++offset</code>，而start对应的是<code>start++</code>，这里解释一下：LED点阵列号是从1开始计数，字体列号从0开始计数，而我们希望它们对外全部表现为从0开始计数，所以传入的offset需要先加1才能作为真正的LED点阵列号。<br>　　有了<code>writeChar</code>的实现，我们写<code>writeString</code>就简单多了，仅仅需要处理好两个字符的同时显示。我的设计目标是，先输出空白字符<code>0xFF</code>，然后字符串的各个字符依次滚动进入，直到最后一个字符全部离开LED点阵才停止输出。总共实现分为三步，代码上有简单的注释，我觉得这里很难讲清所有细节，比如为什么<code>j == 9</code>时才会让它复位为<code>1</code>，为什么不复位为<code>0</code>，为什么点阵偏移列号是<code>8-j</code>而不是其他数… …如果你真的想理解这些细节问题，建议用笔在纸上模拟一下字符的滚动，然后理解一下<code>writeChar</code>函数，相信你能很快将<code>writeString</code>滚动输出的设计细节弄清楚。<br>　　最后，贴上字符串滚动输出的显示效果(若无法观看动态图，请点击<a href="http://static.zybuluo.com/hac/b7e3erklgu3j81ct8tl8gogj/VID1.gif" target="_blank" rel="noopener">链接</a>)：<br>　　<img src="http://static.zybuluo.com/hac/b7e3erklgu3j81ct8tl8gogj/VID1.gif" alt="VID1.gif-8631.7kB"></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li><a href="http://xianan.org/share/MAX7219.zip" target="_blank" rel="noopener">课程提供的资料</a>(包含中英文版的datasheet以及参考代码)</li>
+<li><a href="https://appusajeev.wordpress.com/2011/06/18/writing-a-linux-character-device-driver/" target="_blank" rel="noopener">Writing a Linux character Device Driver</a></li>
+<li><a href="http://www.tldp.org/LDP/lkmpg/2.4/html/x579.html" target="_blank" rel="noopener">The Linux Kernel Module Programming Guide</a></li>
+<li><a href="https://github.com/rm-hull/max7219" target="_blank" rel="noopener">Max7219 Wheel in Python</a></li>
+<li><a href="http://www.xml.com/ldd/chapter/book/ch06.html" target="_blank" rel="noopener">Linux Device Drivers, 2nd Edition</a></li>
+<li><a href="http://www.linuxjournal.com/article/8110?page=0,0" target="_blank" rel="noopener">Driving Me Nuts - Things You Never Should Do in the Kernel</a></li>
+<li><a href="http://stackoverflow.com/questions/1184274/how-to-read-write-files-within-a-linux-kernel-module" target="_blank" rel="noopener">How to read/write files within a Linux kernel module</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Embedded/" rel="tag"># Embedded</a>
+          
+            <a href="/tags/Device-Driver/" rel="tag"># Device Driver</a>
+          
+            <a href="/tags/C/" rel="tag"># C</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/01/使用John-the-Ripper破解密码/" rel="next" title="使用John the Ripper破解密码">
+                <i class="fa fa-chevron-left"></i> 使用John the Ripper破解密码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/11/Git技术笔记/" rel="prev" title="Git技术笔记">
+                Git技术笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Xiao An</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ihac" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/u/0/117973548704440941150" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://stackoverflow.com/users/7708919/hac" target="_blank" title="StackOverflow">
+                      
+                        <i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/zjuhac" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hac@zju.edu.cn" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过GPIO控制LED点阵"><span class="nav-number">2.</span> <span class="nav-text">通过GPIO控制LED点阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计字符设备驱动程序"><span class="nav-number">3.</span> <span class="nav-text">设计字符设备驱动程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiao An</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
