@@ -4,7 +4,7 @@ date: 2017-05-11 16:47:54
 tags: [Study Notes, Git]
 ---
 
-这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于[Pro Git](https://git-scm.com/book/en/v2)、[Stack Overflow](https://stackoverflow.com/questions/tagged/git)。
+　　这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于[Pro Git](https://git-scm.com/book/en/v2)、[Stack Overflow](https://stackoverflow.com/questions/tagged/git)。
 
 ## 版本控制系统的演变
 
