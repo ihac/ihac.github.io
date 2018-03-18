@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Security,Assembly,Buffer Overflow," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="MIT OpencoursewareComputer System Security 6-858  IntroConsider the following simplified example code from a Web server.1234567int read_req() &amp;#123;    char buf[128];    int i;    gets(buf);    i = a">
+<meta name="keywords" content="Security,Assembly,Buffer Overflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Buffer Overflow理论">
+<meta property="og:url" content="https://ihac.xyz/2016/05/03/Buffer-Overflow理论/index.html">
+<meta property="og:site_name" content="Coding">
+<meta property="og:description" content="MIT OpencoursewareComputer System Security 6-858  IntroConsider the following simplified example code from a Web server.1234567int read_req() &amp;#123;    char buf[128];    int i;    gets(buf);    i = a">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-03-18T02:23:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Buffer Overflow理论">
+<meta name="twitter:description" content="MIT OpencoursewareComputer System Security 6-858  IntroConsider the following simplified example code from a Web server.1234567int read_req() &amp;#123;    char buf[128];    int i;    gets(buf);    i = a">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://ihac.xyz/2016/05/03/Buffer-Overflow理论/"/>
+
+
+
+
+
+  <title>Buffer Overflow理论 | Coding</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Thoughts, stories and ideas</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2016/05/03/Buffer-Overflow理论/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xiao An">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Buffer Overflow理论</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-03T10:02:52+08:00">
+                2016-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>MIT Opencourseware<br>Computer System Security 6-858</p>
+</blockquote>
+<h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>Consider the following simplified example code from a Web server.<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read_req</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">128</span>];</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    gets(buf);</span><br><span class="line">    i = atoi(buf);</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>It’s dangerous because <code>gets()</code> has no bounds check. Thus, stack may be flushed by a long(more than 128 bytes) input sequence.</p>
+<!--more Keep on reading-->
+<p>Look as the architecture of stack in X86:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">                 +----------------+</span><br><span class="line">entry %ebp ----&gt; |.. prev frame ..|</span><br><span class="line">                 |                |</span><br><span class="line">                 |                |</span><br><span class="line">                 +----------------+</span><br><span class="line">entry %esp ----&gt; | <span class="built_in">return</span> address |</span><br><span class="line">                 +----------------+</span><br><span class="line">new %ebp   ----&gt; |   saved %ebp   |</span><br><span class="line">                 +----------------+</span><br><span class="line">                 |       i        |</span><br><span class="line">                 +----------------+</span><br><span class="line">                 |    buf[127]    |</span><br><span class="line">                 |      ...       |</span><br><span class="line">                 |     buf[0]     |</span><br><span class="line">                 +----------------+</span><br><span class="line">new %esp   ----&gt; |      ...       |</span><br><span class="line">                 +----------------+</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># read_req's code:</span></span><br><span class="line">    push %ebp</span><br><span class="line">    mov %esp -&gt; %ebp</span><br><span class="line">    sub 168, %esp</span><br><span class="line">    ... <span class="comment"># program</span></span><br><span class="line">    mov %ebp -&gt; %esp</span><br><span class="line">    pop %ebp</span><br><span class="line">    ret</span><br></pre></td></tr></table></figure>
+<p>Since <code>gets()</code> has no bounds check, all data in stack might be overwrited by input sequence. Attackers can exploit this weakness and modify the <code>return address</code> of this function. The new <code>return address</code> may point to a uncharted area or even a malicious program.</p>
+<h2 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a>Solutions</h2><h3 id="Stack-Canaries"><a href="#Stack-Canaries" class="headerlink" title="Stack Canaries"></a>Stack Canaries</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+------------+</span><br><span class="line">|  ret addr  |</span><br><span class="line">+------------+  ^</span><br><span class="line">| saved %ebp |  |</span><br><span class="line">+------------+  |</span><br><span class="line">|   CANARY   |  |  Overflow goes</span><br><span class="line">+------------+  |  this way.</span><br><span class="line">|  buf[127]  |  |</span><br><span class="line">|    ...     |  |</span><br><span class="line">|   buf[0]   |  |</span><br><span class="line">+------------+</span><br></pre></td></tr></table></figure>
+<p><code>Canary</code> goes <code>in front of</code> return address on the stack, so that any overflow which rewrites the return address will also rewrite canary. Therefore, we can check <code>canary</code> before we <code>ret</code> from the function.</p>
+<blockquote>
+<p>Care that here we assume attackers can only rewrite the stack in a linear way<br>That is to say, before rewriting ret addr, canary must be changed.</p>
+</blockquote>
+<p>Another important thing is that <code>canary</code> cannot be easily guessed by attackers. It is interesting that <code>canary</code> can use <code>0</code>, <code>CR</code>, <code>LF</code> or <code>-1</code>, since these characters are terminated characters.</p>
+<h4 id="When-do-canaries-fail"><a href="#When-do-canaries-fail" class="headerlink" title="When do canaries fail"></a>When do canaries fail</h4><ol>
+<li>Overwrite function pointers before <code>canary</code></li>
+<li><p><code>malloc()</code> and <code>free()</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *p, *q;</span><br><span class="line">p = <span class="built_in">malloc</span>(<span class="number">1024</span>);</span><br><span class="line">q = <span class="built_in">malloc</span>(<span class="number">1024</span>);</span><br><span class="line"><span class="built_in">strcpy</span>(p, buf);</span><br><span class="line"><span class="built_in">free</span>(q);</span><br><span class="line"><span class="built_in">free</span>(p);</span><br></pre></td></tr></table></figure>
+<p> Assume that <code>p</code> and <code>q</code> are nearby.<br>Here is architecture of memory block:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#   Allocated block        Free block</span></span><br><span class="line">    +-----------+          +------------+</span><br><span class="line">    |           |          |    size    |</span><br><span class="line">    |   Data    |          +------------+</span><br><span class="line">    |           |          |  ...empty  |</span><br><span class="line">    +-----------+          +------------+</span><br><span class="line">    |   Size    |          |  bkwd ptr  |</span><br><span class="line">    +-----------+          +------------+</span><br><span class="line">                           |   fwd ptr  |</span><br><span class="line">                           +------------+</span><br><span class="line">                           |    size    |</span><br><span class="line">                           +------------+</span><br></pre></td></tr></table></figure>
+<p> The buffer overrun in <code>p</code>(<code>strcpy()</code>) will overwrite the size value in <code>q</code>‘s memory block!</p>
+<p> When <code>free()</code> merges two adjacent free blocks, it needs to manipulate <code>bkwd</code> and <code>fwd</code> pointers, and pointer calculation uses size to determine where the free memory block structure lives!</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">p = get_free_block_struct(size);</span><br><span class="line">bck = p-&gt;bk;</span><br><span class="line">fwd = p-&gt;fd;</span><br><span class="line">fwd-&gt;bk = bck; <span class="comment">// Writes memory</span></span><br><span class="line">bck-&gt;fd = fwd; <span class="comment">// Writes memory</span></span><br></pre></td></tr></table></figure>
+<p> By corrupting the <code>size</code> value, attackers can force <code>free()</code> to operate on a fake struct that resides in attacker-controlled memory and has attacker-controlled values for <code>forward</code> and <code>backward</code> pointers.<br><a href="http://www.win.tue.nl/~aeb/linux/hh/hh-11.html" target="_blank" rel="noopener">reference</a></p>
+</li>
+</ol>
+<h3 id="Bounds-Check"><a href="#Bounds-Check" class="headerlink" title="Bounds Check"></a>Bounds Check</h3><ul>
+<li><p><strong>Eletric fences</strong><br>Align each heap object with a guard page, and use page tables to ensure that accesses to the guard page cause a fault</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+----------+</span><br><span class="line">|  Guard   |</span><br><span class="line">|          |  ^</span><br><span class="line">+----------+  |  Overflows cause</span><br><span class="line">|   Heap   |  |  a page exception</span><br><span class="line">|   obj    |  |</span><br><span class="line">+----------+</span><br></pre></td></tr></table></figure>
+<p>  Eletric fences can’t protect the stack, and the memory overhead is too high to use in production systems.</p>
+</li>
+<li><p><strong>Fat pointer</strong><br>Modify the pointer representation to include bounds information. Now, a pointer includes a memory address and bounds information about an object that lives in that memory region.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// Example:</span><br><span class="line">    /* Regular 32-bit pointer */</span><br><span class="line">    +----------------+</span><br><span class="line">    | 4-byte address |</span><br><span class="line">    +----------------+</span><br><span class="line"></span><br><span class="line">    /* Fat pointer */</span><br><span class="line">+-----------------+----------------+---------------------+</span><br><span class="line">| 4-byte obj_base | 4-byte obj_end | 4-byte curr_address |</span><br><span class="line">+-----------------+----------------+---------------------+</span><br></pre></td></tr></table></figure>
+<p>  The program will be aborted if it dereferences a pointer whose address is outside of its own base-end range.<br>However, it can be expensive to check all pointer dereferences; Also, fat pointers are incompatible with a lot of existing software.</p>
+</li>
+<li><p><strong>Baggy Bounds</strong><br>For each alocated object, store how big the object is.<br>There are 5 tricks in <code>Baggy Bounds</code>:</p>
+<ol>
+<li>Round up each allocation to a power of 2, and align the start of the allocation to that power of 2</li>
+<li>Express each range limit as log<sub>2</sub>(alloc_size). For 32-bit pointers, only need 5 bits to express the possible ranges.</li>
+<li>Store limit info in a linear array: fast lookup with one byte per entry. Also, we can use virtual memory to allocate the array on-demand.</li>
+<li><p>Allocate memory at slot granularity(e.g. 16bytes): fewer array entries</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/* Memory Block */</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">|                               |</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">0       32      64      96     128</span><br><span class="line"></span><br><span class="line">a = malloc(28);</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">|  a    |                       |</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">0       32      64      96     128</span><br><span class="line"></span><br><span class="line">b = malloc(50);</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">|  a    |       |       b       |</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">0       32      64      96     128</span><br><span class="line"></span><br><span class="line">c = malloc(20);</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">|  a    |   c   |       b       |</span><br><span class="line">+-------+-------+-------+-------+</span><br><span class="line">0       32      64      96     128</span><br></pre></td></tr></table></figure>
+<p>How we check the bounds:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">    slot_size = <span class="number">16</span>;</span><br><span class="line">    p = <span class="built_in">malloc</span>(<span class="number">16</span>);     table[p/slot_size] = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">    p = <span class="built_in">malloc</span>(<span class="number">32</span>);     table[p/slot_size] = <span class="number">5</span>;</span><br><span class="line"><span class="comment">/* 2 slot are used */</span>   table[p/slot_size + <span class="number">1</span>] = <span class="number">5</span>;</span><br><span class="line">    <span class="comment">// Care that p is not the base address of the allocated block.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// C code</span></span><br><span class="line">    p1 = p + i;</span><br><span class="line">    <span class="comment">// Bounds check</span></span><br><span class="line">    size = <span class="number">1</span> &lt;&lt; table[p &gt;&gt; log_of_slot_size];</span><br><span class="line">    <span class="comment">/** For example</span></span><br><span class="line"><span class="comment">     * p = malloc(28); slot_size = 16;</span></span><br><span class="line"><span class="comment">     * So table[p/slot_size] = table[p/slot_size + 1] = 5;</span></span><br><span class="line"><span class="comment">     * table[p &gt;&gt; log_of_slot_size] = 5;</span></span><br><span class="line"><span class="comment">     * size = 1 &lt;&lt; 5 = 32</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    base = p &amp; ~(size - <span class="number">1</span>);</span><br><span class="line">    <span class="comment">/** For example</span></span><br><span class="line"><span class="comment">     * size = 32 = 00100000; size - 1 = 00011111;</span></span><br><span class="line"><span class="comment">     * Assume p1's value(memory address) = 13 = 00001101</span></span><br><span class="line"><span class="comment">     * p &amp; ~(size - 1) = 00001101 &amp; 11100000 = 0</span></span><br><span class="line"><span class="comment">     * Assume p1's value(memory address) = 39 = 00100111</span></span><br><span class="line"><span class="comment">     * p &amp; ~(size - 1) = 00100111 &amp; 11100000 = 00100000 = 32</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// check</span></span><br><span class="line">    (p1 &gt;= base) &amp;&amp; ((p1 - base) &lt; size)</span><br><span class="line">                   <span class="keyword">or</span></span><br><span class="line">    (p ^ p1) &gt;&gt; table[p &gt;&gt; log_of_slot_size] == <span class="number">0</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Use virtual memory system to prevent out-of-bound derefs: set most signifcant bit in an OOB pointer, and then mark pages in the upper half of the address space as inaccessible. So we don’t have to instrument pointer dereferences to prevent bad memory accesses.</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>　　Below is an example(assume slot_size = 16)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *p = <span class="built_in">malloc</span>(<span class="number">44</span>);</span><br><span class="line"><span class="comment">// 64 bytes are allocated</span></span><br><span class="line"><span class="comment">// 64 / slot_size = 4 bounds table entries</span></span><br><span class="line"><span class="comment">// These entries are set to 6</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> *q = p + <span class="number">60</span>;</span><br><span class="line"><span class="comment">// Access is ok!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> *r = q + <span class="number">16</span>；</span><br><span class="line"><span class="comment">// r is now at an offset of 60 + 16 = 76 from</span></span><br><span class="line"><span class="comment">// p. This means 12 bytes beyond the end of p.</span></span><br><span class="line"><span class="comment">// So baggy bounds will raise an error.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> *s = q + <span class="number">8</span>;</span><br><span class="line"><span class="comment">// s is now at an offset of 60 + 8 = 64 from</span></span><br><span class="line"><span class="comment">// p. This means 4 bytes beyond the end of p,</span></span><br><span class="line"><span class="comment">// which is less than half a slot away.</span></span><br><span class="line"><span class="comment">// No error is raised, but the OOB high-order bit</span></span><br><span class="line"><span class="comment">// is set in s, so that s cannot be dereferenced.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> *t = s - <span class="number">32</span>;</span><br><span class="line"><span class="comment">// t is now back inside the bounds,</span></span><br><span class="line"><span class="comment">// so the OOB bit is cleared.</span></span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Security/" rel="tag"># Security</a>
+          
+            <a href="/tags/Assembly/" rel="tag"># Assembly</a>
+          
+            <a href="/tags/Buffer-Overflow/" rel="tag"># Buffer Overflow</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/11/Buffer-Overflow实践/" rel="prev" title="Buffer Overflow实践">
+                Buffer Overflow实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Xiao An" />
+            
+              <p class="site-author-name" itemprop="name">Xiao An</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ihac" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/u/0/117973548704440941150" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://stackoverflow.com/users/7708919/hac" target="_blank" title="StackOverflow">
+                      
+                        <i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/zjuhac" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hac@zju.edu.cn" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intro"><span class="nav-number">1.</span> <span class="nav-text">Intro</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solutions"><span class="nav-number">2.</span> <span class="nav-text">Solutions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Stack-Canaries"><span class="nav-number">2.1.</span> <span class="nav-text">Stack Canaries</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#When-do-canaries-fail"><span class="nav-number">2.1.1.</span> <span class="nav-text">When do canaries fail</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bounds-Check"><span class="nav-number">2.2.</span> <span class="nav-text">Bounds Check</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiao An</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
