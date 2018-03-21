@@ -1,7 +1,7 @@
 ---
 title: Scala学习笔记
 date: 2017-07-27 14:43:05
-tags: [Scala, Study Notes]
+tags: [Scala, Study Notes, Programming Language]
 ---
 
 ### Parameterize arrays with types
