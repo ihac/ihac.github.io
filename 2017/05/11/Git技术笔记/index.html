@@ -89,7 +89,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://git-scm.com/book/en/v2/images/interesting-rebase-1.png">
 <meta property="og:image" content="https://git-scm.com/book/en/v2/images/interesting-rebase-2.png">
-<meta property="og:updated_time" content="2018-03-17T02:21:04.000Z">
+<meta property="og:updated_time" content="2018-03-21T08:04:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git技术笔记">
 <meta name="twitter:description" content="这篇博文主要是对Git（而非Github）背景知识、管理操作的摘抄与整理，内容来源包括但不限于Pro Git、Stack Overflow。 版本控制系统的演变 保存文件修改记录 –&amp;gt; 本地版本控制系统，如RCS。 与其他开发者合作 –&amp;gt; 中心化版本控制系统，如CVS、Subversion、Perforce。 去除单点故障 –&amp;gt; 分布式版本控制系统，如Git、Mercuria">
@@ -524,7 +524,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push &lt;remote&gt; --delete &lt;branch&gt;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>rebase</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git rebase &lt;branch&gt;</span><br><span class="line"><span class="comment"># 将当前分支rebase到&lt;branch&gt;上</span></span><br><span class="line">git rebase &lt;base_branch&gt; &lt;topic_branch&gt;</span><br><span class="line"><span class="comment"># 将&lt;topic_branch&gt;分支rebase到&lt;base_branch&gt;上</span></span><br><span class="line">git rebase --onto &lt;base_branch&gt; &lt;new_branch1&gt; &lt;new_branch2&gt;</span><br><span class="line"><span class="comment"># 以&lt;base_branch&gt;作为base，将&lt;new_branch2&gt;从&lt;new_branch1&gt;分叉后的所有commit重新apply一遍，具体应用见下</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">git rebase &lt;branch&gt;</span><br><span class="line"><span class="comment"># 将当前分支rebase到&lt;branch&gt;上</span></span><br><span class="line">git rebase &lt;base_branch&gt; &lt;topic_branch&gt;</span><br><span class="line"><span class="comment"># 将&lt;topic_branch&gt;分支rebase到&lt;base_branch&gt;上</span></span><br><span class="line">git rebase --onto &lt;base_branch&gt; &lt;new_branch1&gt; &lt;new_branch2&gt;</span><br><span class="line"><span class="comment"># 以&lt;base_branch&gt;作为base，将&lt;new_branch2&gt;从&lt;new_branch1&gt;分叉后的所有commit重新apply一遍，具体应用见下</span></span><br><span class="line">git rebase -i &lt;commit_hash_value&gt;</span><br><span class="line"><span class="comment"># 基于&lt;commit_hash_value&gt;对应的commit，对后续commit进行交互式rebase操作，用于调整git历史</span></span><br></pre></td></tr></table></figure>
 <p>初始状态<br><img src="https://git-scm.com/book/en/v2/images/interesting-rebase-1.png" alt="before"><br>rebase命令：<code>$ git rebase --onto master server client</code><br>结果：<br><img src="https://git-scm.com/book/en/v2/images/interesting-rebase-2.png" alt=""></p>
 </li>
 <li><p>自动rebase</p>
@@ -673,7 +673,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
