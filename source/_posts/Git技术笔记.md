@@ -330,6 +330,8 @@ git rebase <base_branch> <topic_branch>
 # 将<topic_branch>分支rebase到<base_branch>上
 git rebase --onto <base_branch> <new_branch1> <new_branch2>
 # 以<base_branch>作为base，将<new_branch2>从<new_branch1>分叉后的所有commit重新apply一遍，具体应用见下
+git rebase -i <commit_hash_value>
+# 基于<commit_hash_value>对应的commit，对后续commit进行交互式rebase操作，用于调整git历史
 ```
     初始状态
     ![before](https://git-scm.com/book/en/v2/images/interesting-rebase-1.png)
