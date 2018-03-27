@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 19. Remove Nth Node From End of List'
-date: 2018-03-27 21:29:16
+date: 2018-03-24 21:29:16
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

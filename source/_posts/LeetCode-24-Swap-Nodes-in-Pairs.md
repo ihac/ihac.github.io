@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 24. Swap Nodes in Pairs'
-date: 2018-03-27 21:39:14
+date: 2018-03-26 21:39:14
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

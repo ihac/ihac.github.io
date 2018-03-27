@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 16. 3Sum Closest'
-date: 2018-03-27 21:05:38
+date: 2018-03-23 21:05:38
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

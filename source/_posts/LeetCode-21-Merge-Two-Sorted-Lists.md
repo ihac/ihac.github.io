@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 21. Merge Two Sorted Lists'
-date: 2018-03-27 21:35:05
+date: 2018-03-25 21:35:05
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

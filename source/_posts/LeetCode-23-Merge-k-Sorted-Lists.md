@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 23. Merge k Sorted Lists'
-date: 2018-03-27 21:37:52
+date: 2018-03-26 21:37:52
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 22. Generate Parentheses'
-date: 2018-03-27 21:36:29
+date: 2018-03-26 21:36:29
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]

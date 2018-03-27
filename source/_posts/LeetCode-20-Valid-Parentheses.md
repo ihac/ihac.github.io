@@ -1,6 +1,6 @@
 ---
 title: '[LeetCode] 20. Valid Parentheses'
-date: 2018-03-27 21:33:34
+date: 2018-03-25 21:33:34
 tags: ['Algorithm', 'C/C++']
 categories:
 - [Algorithm, LeetCode]
