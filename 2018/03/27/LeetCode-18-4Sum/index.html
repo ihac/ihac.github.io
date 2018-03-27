@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta name="description" content="题目：Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target. Note: The solution s">
 <meta name="keywords" content="Algorithm,C&#x2F;C++">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[LeetCode] 16. 3Sum Closest">
-<meta property="og:url" content="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/index.html">
+<meta property="og:title" content="[LeetCode] 18. 4Sum">
+<meta property="og:url" content="https://ihac.xyz/2018/03/27/LeetCode-18-4Sum/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta property="og:description" content="题目：Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target. Note: The solution s">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-27T13:07:14.000Z">
+<meta property="og:updated_time" content="2018-03-27T13:24:05.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[LeetCode] 16. 3Sum Closest">
-<meta name="twitter:description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta name="twitter:title" content="[LeetCode] 18. 4Sum">
+<meta name="twitter:description" content="题目：Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target. Note: The solution s">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/"/>
+  <link rel="canonical" href="https://ihac.xyz/2018/03/27/LeetCode-18-4Sum/"/>
 
 
 
 
 
-  <title>[LeetCode] 16. 3Sum Closest | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>[LeetCode] 18. 4Sum | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/27/LeetCode-18-4Sum/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Xiao An">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[LeetCode] 16. 3Sum Closest</h1>
+          <h1 class="post-title" itemprop="name headline">[LeetCode] 18. 4Sum</h1>
         
 
         <div class="post-meta">
@@ -326,7 +326,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-27T21:05:38+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-27T21:20:22+08:00">
                 2018-03-27
               </time>
             
@@ -397,11 +397,10 @@
       
 
       
-        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
-For example, given array S = {-1 2 1 -4}, and target = 1.
-The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
-</code></pre><h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>和15题类似，同样采取固定a，然后求解b、c的最优解，区别在于，这里只需要返回三数之和，因此实际上题目更简单了。<br>容易出错的点主要是一些临界数据，比如数列刚好仅有三个数时，如果没有做好初始化工作，答案就会出错。</p>
-<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// find a, b, c whose sum is closest to target and return their sum.</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">threeSumClosest</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ((<span class="keyword">int</span>)nums.size() &lt; <span class="number">3</span>) <span class="comment">// return immediately.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        sort(nums.begin(), nums.end()); <span class="comment">// sort the array to ensure a &lt; b &lt; c.</span></span><br><span class="line">        <span class="keyword">int</span> res = nums[<span class="number">0</span>] + nums[<span class="number">1</span>] + nums[<span class="number">2</span>]; <span class="comment">// initialize result.</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; (<span class="keyword">int</span>)nums.size(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i != <span class="number">0</span> &amp;&amp; nums[i] == nums[i<span class="number">-1</span>]) <span class="comment">// skip the duplicate a.</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">int</span> bPlusC = target - nums[i];</span><br><span class="line">            <span class="keyword">int</span> j = i + <span class="number">1</span>, k = (<span class="keyword">int</span>)nums.size() - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (j &lt; k) &#123;</span><br><span class="line">                <span class="keyword">int</span> sum = nums[j] + nums[k];</span><br><span class="line">                <span class="keyword">int</span> delta = sum - bPlusC;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">abs</span>(delta) &lt; <span class="built_in">abs</span>(target - res)) <span class="comment">// whether closer to target than previous sum.</span></span><br><span class="line">                    res = sum + nums[i];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (delta &lt; <span class="number">0</span>) j++; <span class="comment">// b + c &lt; 0 - a, so increase b.</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (delta &gt; <span class="number">0</span>) k--; <span class="comment">// b + c &gt; 0 - a, so decrease c.</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">return</span> res; <span class="comment">// b + c = 0 - a, best answer.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
+Note: The solution set must not contain duplicate quadruplets.
+</code></pre><h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>四数和解法和三数和没有本质区别，无非是多固定一个b而已，复杂度为$O(n^3)$。不过为了优化算法性能，我们需要做一些剪枝，比如忽略重复的a（代码17行）、跳过过小的a（代码19行）以及a过大时结束循环（代码21行）。</p>
+<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// find all unique a, b, c, d where a + b + c + d = target.</span></span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; fourSum(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">if</span> (nums.size() &lt; <span class="number">4</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// do not modify the input vector.</span></span><br><span class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; nums_copy(nums.begin(), nums.end());</span><br><span class="line">        <span class="comment">// sort the nums array to ensure a &lt;= b &lt;= c &lt;= d;</span></span><br><span class="line">        sort(nums_copy.begin(), nums_copy.end());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> size = nums_copy.size();</span><br><span class="line">        <span class="keyword">int</span> last3sum = nums_copy[size<span class="number">-1</span>] + nums_copy[size<span class="number">-2</span>] + nums_copy[size<span class="number">-3</span>];</span><br><span class="line">        <span class="keyword">int</span> last2sum = nums_copy[size<span class="number">-1</span>] + nums_copy[size<span class="number">-2</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size<span class="number">-3</span>; i++) &#123;</span><br><span class="line">            <span class="comment">// skip the duplicate a</span></span><br><span class="line">            <span class="keyword">if</span> (i != <span class="number">0</span> &amp;&amp; nums_copy[i] == nums_copy[i<span class="number">-1</span>]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// a is too small.</span></span><br><span class="line">            <span class="keyword">if</span> (nums_copy[i] + last3sum &lt; target) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// a is too large.</span></span><br><span class="line">            <span class="keyword">if</span> (nums_copy[i] + nums_copy[i+<span class="number">1</span>] + nums_copy[i+<span class="number">2</span>] + nums_copy[i+<span class="number">3</span>] &gt; target) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> target1 = target - nums_copy[i];</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = i+<span class="number">1</span>; j &lt; size<span class="number">-2</span>; j++) &#123;</span><br><span class="line">                <span class="comment">// skip the duplicate b.</span></span><br><span class="line">                <span class="keyword">if</span> (j != i+<span class="number">1</span> &amp;&amp; nums_copy[j] == nums_copy[j<span class="number">-1</span>]) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="comment">// b is too small.</span></span><br><span class="line">                <span class="keyword">if</span> (nums_copy[j] + last2sum &lt; target1) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="comment">// b is too large.</span></span><br><span class="line">                <span class="keyword">if</span> (nums_copy[j] + nums_copy[j+<span class="number">1</span>] + nums_copy[j+<span class="number">2</span>] &gt; target1) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> target2 = target1 - nums_copy[j];</span><br><span class="line">                <span class="keyword">int</span> k = j + <span class="number">1</span>, l = size - <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">while</span> (k &lt; l) &#123;</span><br><span class="line">                    <span class="keyword">int</span> sum = nums_copy[k] + nums_copy[l];</span><br><span class="line">                    <span class="keyword">if</span> (sum &lt; target2) k++;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (sum &gt; target2) l--;</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; tmp&#123;nums_copy[i], nums_copy[j], nums_copy[k], nums_copy[l]&#125;;</span><br><span class="line">                        res.push_back(tmp);</span><br><span class="line">                        <span class="keyword">do</span> &#123; k++; &#125; <span class="keyword">while</span> (nums_copy[k] == nums_copy[k<span class="number">-1</span>]);</span><br><span class="line">                        <span class="keyword">do</span> &#123; l--; &#125; <span class="keyword">while</span> (nums_copy[l] == nums_copy[l+<span class="number">1</span>]);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -434,8 +433,8 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/27/LeetCode-15-3Sum/" rel="next" title="[LeetCode] 15. 3Sum">
-                <i class="fa fa-chevron-left"></i> [LeetCode] 15. 3Sum
+              <a href="/2018/03/27/LeetCode-17-Letter-Combinations-of-a-Phone-Number/" rel="next" title="[LeetCode] 17. Letter Combinations of a Phone Number">
+                <i class="fa fa-chevron-left"></i> [LeetCode] 17. Letter Combinations of a Phone Number
               </a>
             
           </div>
@@ -443,10 +442,6 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/03/27/LeetCode-17-Letter-Combinations-of-a-Phone-Number/" rel="prev" title="[LeetCode] 17. Letter Combinations of a Phone Number">
-                [LeetCode] 17. Letter Combinations of a Phone Number <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
