@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[[LeetCode] 17. Letter Combinations of a Phone Number]]></title>
+    <url>%2F2018%2F03%2F27%2FLeetCode-17-Letter-Combinations-of-a-Phone-Number%2F</url>
+    <content type="text"><![CDATA[题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below. 分析：本题有多种不同解法: 为了求解长度为n的电话号码所对应的字母组合，我们可以先计算出后n-1位的所有字母组合，然后再与第1位数字对应的多个字母进行组合，如此递归即可求得最终解。这种解法思路比较直观，需要产生n次函数调用，但每次递归结束需要遍历中间结果（vector），然后与当前数字的多个数字进行组合。 采用回溯法，基于深度优先对所有数字进行遍历。产生约$3^n$次函数调用，但是减少了vector的构造、回收与遍历。 代码：1234567891011121314151617181920212223242526272829// backtrackingclass Solution &#123;public: char lookupTable[10][4] = &#123; &#123;&#125;, &#123;&#125;, &#123;'a','b','c'&#125;, &#123;'d','e','f'&#125;, &#123;'g','h','i'&#125;, &#123;'j','k','l'&#125;, &#123;'m','n','o'&#125;, &#123;'p','q','r','s'&#125;, &#123;'t','u','v'&#125;, &#123;'w','x','y','z'&#125; &#125;; int length[10] = &#123; 0, 0, 3, 3, 3, 3, 3, 4, 3, 4 &#125;; vector&lt;string&gt; letterCombinations(string digits) &#123; if (digits.length() == 0) return vector&lt;string&gt;&#123;&#125;; vector&lt;string&gt; res; string init; backtrack(init, res, digits, 0); return res; &#125; void backtrack(string&amp; prev, vector&lt;string&gt;&amp; res, string&amp; digits, int index) &#123; if (index == (int)digits.length()) res.push_back(prev); else &#123; int num = digits[index] - '0'; for (int i = 0; i &lt; length[num]; i++) &#123; prev.push_back(lookupTable[num][i]); backtrack(prev, res, digits, index+1); prev.pop_back(); &#125; &#125; &#125;&#125;;]]></content>
+      <categories>
+        <category>Algorithm</category>
+        <category>LeetCode</category>
+      </categories>
+      <tags>
+        <tag>Algorithm</tag>
+        <tag>C/C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[[LeetCode] 16. 3Sum Closest]]></title>
     <url>%2F2018%2F03%2F27%2FLeetCode-16-3Sum-Closest%2F</url>
     <content type="text"><![CDATA[题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution. For example, given array S = {-1 2 1 -4}, and target = 1. The sum that is closest to the target is 2. (-1 + 2 + 1 = 2). 分析：和15题类似，同样采取固定a，然后求解b、c的最优解，区别在于，这里只需要返回三数之和，因此实际上题目更简单了。容易出错的点主要是一些临界数据，比如数列刚好仅有三个数时，如果没有做好初始化工作，答案就会出错。 代码：123456789101112131415161718192021222324252627282930class Solution &#123;public: // find a, b, c whose sum is closest to target and return their sum. int threeSumClosest(vector&lt;int&gt;&amp; nums, int target) &#123; if ((int)nums.size() &lt; 3) // return immediately. return 0; sort(nums.begin(), nums.end()); // sort the array to ensure a &lt; b &lt; c. int res = nums[0] + nums[1] + nums[2]; // initialize result. for (int i = 0; i &lt; (int)nums.size(); i++) &#123; if (i != 0 &amp;&amp; nums[i] == nums[i-1]) // skip the duplicate a. continue; int bPlusC = target - nums[i]; int j = i + 1, k = (int)nums.size() - 1; while (j &lt; k) &#123; int sum = nums[j] + nums[k]; int delta = sum - bPlusC; if (abs(delta) &lt; abs(target - res)) // whether closer to target than previous sum. res = sum + nums[i]; if (delta &lt; 0) j++; // b + c &lt; 0 - a, so increase b. else if (delta &gt; 0) k--; // b + c &gt; 0 - a, so decrease c. else return res; // b + c = 0 - a, best answer. &#125; &#125; return res; &#125;&#125;;]]></content>
