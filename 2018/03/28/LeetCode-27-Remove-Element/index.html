@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta name="description" content="题目：Given an array and a value, remove all instances of that value in-place and return the new length. Do not allocate extra space for another array, you must do this by modifying the input array in-pl">
 <meta name="keywords" content="Algorithm,C&#x2F;C++">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[LeetCode] 16. 3Sum Closest">
-<meta property="og:url" content="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/index.html">
+<meta property="og:title" content="[LeetCode] 27. Remove Element">
+<meta property="og:url" content="https://ihac.xyz/2018/03/28/LeetCode-27-Remove-Element/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta property="og:description" content="题目：Given an array and a value, remove all instances of that value in-place and return the new length. Do not allocate extra space for another array, you must do this by modifying the input array in-pl">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-27T13:07:14.000Z">
+<meta property="og:updated_time" content="2018-03-28T02:37:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[LeetCode] 16. 3Sum Closest">
-<meta name="twitter:description" content="题目：Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exac">
+<meta name="twitter:title" content="[LeetCode] 27. Remove Element">
+<meta name="twitter:description" content="题目：Given an array and a value, remove all instances of that value in-place and return the new length. Do not allocate extra space for another array, you must do this by modifying the input array in-pl">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/"/>
+  <link rel="canonical" href="https://ihac.xyz/2018/03/28/LeetCode-27-Remove-Element/"/>
 
 
 
 
 
-  <title>[LeetCode] 16. 3Sum Closest | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>[LeetCode] 27. Remove Element | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/27/LeetCode-16-3Sum-Closest/">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/28/LeetCode-27-Remove-Element/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Xiao An">
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[LeetCode] 16. 3Sum Closest</h1>
+          <h1 class="post-title" itemprop="name headline">[LeetCode] 27. Remove Element</h1>
         
 
         <div class="post-meta">
@@ -326,8 +326,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-27T21:05:38+08:00">
-                2018-03-27
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-28T10:34:39+08:00">
+                2018-03-28
               </time>
             
 
@@ -397,11 +397,16 @@
       
 
       
-        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
-For example, given array S = {-1 2 1 -4}, and target = 1.
-The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
-</code></pre><h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>和15题类似，同样采取固定a，然后求解b、c的最优解，区别在于，这里只需要返回三数之和，因此实际上题目更简单了。<br>容易出错的点主要是一些临界数据，比如数列刚好仅有三个数时，如果没有做好初始化工作，答案就会出错。</p>
-<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// find a, b, c whose sum is closest to target and return their sum.</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">threeSumClosest</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ((<span class="keyword">int</span>)nums.size() &lt; <span class="number">3</span>) <span class="comment">// return immediately.</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        sort(nums.begin(), nums.end()); <span class="comment">// sort the array to ensure a &lt; b &lt; c.</span></span><br><span class="line">        <span class="keyword">int</span> res = nums[<span class="number">0</span>] + nums[<span class="number">1</span>] + nums[<span class="number">2</span>]; <span class="comment">// initialize result.</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; (<span class="keyword">int</span>)nums.size(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i != <span class="number">0</span> &amp;&amp; nums[i] == nums[i<span class="number">-1</span>]) <span class="comment">// skip the duplicate a.</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">int</span> bPlusC = target - nums[i];</span><br><span class="line">            <span class="keyword">int</span> j = i + <span class="number">1</span>, k = (<span class="keyword">int</span>)nums.size() - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (j &lt; k) &#123;</span><br><span class="line">                <span class="keyword">int</span> sum = nums[j] + nums[k];</span><br><span class="line">                <span class="keyword">int</span> delta = sum - bPlusC;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">abs</span>(delta) &lt; <span class="built_in">abs</span>(target - res)) <span class="comment">// whether closer to target than previous sum.</span></span><br><span class="line">                    res = sum + nums[i];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (delta &lt; <span class="number">0</span>) j++; <span class="comment">// b + c &lt; 0 - a, so increase b.</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (delta &gt; <span class="number">0</span>) k--; <span class="comment">// b + c &gt; 0 - a, so decrease c.</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">return</span> res; <span class="comment">// b + c = 0 - a, best answer.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given an array and a value, remove all instances of that value in-place and return the new length.
+Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
+The order of elements can be changed. It doesn&apos;t matter what you leave beyond the new length.
+
+Example:
+Given nums = [3,2,2,3], val = 3,
+Your function should return length = 2, with the first two elements of nums being 2.
+</code></pre><h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p><code>Array</code>, <code>Two Pointers</code></p>
+<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>和前一题类似，维护两个指针，一个指向“新”数组的尾部，另一个用于遍历“原”数组。</p>
+<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">removeElement</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nums.size() == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (j &lt; nums.size()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[j++] == val) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">else</span> nums[i++] = nums[j<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -434,8 +439,8 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/27/LeetCode-15-3Sum/" rel="next" title="[LeetCode] 15. 3Sum">
-                <i class="fa fa-chevron-left"></i> [LeetCode] 15. 3Sum
+              <a href="/2018/03/28/LeetCode-26-Remove-Duplicates-from-Sorted-Array/" rel="next" title="[LeetCode] 26. Remove Duplicates from Sorted Array">
+                <i class="fa fa-chevron-left"></i> [LeetCode] 26. Remove Duplicates from Sorted Array
               </a>
             
           </div>
@@ -444,8 +449,8 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/03/27/LeetCode-17-Letter-Combinations-of-a-Phone-Number/" rel="prev" title="[LeetCode] 17. Letter Combinations of a Phone Number">
-                [LeetCode] 17. Letter Combinations of a Phone Number <i class="fa fa-chevron-right"></i>
+              <a href="/2018/03/28/LeetCode-28-Implement-strStr/" rel="prev" title="[LeetCode] 28. Implement strStr()">
+                [LeetCode] 28. Implement strStr() <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -527,7 +532,7 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -616,7 +621,7 @@ The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">2.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">3.</span> <span class="nav-text">代码：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签："><span class="nav-number">2.</span> <span class="nav-text">标签：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">3.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">4.</span> <span class="nav-text">代码：</span></a></li></ol></div>
             
 
           </div>

@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[[LeetCode] 29. Divide Two Integers]]></title>
+    <url>%2F2018%2F03%2F28%2FLeetCode-29-Divide-Two-Integers%2F</url>
+    <content type="text"><![CDATA[题目：Divide two integers without using multiplication, division and mod operator. If it is overflow, return MAX_INT. 标签：Math, Binary Search, Overflow 分析：题目看起来很简单，但是通过率并不高。首先，单纯地用dividend一直减divisor肯定会超时，其次，实际计算过程中很容易出现overflow的情况，比如，对INT_MIN求绝对值。为了防止算法超时，可以使用移位运算符成倍增大divisor，尽可能逼近dividend，然后将dividend设为dividend - divisor，重复循环。原理与二分查找类似。 代码：12345678910111213141516171819202122232425class Solution &#123;public: int divide(int dividend, int divisor) &#123; if (divisor == 0) return INT_MAX; if (divisor == 1) return dividend; if (divisor == -1) return dividend == INT_MIN? INT_MAX : -dividend; // convert both dividend and divisor to negative number. bool neg = (dividend &lt; 0) ^ (divisor &lt; 0); if (dividend &gt; 0) dividend = -dividend; if (divisor &gt; 0) divisor = -divisor; int res = 0; while (dividend &lt;= divisor) &#123; long long cnt = 1, new_divisor = divisor; // use long long to avoid overflow while (dividend &lt;= new_divisor) &#123; cnt &lt;&lt;= 1; // cnt *= 2 new_divisor &lt;&lt;= 1; // new_divisor *= 2 &#125; dividend -= new_divisor &gt;&gt; 1; res += cnt &gt;&gt; 1; &#125; return neg? -res : res; &#125;&#125;;]]></content>
+      <categories>
+        <category>Algorithm</category>
+        <category>LeetCode</category>
+      </categories>
+      <tags>
+        <tag>Algorithm</tag>
+        <tag>C/C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[[LeetCode] 28. Implement strStr()]]></title>
+    <url>%2F2018%2F03%2F28%2FLeetCode-28-Implement-strStr%2F</url>
+    <content type="text"><![CDATA[题目：Implement strStr(). Return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack. Example 1: Input: haystack = &quot;hello&quot;, needle = &quot;ll&quot; Output: 2 Example 2: Input: haystack = &quot;aaaaa&quot;, needle = &quot;bba&quot; Output: -1 标签：Two Pointers, String, KMP 分析：注意edge case的存在，比如当needle为&quot;&quot;时，结果应该是0，而非-1。最简单的做法是，遍历haystack，当出现与needle[0]匹配的字符时，进入匹配循环，如果匹配成功，即可返回当前索引；如果匹配失败，继续遍历。这种算法在最差情况下的复杂度为$O(MN)$（假设needle、haystack长度分别为$m$、$n$）。具体的改进方法有两种： 使用双指针：当找到与needle[0]匹配的字符时，使用两个指针分别从needle头部、尾部同时匹配，当指针出现交叉时，匹配结束。这种方法相较于原始方法，在某些情况下有很大改进，不妨试想haystack=&quot;111...11&quot;、needle=&quot;111..12&quot;的场景。 KMP算法：注意到，无论是原始方法，还是改进的双指针算法，它们都存在着“信息浪费”的情况，即匹配过程中，我们其实已经对haystack进行了一段距离的遍历，但是匹配结束后，我们并没有对遍历结果加以利用，而是重新开始了新的遍历+匹配。KMP算法很巧妙地利用了prefix=suffix的特征，允许我们在匹配结束后，省去一段距离的遍历。具体算法原理在之后的post中会详细说明。 代码：1234567891011121314151617181920212223class Solution &#123;public: // using two pointers int strStr(string haystack, string needle) &#123; if (needle.length() &gt; haystack.length()) return -1; if (needle == "") return 0; int len = needle.length(), start, end; for (int i = 0; i &lt; (int)haystack.length(); i++) &#123; if (needle[0] == haystack[i]) &#123; start = i+1; end = i + len - 1; // start matching from both sides. if (end &gt;= (int)haystack.length()) break; while (start &lt;= end) &#123; if (haystack[start] != needle[start-i] || haystack[end] != needle[end-i]) break; start++; end--; &#125; if (start &gt; end) return i; &#125; &#125; return -1; &#125;&#125;;]]></content>
+      <categories>
+        <category>Algorithm</category>
+        <category>LeetCode</category>
+      </categories>
+      <tags>
+        <tag>Algorithm</tag>
+        <tag>C/C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[[LeetCode] 27. Remove Element]]></title>
+    <url>%2F2018%2F03%2F28%2FLeetCode-27-Remove-Element%2F</url>
+    <content type="text"><![CDATA[题目：Given an array and a value, remove all instances of that value in-place and return the new length. Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory. The order of elements can be changed. It doesn&apos;t matter what you leave beyond the new length. Example: Given nums = [3,2,2,3], val = 3, Your function should return length = 2, with the first two elements of nums being 2. 标签：Array, Two Pointers 分析：和前一题类似，维护两个指针，一个指向“新”数组的尾部，另一个用于遍历“原”数组。 代码：123456789101112class Solution &#123;public: int removeElement(vector&lt;int&gt;&amp; nums, int val) &#123; if (nums.size() == 0) return 0; int i = 0, j = 0; while (j &lt; nums.size()) &#123; if (nums[j++] == val) continue; else nums[i++] = nums[j-1]; &#125; return i; &#125;&#125;;]]></content>
+      <categories>
+        <category>Algorithm</category>
+        <category>LeetCode</category>
+      </categories>
+      <tags>
+        <tag>Algorithm</tag>
+        <tag>C/C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[[LeetCode] 26. Remove Duplicates from Sorted Array]]></title>
     <url>%2F2018%2F03%2F28%2FLeetCode-26-Remove-Duplicates-from-Sorted-Array%2F</url>
     <content type="text"><![CDATA[题目：Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length. Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory. Example: Given nums = [1,1,2], Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively. It doesn&apos;t matter what you leave beyond the new length. 标签：Array, Two Pointers 分析：数组是排好序的，因此重复数字一定相邻。 代码：123456789101112class Solution &#123;public: int removeDuplicates(vector&lt;int&gt;&amp; nums) &#123; if (nums.size() &lt;= 1) return nums.size(); int i = 0, j = 1; while (j &lt; nums.size()) &#123; if (nums[i] == nums[j++]) continue; else nums[++i] = nums[j-1]; &#125; return i+1; &#125;&#125;;]]></content>
