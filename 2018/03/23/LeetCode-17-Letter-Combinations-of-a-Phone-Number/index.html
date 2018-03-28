@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  分析：本题有多种不同解法:  为了求">
+<meta name="description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  标签：String, Backtra">
 <meta name="keywords" content="Algorithm,C&#x2F;C++">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[LeetCode] 17. Letter Combinations of a Phone Number">
 <meta property="og:url" content="https://ihac.xyz/2018/03/23/LeetCode-17-Letter-Combinations-of-a-Phone-Number/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  分析：本题有多种不同解法:  为了求">
+<meta property="og:description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  标签：String, Backtra">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png">
-<meta property="og:updated_time" content="2018-03-27T13:45:05.000Z">
+<meta property="og:updated_time" content="2018-03-28T01:56:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[LeetCode] 17. Letter Combinations of a Phone Number">
-<meta name="twitter:description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  分析：本题有多种不同解法:  为了求">
+<meta name="twitter:description" content="题目：Given a digit string, return all possible letter combinations that the number could represent. A mapping of digit to letters (just like on the telephone buttons) is given below.  标签：String, Backtra">
 <meta name="twitter:image" content="http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png">
 
 
@@ -402,6 +402,7 @@
         <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given a digit string, return all possible letter combinations that the number could represent.
 A mapping of digit to letters (just like on the telephone buttons) is given below.
 </code></pre><p><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png" alt=""></p>
+<h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p><code>String</code>, <code>Backtracking</code></p>
 <h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>本题有多种不同解法:</p>
 <ol>
 <li>为了求解长度为n的电话号码所对应的字母组合，我们可以先计算出后n-1位的所有字母组合，然后再与第1位数字对应的多个字母进行组合，如此递归即可求得最终解。这种解法思路比较直观，需要产生n次函数调用，但每次递归结束需要遍历中间结果（vector），然后与当前数字的多个数字进行组合。</li>
@@ -533,7 +534,7 @@ A mapping of digit to letters (just like on the telephone buttons) is given belo
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -622,7 +623,7 @@ A mapping of digit to letters (just like on the telephone buttons) is given belo
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">2.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">3.</span> <span class="nav-text">代码：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签："><span class="nav-number">2.</span> <span class="nav-text">标签：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">3.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">4.</span> <span class="nav-text">代码：</span></a></li></ol></div>
             
 
           </div>

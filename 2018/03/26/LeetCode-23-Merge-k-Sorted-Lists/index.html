@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。假设每条列表长度为$n$，列表个数为$k">
+<meta name="description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 标签：Linked List, Divide and Conquer, Heap 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入">
 <meta name="keywords" content="Algorithm,C&#x2F;C++">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[LeetCode] 23. Merge k Sorted Lists">
 <meta property="og:url" content="https://ihac.xyz/2018/03/26/LeetCode-23-Merge-k-Sorted-Lists/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。假设每条列表长度为$n$，列表个数为$k">
+<meta property="og:description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 标签：Linked List, Divide and Conquer, Heap 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-27T13:46:20.000Z">
+<meta property="og:updated_time" content="2018-03-28T02:00:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[LeetCode] 23. Merge k Sorted Lists">
-<meta name="twitter:description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。假设每条列表长度为$n$，列表个数为$k">
+<meta name="twitter:description" content="题目：Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity. 标签：Linked List, Divide and Conquer, Heap 分析：算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入">
 
 
 
@@ -398,7 +398,8 @@
 
       
         <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
-</code></pre><h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。<br>假设每条列表长度为$n$，列表个数为$k$：</p>
+</code></pre><h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p><code>Linked List</code>, <code>Divide and Conquer</code>, <code>Heap</code></p>
+<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。<br>假设每条列表长度为$n$，列表个数为$k$：</p>
 <ol>
 <li>直接遍历比较：那么比较一次需要$k$次操作，需要k次比较才能进入下一轮（即所有列表长度变为$n-1$），总共$n$轮，因此计算复杂度为$k \times k \times n = O(nk^2)$；</li>
 <li>采用优先队列（最小堆）：每次取最小值只需要常数次操作，每次新插节点需要$log(k)$次操作，经过$k$次比较进入下一轮，总共$n$轮，因此计算复杂度为$O(k \times log(k) \times n = O(nklog(k)))$；</li>
@@ -530,7 +531,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -619,7 +620,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">2.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">3.</span> <span class="nav-text">代码：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签："><span class="nav-number">2.</span> <span class="nav-text">标签：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">3.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">4.</span> <span class="nav-text">代码：</span></a></li></ol></div>
             
 
           </div>
