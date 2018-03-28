@@ -8,6 +8,7 @@ visible: hide
 ---
 
 ### 题目：
+
     Given a linked list, remove the nth node from the end of list and return its head.
     For example,
 
@@ -17,6 +18,9 @@ visible: hide
     Note:
     Given n will always be valid.
     Try to do this in one pass.
+
+### 标签：
+`Linked List`, `Two Pointers`
 
 ### 分析：
 给定的是单列表，且要求解法为one-pass，因此可以使用两个指针同时移动，当前面的指针到达链表尾部时，删除后面指针指向的node即可。

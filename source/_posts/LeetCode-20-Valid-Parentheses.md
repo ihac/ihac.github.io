@@ -8,8 +8,12 @@ visible: hide
 ---
 
 ### 题目：
+
     Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
     The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+### 标签：
+`String`, `Stack`
 
 ### 分析：
 本题比较简单，可能的出错点在于对空栈进行pop操作～比如初始字符可能为右括号。

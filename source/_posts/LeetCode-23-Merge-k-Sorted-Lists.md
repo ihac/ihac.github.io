@@ -11,6 +11,9 @@ visible: hide
 
     Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
 
+### 标签：
+`Linked List`, `Divide and Conquer`, `Heap`
+
 ### 分析：
 算法流程和Merge 2 Sorted Lists在本质上没有太大区别，都是在多条列表头部中取最小，然后进入下一轮比较，真正影响算法效率的是比较算法。
 假设每条列表长度为$n$，列表个数为$k$：

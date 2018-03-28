@@ -15,6 +15,9 @@ visible: hide
 
     Your algorithm should use only constant space. You may not modify the values in the list, only nodes itself can be changed.
 
+### 标签：
+`Linked List`
+
 ### 分析：
 尝试不用虚头部解决这类链表问题～在正确性得到保证的情况下，尽可能地保持代码简洁。
 

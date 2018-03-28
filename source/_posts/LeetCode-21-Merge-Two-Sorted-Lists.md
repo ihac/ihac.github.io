@@ -11,6 +11,9 @@ visible: hide
 
     Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
 
+### 标签：
+`Linked List`
+
 ### 分析：
 将两个有序列表合并为一个有序列表。为了减少逻辑判断，可以新建一个node作为虚拟头部，省去对原头部的单独处理。
 

@@ -8,8 +8,12 @@ visible: hide
 ---
 
 ### 题目：
+
     Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
     Note: The solution set must not contain duplicate quadruplets.
+
+### 标签：
+`Array`, `Hash Table`, `Two Pointers`
 
 ### 分析：
 四数和解法和三数和没有本质区别，无非是多固定一个b而已，复杂度为$O(n^3)$。不过为了优化算法性能，我们需要做一些剪枝，比如忽略重复的a（代码17行）、跳过过小的a（代码19行）以及a过大时结束循环（代码21行）。

@@ -12,6 +12,8 @@ visible: hide
     Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
     Note: The solution set must not contain duplicate triplets.
 
+### 标签：
+`Array`, `Two Pointers`
 
 ### 分析：
 比较直观的解法是三个嵌套循环直接暴搜解法，最后去重，计算复杂度为$O(n^3)$，不过，暴力枚举过程中存在着大量可以省略的重复计算工作，存在很大的优化空间，事实上最终的优解复杂度仅有$O(n^2)$而已。

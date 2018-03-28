@@ -8,9 +8,13 @@ visible: hide
 ---
 
 ### 题目：
+
     Given a digit string, return all possible letter combinations that the number could represent.
     A mapping of digit to letters (just like on the telephone buttons) is given below.
 ![](http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Telephone-keypad2.svg/200px-Telephone-keypad2.svg.png)
+
+### 标签：
+`String`, `Backtracking`
 
 ### 分析：
 本题有多种不同解法:
