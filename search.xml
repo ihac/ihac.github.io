@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Difference Between Val, Lazy Val and Def]]></title>
+    <url>%2F2018%2F04%2F09%2FDifference-Between-Val-Lazy-Val-and-Def%2F</url>
+    <content type="text"><![CDATA[val 123456scala&gt; val a = &#123; println("hello, world."); 3 &#125;hello, world.a: Int = 3scala&gt; ares0: Int = 3 lazy val 123456789scala&gt; lazy val a = &#123; println("hello, world."); 3 &#125;a: Int = &lt;lazy&gt;scala&gt; ahello, world.res1: Int = 3scala&gt; ares2: Int = 3 def 12345678910scala&gt; def a = &#123; println("hello, world."); 3 &#125;a: Intscala&gt; ahello, world.res4: Int = 3scala&gt; ahello, world.res5: Int = 3 TBD]]></content>
+      <tags>
+        <tag>Scala</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[[LeetCode] 29. Divide Two Integers]]></title>
     <url>%2F2018%2F03%2F28%2FLeetCode-29-Divide-Two-Integers%2F</url>
     <content type="text"><![CDATA[题目：Divide two integers without using multiplication, division and mod operator. If it is overflow, return MAX_INT. 标签：Math, Binary Search, Overflow 分析：题目看起来很简单，但是通过率并不高。首先，单纯地用dividend一直减divisor肯定会超时，其次，实际计算过程中很容易出现overflow的情况，比如，对INT_MIN求绝对值。为了防止算法超时，可以使用移位运算符成倍增大divisor，尽可能逼近dividend，然后将dividend设为dividend - divisor，重复循环。原理与二分查找类似。 代码：12345678910111213141516171819202122232425class Solution &#123;public: int divide(int dividend, int divisor) &#123; if (divisor == 0) return INT_MAX; if (divisor == 1) return dividend; if (divisor == -1) return dividend == INT_MIN? INT_MAX : -dividend; // convert both dividend and divisor to negative number. bool neg = (dividend &lt; 0) ^ (divisor &lt; 0); if (dividend &gt; 0) dividend = -dividend; if (divisor &gt; 0) divisor = -divisor; int res = 0; while (dividend &lt;= divisor) &#123; long long cnt = 1, new_divisor = divisor; // use long long to avoid overflow while (dividend &lt;= new_divisor) &#123; cnt &lt;&lt;= 1; // cnt *= 2 new_divisor &lt;&lt;= 1; // new_divisor *= 2 &#125; dividend -= new_divisor &gt;&gt; 1; res += cnt &gt;&gt; 1; &#125; return neg? -res : res; &#125;&#125;;]]></content>

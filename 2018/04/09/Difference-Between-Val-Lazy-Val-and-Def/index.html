@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Scala," />
 
 
 
@@ -79,13 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Coding">
-<meta property="og:url" content="https://ihac.xyz/tags/Password/index.html">
+<meta name="description" content="val 123456scala&amp;gt; val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125;hello, world.a: Int = 3scala&amp;gt; ares0: Int = 3  lazy val 123456789scala&amp;gt; lazy val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125">
+<meta name="keywords" content="Scala">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Difference Between Val, Lazy Val and Def">
+<meta property="og:url" content="https://ihac.xyz/2018/04/09/Difference-Between-Val-Lazy-Val-and-Def/index.html">
 <meta property="og:site_name" content="Coding">
+<meta property="og:description" content="val 123456scala&amp;gt; val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125;hello, world.a: Int = 3scala&amp;gt; ares0: Int = 3  lazy val 123456789scala&amp;gt; lazy val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-04-09T13:40:38.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Coding">
+<meta name="twitter:title" content="Difference Between Val, Lazy Val and Def">
+<meta name="twitter:description" content="val 123456scala&amp;gt; val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125;hello, world.a: Int = 3scala&amp;gt; ares0: Int = 3  lazy val 123456789scala&amp;gt; lazy val a = &amp;#123; println(&quot;hello, world.&quot;); 3 &amp;#125">
 
 
 
@@ -115,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/tags/Password/"/>
+  <link rel="canonical" href="https://ihac.xyz/2018/04/09/Difference-Between-Val-Lazy-Val-and-Def/"/>
 
 
 
 
 
-  <title>Tag: Password | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Difference Between Val, Lazy Val and Def | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -140,7 +145,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left ">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -278,54 +283,159 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Password<small>Tag</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/04/09/Difference-Between-Val-Lazy-Val-and-Def/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xiao An">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Coding">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2016/06/01/使用John-the-Ripper破解密码/" itemprop="url">
-              
-                <span itemprop="name">使用John the Ripper破解密码</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">Difference Between Val, Lazy Val and Def</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-06-01T10:47:39+08:00"
-              content="2016-06-01" >
-          06-01
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-09T21:38:16+08:00">
+                2018-04-09
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <ol>
+<li><p><code>val</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">val</span> a = &#123; println(<span class="string">"hello, world."</span>); <span class="number">3</span> &#125;</span><br><span class="line">hello, world.</span><br><span class="line">a: <span class="type">Int</span> = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">scala&gt; a</span><br><span class="line">res0: <span class="type">Int</span> = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>lazy val</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">lazy</span> <span class="keyword">val</span> a = &#123; println(<span class="string">"hello, world."</span>); <span class="number">3</span> &#125;</span><br><span class="line">a: <span class="type">Int</span> = &lt;<span class="keyword">lazy</span>&gt;</span><br><span class="line"></span><br><span class="line">scala&gt; a</span><br><span class="line">hello, world.</span><br><span class="line">res1: <span class="type">Int</span> = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">scala&gt; a</span><br><span class="line">res2: <span class="type">Int</span> = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>def</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="function"><span class="keyword">def</span> <span class="title">a</span> </span>= &#123; println(<span class="string">"hello, world."</span>); <span class="number">3</span> &#125;</span><br><span class="line">a: <span class="type">Int</span></span><br><span class="line"></span><br><span class="line">scala&gt; a</span><br><span class="line">hello, world.</span><br><span class="line">res4: <span class="type">Int</span> = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">scala&gt; a</span><br><span class="line">hello, world.</span><br><span class="line">res5: <span class="type">Int</span> = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<p><em>TBD</em></p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Scala/" rel="tag"># Scala</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/28/LeetCode-29-Divide-Two-Integers/" rel="next" title="[LeetCode] 29. Divide Two Integers">
+                <i class="fa fa-chevron-left"></i> [LeetCode] 29. Divide Two Integers
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -333,6 +443,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -585,6 +699,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
