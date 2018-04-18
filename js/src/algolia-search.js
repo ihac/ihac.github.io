@@ -34,7 +34,7 @@ $(document).ready(function () {
 
     instantsearch.widgets.hits({
       container: '#algolia-hits',
-      hitsPerPage: 5 + algoliaSettings.hits.per_page || 10,
+      hitsPerPage: algoliaSettings.hits.per_page || 10,
       templates: {
         item: function (data) {
           var link = data.permalink ? data.permalink : (CONFIG.root + data.path);
