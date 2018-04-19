@@ -294,6 +294,132 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2016/06/10/手写一个简单的字符设备驱动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xiao An">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/06/10/手写一个简单的字符设备驱动/" itemprop="url">手写一个简单的字符设备驱动</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-06-10T09:52:10+08:00">
+                2016-06-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>　　在嵌入式Linux中，操作GPIO并不是一件难事，我们可以通过虚拟文件系统或者其他相关库轻易地控制一个引脚的电平。不过当我们需要利用GPIO来控制一个设备时，一切就不再是那么简单了，因为控制引脚电平是一种非常<code>low-level</code>的原始操作，而控制设备行为是一种<code>high-level</code>的语义操作，这之间的巨大鸿沟显示不是普通用户所能填平的，此时就需要程序员出马了。在计算机领域有这么一句话：<code>计算机学科的所有问题都能通过增加一层额外的抽象层来解决</code>，上述问题也不例外，我们可以在用户与设备之间建立一个抽象层，它向用户提供浅显易懂的语义操作，而对下层设备的控制仍是通过GPIO原始操作来完成，这对用户而言是透明的，所以他们不会再因繁琐的GPIO操作而烦恼，上述问题也即得到了解决。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/06/10/手写一个简单的字符设备驱动/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+      
+    
+      
+        
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2016/06/01/使用John-the-Ripper破解密码/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -725,7 +851,7 @@ IntroConsider the following simplified example code from a Web server.1234567int
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
