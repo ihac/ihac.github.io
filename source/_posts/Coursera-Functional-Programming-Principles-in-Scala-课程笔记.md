@@ -163,5 +163,84 @@ a + b ^? c ?^ d less a ==> b | c
     - generics: instances of a class or function are created by type parameterization.
 
 ## Week 4
+
+### Lecture 4.1 - Objects Everywhere
+
+- a pure object oriented language is one which every value is an object.
+- define `Boolean` as a class from first principles:
+``` scala
+package idealized.scala
+abstract class Boolean {
+    def ifThenElse[T](t: => T, e: => T): T
+    def && (x: => Boolean): Boolean = ifThenElse(x, false)
+    def || (x: => Boolean): Boolean = ifThenElse(true, x)
+    def unary_!: Boolean = ifThenElse(false, true)
+    def == (x: Boolean): Boolean = ifThenElse(x, x.unary_!)
+    def != (x: Boolean): Boolean = ifThenElse(x.unary_!, x)
+}
+
+object true extends Boolean {
+    def ifThenElse[T](t: => T, e: => T) = t
+}
+object false extends Boolean {
+    def ifThenElse[T](t: => T, e: => T) = e
+}
+```
+
+### Lecture 4.2 - Functions as Objects
+
+- function values are treated as objects in Scala:
+    - the function type `A => B` is just an abbreviation for class `scala.Function1[A, B]`.
+
+### Lecture 4.3 - Subtyping and Generics
+
+- `A <: B` is an upper bound of the type parameter `A` which means `A` is a subtype of `B`.
+- `A >: B` is an lower bound of the type parameter `A` which means `A` is a supertype of `B`.
+- mixed bound is possible: `A >: B <: C` would restrict `A` any type on the interval between `B` and `C`.
+- `Liskov Substitution Principle`: let q(x) be a property provable about objects x of type B, then q(y) should be provable for objects y of type A where A <: B
+
+### Lecture 4.4 - Variance (Optional)
+
+- (roughly speaking) a type that accepts mutations of its elements should not be covariant, but immutable types can be covariant if some conditions are met.
+- covariant and contravariant:
+    - given `A <: B`, if `C[A] <: C[B]`, `C` is covariant; if `C[A] >: C[B]`, `C` is covariant; if neither `C[A]` nor `C[B]` is a subtype of the other, `C` is nonvariant.
+    ``` scala
+    class C[+A] { ... } // C is covariant
+    class C[-A] { ... } // C is contravariant
+    class C[A] { ... } // C is nonvariant
+    ```
+- functions must be contravariant in their argument types and covariant in their result types:
+    - for a function, if `A2 <: A1` and `B1 <: B2`, then `A1 => B1 <: A2 => B2`.
+    - covariant type parameters can only appear in method results.
+    - contravariant type parameters can only appear in method parameters.
+    - invariant type parameters can appear anywhere.
+
+- sometimes we have to put in a bit of work to make a class covariant.
+``` scala
+trait List[+T] {
+    // the following code does not type-check because T is covariant.
+    // List[IntSet].prepend(Empty) works but List[NonEmpty].prepend(Empty) does not work.
+    def prepend(elem: T): List[T] = new Cons(elem, this)
+
+    // we can use a lower bound to solve this problem.
+    def prepend [U >: T] (elem: U): List[U] = new Cons(elem, this)
+}
+```
+
+### Lecture 4.5 - Decomposition
+
+### Lecture 4.6 - Pattern Matching
+
+- pattern matching is a generalization of switch from C/Java to class hierarchies.
+    - a constructor pattern `C(p1, ..., pn)` matches all the values of type `C` (or a subtype) that have been constructed with arguments matching the patterns `p1, ..., pn`.
+    - a variable pattern `x` matches any value, and binds the name of the variable to this value.
+    - a constant pattern `c` matches values that are equal to `c` (in the sense of `==`)
+
+### Lecture 4.7 - Lists
+
+- lists are immutable; lists are recursive, while arrays are flat.
+- like arrays, lists are homogeneous that all elements of a list must all have the same type.
+- operators ending in `:` associate to the right.
+
 ## Week 5
 ## Week 6
