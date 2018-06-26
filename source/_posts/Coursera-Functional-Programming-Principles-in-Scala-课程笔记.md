@@ -243,4 +243,30 @@ trait List[+T] {
 - operators ending in `:` associate to the right.
 
 ## Week 5
+
+### Lecture 5.1 - More Functions on Lists
+
+### Lecture 5.2 - Pairs and Tuples
+
+### Lecture 5.3 - Implicit Parameters
+
+- `scala.math.Ordering[T]` provides ways to compare elements of type `T`.
+- if a function takes an implicit parameter of type `T`, the compiler will search an implicit definition that:
+    - is marked `implicit`.
+    - has a type compatible with `T`.
+    - is visible at the point of the function call, or is defined in a companion object associated with T.
+- if there is a single (most specific) definition, it will be taken as actual argument for the implicit parameter; otherwise it's an error.
+
+### Lecture 5.4 - High-Order List Functions
+
+### Lecture 5.5 - Reduction of Lists
+
+- `reduceLeft` inserts a given binary operator between adjacent elements of a list.
+- `foldLeft` is like `reduceLeft` but takes an accumalator.
+- `foldLeft` and `reduceLeft` produces trees which lean to the left, while `foldRight` and `reduceRight` produces trees which lean to the right.
+
+### Lecture 5.6 - Reasoning About Concat
+
+### Lecture 5.7 - A Larger Equational Proof on Lists
+
 ## Week 6
