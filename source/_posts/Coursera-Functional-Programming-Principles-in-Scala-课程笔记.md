@@ -138,6 +138,30 @@ a + b ^? c ?^ d less a ==> b | c
 ```
 
 ## Week 3
+
+### Lecture 3.1 - Class Hierarchies
+
+- abstract classes can contain members which are missing an implementation.
+- no instances of an abstract class can be created with `new`.
+- dynamic dispatch of methods (in Object-Oriented Language) is analogous to calls to higher-order functions (in Functional Languages):
+    - because the code thats gets executed on functional method call is not known statically, but it's determined by the runtime value that is passed.
+
+### Lecture 3.2 - How Classes Are Organized
+
+- a class can only have one superclass, but it could extends multiple `trait`s.
+- `trait` can contains fields and concrete methods, but it cannot have parameters.
+- `Null` is a subtype of every class that inherits from `Object`; it is incompatible with subtypes of `AnyVal`.
+
+### Lecture 3.3 - Polymorphism
+
+- type parameters do not affect evaluation in Scala.
+    - type erasure: we can assume that all type parameters and type arguments are removed before evaluating the program.
+    - languages that use type erasure: Scala, Java, Haskell, ML, Ocaml.
+    - languages that keep the type parameters around run time: C++, C#, F#.
+- polymorphsim has two principal forms: subtyping and generics:
+    - subtyping: instances of a subclass can be passed to a base class.
+    - generics: instances of a class or function are created by type parameterization.
+
 ## Week 4
 ## Week 5
 ## Week 6
