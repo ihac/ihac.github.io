@@ -6,6 +6,8 @@ categories:
 - [Open Course, Coursera]
 ---
 
+**Note:**
+This blog is intended to record what I learned in *Functional Programming Principles in Scala*, rather than sharing the course materials. So there are two things that I won't put up: my solution to assignments and topics which I've mastered already.
 
 ## Week 1
 
