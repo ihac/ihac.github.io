@@ -61,6 +61,82 @@ def foo(x: Int, y: => Int): Int = x
 - we can require a function is tail-recursive using a `@tailrec` annotation.
 
 ## Week 2
+
+### Lecture 2.1 - High-Order Functions
+
+- functional languages treat functions as first-class values.
+- higher order functions: functions that take other functions as parameters or return other functions as results.
+- anonymous functions: function literals.
+
+### Lecture 2.2 - Currying - Principles of Functional Programming
+
+- the type of `sum` is `(Int => Int) => (Int, Int) => Int`:
+``` scala
+def sum(f: Int => Int)(x: Int, y: Int): Int = ...
+```
+- function types associate to the right, so `Int => Int => Int` is equivalent to `Int => (Int => Int)`.
+
+### Lecture 2.3 - Example: Finding Fixed Points
+
+### Lecture 2.4 - Scala Syntax Summary
+
+```
+Type            = SimpleType | FunctionType
+FunctionType    = SimpleType ‘= > ’ Type
+                | ‘( ’ [ Types ] ‘) ’ ‘= > ’ Type
+SimpleType      = Ident
+Types           = Type { ‘ , ’ Type }
+
+Expr            = InfixExpr | FunctionExpr
+                | if ‘( ’ Expr ‘) ’ Expr else Expr
+InfixExpr       = PrefixExpr | InfixExpr Operator InfixExpr
+Operator        = ident
+PrefixExpr      = [ ‘+ ’ | ‘-’ | ‘! ’ | ‘~ ’ ] SimpleExpr
+SimpleExpr      = ident | literal | SimpleExpr ‘. ’ ident
+                | Block
+FunctionExpr    = Bindings ‘= > ‘ Expr
+Bindings        = ident [ ‘: ’ SimpleType ]
+                | ‘( ’ [ Binding { ‘ , ’ Binding }] ‘) ’
+Binding         = ident [ ‘: ’ Type ]
+Block           = ‘{ ’ { Def ‘; ’} Expr ‘} ’
+
+Def             = FunDef | ValDef
+FunDef          = def ident { ‘( ’ [ Parameters ] ‘) ’}
+                    [ ‘: ’ Type ] ‘= ’ Expr
+ValDef          = val ident [ ‘: ’ Type ] ‘= ’ Expr
+Parameter       = ident ‘: ’ [ ‘= > ’ ] Type
+Parameters      = Parameter { ‘ , ’ Parameter }
+```
+
+### Lecture 2.5 - Functions and Data
+
+### Lecture 2.6 - More Fun With Rationals
+
+- data abstraction: the ability to choose different implementation of the data without affecting clients.
+- `require` and `assert`: require is used to enforce a precondition on the caller of a function, while assert is used as to check the code of the function itself.
+
+### Lecture 2.7 - Evaluation and Operators
+
+- the precedence of an operator is determined by its first character, and the following table lists the characters in increasing order of priority precedence:
+```
+(all letters)
+|
+^
+&
+< >
+= !
+:
++ -
+* / %
+(all other special characters)
+```
+- exercise:
+``` scala
+a + b ^? c ?^ d less a ==> b | c
+// is equivalent to
+((a + b) ^? (c ?^ d)) less ((a ==> b) | c)
+```
+
 ## Week 3
 ## Week 4
 ## Week 5
