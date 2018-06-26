@@ -270,3 +270,43 @@ trait List[+T] {
 ### Lecture 5.7 - A Larger Equational Proof on Lists
 
 ## Week 6
+
+### Lecture 6.1 - Other Collections
+
+- `Vector` has more evenly balanced access patterns than `List` based on its structure design.
+- a common base class of `List` and `Vector` is `Seq`, the class of all sequences, which is a subclass of `Iterable`.
+``` Scala
+Seq, Set, Map <: Iterable
+Vector, List, Range <: Seq
+// Array and String support the same operations as Seq and can implicitly be converted to sequences where needed,
+// but they cannot be subclasses of Seq because they come from Java.
+```
+- `Range` represents a sequence of evenly spaced integers, which has three operators: `to` (inclusive), `until` (exclusive) and `by` (step value).
+``` scala
+1 to 4 // 1, 2, 3, 4
+1 until 4 // 1, 2, 3
+1 to 4 by 2 // 1, 3
+```
+
+### Lecture 6.2 - Combinatorial Search and For-Expressions
+
+- a `for`-expression is of the form: `for (s) yield e` where:
+    - `s` is a sequence of generators or filters,
+    - `e` is an expression whose value is returned by an iteration.
+    - a generator is of the form `p <- e`.
+    - a filter is of the form `if f`.
+    - the sequence must start with a generator.
+    - if there're multiple generators in the sequence, the last generators vary faster than the first one.
+
+### Lecture 6.3 - Combinatorial Search Example
+
+- `Set` is different with `Seq`:
+    - `Set` is unordered.
+    - `Set` does not have duplicate elements.
+    - the fundamental operation on `Set` is `contains`.
+
+### Lecture 6.4 - Maps
+
+- repeated parameter: `T*` means you can pass variable number of parameter with type `T`.
+
+### Lecture 6.5 - Putting the Pieces Together
