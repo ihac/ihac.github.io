@@ -139,8 +139,7 @@ def test[T](g: Generator[T], runTimes: Int = 100)
 trait M[T] {
     def flatMap[U](f: T => M[U]): M[U]
 }
-def unit[T](x: T): M[T]
-```
+def unit[T](x: T): M[T] ```
 - `List` is a monad with `unit(x) = List(x)`; `Set` is monad with `unit(x) = Set(x)`; `Generator` is a monad with `unit(x) = single(x)`
 - `map` can be defined for every monad as a combination of `flatMap` and `unit`:
 ``` scala
@@ -184,5 +183,65 @@ List(1) flatMap (x => List(x, x)) = List(1, 1) == (x => List(x, x))(1)
     - an expression composed from `Try`, `map`, `flatMap` will never throw a non-fatal exception.
 
 ## Week 2
+
+### Lecture 2.1 - Structural Induction on Trees
+
+### Lecture 2.2 - Streams
+
+- streams is similar to lists, but their tail is evaluated only on demand.
+``` scala
+scala> Stream(1, 2, 3)
+res0: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+
+scala> res0.tail
+res1: scala.collection.immutable.Stream[Int] = Stream(2, ?)
+```
+- we use `#::` instead of `::` for stream prepending.
+- how to use stream to improve efficiency?
+``` scala
+// it is inefficient because it constructs all prime numbers between 1000
+// and 10000 in a list, while what we need is only the second one.
+((1000 to 10000) filter isPrime)(1)
+
+// using stream only needs evaluate the first two prime numbers.
+((1000 to 10000).toStream filter isPrime)(1)
+```
+
+### Lecture 2.3 - Lazy Evaluation
+
+- in a purely functional language an expression produces the same result each time it is evaluated.
+- `lazy evaluation` means evaluting on first demand, storing the result of the first evaluation and re-using the stored result instead of recomputing.
+    - it's not `by-name evaluation` where everything is recomputed.
+    - it's not `restricted evaluation` for normal parameters and `val` definitions.
+- Haskell use lazy evaluation by default, but Scala use stricted evaluation by default since it also supports mutable side effects (which might be inharmonious with lazy evaluation) in functions.
+
+### Lecture 2.4 - Computing with Infinite Sequences
+
+- define an infinity stream:
+``` scala
+def from(n: Int): Stream[Int] = n #:: from(n+1)
+// all natural numbers:
+val nats = from(0)
+```
+- calculate all prime numbers:
+``` scala
+def sieve(s: Stream[Int]): Stream[Int] =
+    s.head #:: sieve(s.tail filter (_ % s.head != 0))
+val primes = sieve(from(2))
+```
+- calculate the square root:
+``` scala
+def sqrtStream(x: Double): Stream[Double] = {
+    def improve(guess: Double) = (guess + x / guess) / 2
+    lazy val guesses: Stream[Double] = 1 #:: (guesses map improve)
+    guesses
+}
+def isGoodEnough(guess: Double, x: Double) =
+    math.abs((guess * guess - x) / x) < 0.0001
+sqrtStream(4) filter (isGoodEnough(_, 4))
+```
+
+### Lecture 2.5 - Case Study: the Water Pouring Problem
+
 ## Week 3
 ## Week 4
