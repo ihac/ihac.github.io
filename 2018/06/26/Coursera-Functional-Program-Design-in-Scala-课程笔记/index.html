@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Functional Program Design in Scala, rather than share the course materials. So there are two things that I won’t put up: my solution to assignmen">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-06-27T07:46:06.975Z">
+<meta property="og:updated_time" content="2018-06-27T09:03:11.596Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Functional Program Design in Scala 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Functional Program Design in Scala, rather than share the course materials. So there are two things that I won’t put up: my solution to assignmen">
@@ -503,7 +503,16 @@
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sqrtStream</span></span>(x: <span class="type">Double</span>): <span class="type">Stream</span>[<span class="type">Double</span>] = &#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">improve</span></span>(guess: <span class="type">Double</span>) = (guess + x / guess) / <span class="number">2</span></span><br><span class="line">    <span class="keyword">lazy</span> <span class="keyword">val</span> guesses: <span class="type">Stream</span>[<span class="type">Double</span>] = <span class="number">1</span> #:: (guesses map improve)</span><br><span class="line">    guesses</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">isGoodEnough</span></span>(guess: <span class="type">Double</span>, x: <span class="type">Double</span>) =</span><br><span class="line">    math.abs((guess * guess - x) / x) &lt; <span class="number">0.0001</span></span><br><span class="line">sqrtStream(<span class="number">4</span>) filter (isGoodEnough(_, <span class="number">4</span>))</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h3 id="Lecture-2-5-Case-Study-the-Water-Pouring-Problem"><a href="#Lecture-2-5-Case-Study-the-Water-Pouring-Problem" class="headerlink" title="Lecture 2.5 - Case Study: the Water Pouring Problem"></a>Lecture 2.5 - Case Study: the Water Pouring Problem</h3><h2 id="Week-3"><a href="#Week-3" class="headerlink" title="Week 3"></a>Week 3</h2><h2 id="Week-4"><a href="#Week-4" class="headerlink" title="Week 4"></a>Week 4</h2>
+<h3 id="Lecture-2-5-Case-Study-the-Water-Pouring-Problem"><a href="#Lecture-2-5-Case-Study-the-Water-Pouring-Problem" class="headerlink" title="Lecture 2.5 - Case Study: the Water Pouring Problem"></a>Lecture 2.5 - Case Study: the Water Pouring Problem</h3><ul>
+<li>a <strong>very decent solution</strong> to <code>Water Pouring Problem</code>, which is quite worthy of being reviewed.</li>
+<li>some guiding principles for good design:<ul>
+<li>name everything you can.</li>
+<li>put operations into natural scopes.</li>
+<li>keep degrees of freedom for future refinements.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Week-3"><a href="#Week-3" class="headerlink" title="Week 3"></a>Week 3</h2><h2 id="Week-4"><a href="#Week-4" class="headerlink" title="Week 4"></a>Week 4</h2>
       
     </div>
     
