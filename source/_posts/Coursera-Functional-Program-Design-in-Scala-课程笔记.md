@@ -44,12 +44,144 @@ x1.flatMap(x => for (y <- e2, s) yield e3)
 ``` scala
 trait Generator[+T] {
     self => // an alias for ”this”.
-    def generate: T
     def map[S](f: T => S): Generator[S] = new Generator[S] {
+        // we cannot use this here (but Generator.this is ok)
         def generate = f(self.generate)
     }
 }
 ```
+- define a trait `Generator[T]` that generates random values of type `T`:
+``` scala
+trait Generator[+T] {
+    def generate: T
+}
+
+// some instances
+val integers = new Generator[Int] {
+    val rand = new java.util.Random
+    def generate: Int = rand.nextInt()
+}
+val booleans = new Generator[Boolean] {
+    def generate: Boolean = integers.generate > 0
+}
+val pairs = new Generator[(Int, Int)] {
+    def generate = (integers.generate, integers.generate)
+}
+```
+- how can we avoid the `new Generator` boilerplate since it's not trivial? Use `for` syntax:
+``` scala
+// Ideally, we would like to write:
+val booleans = for (x <- integers) yield x > 0
+def pairs[T, U](t: Generator[T], u: Generator[U]) = for {
+    x <- t
+    y <- u
+} yield (x, y)
+
+// they would be expanded to:
+val booleans = integers.map(x => x > 0)
+def pairs[T, U](t: Generator[T], u: Generator[U]) = t.flatMap(x => u.map(y => (x, y)))
+
+// so we have to define map and flatMap for trait Generator:
+trait Generator[+T] {
+    self => // an alias for ”this”.
+    def generate: T
+    def map[S](f: T => S): Generator[S] = new Generator[S] {
+        def generate = f(self.generate)
+    }
+    def flatMap[S](f: T => Generator[S]): Generator[S] = new Generator[S] {
+        def generate = f(self.generate).generate
+    }
+}
+```
+- some helper functions:
+``` scala
+def single[T](x: T): Generator[T] = new Generator[T] {
+    def generate = x
+}
+def choose(lo: Int, hi: Int): Generator[Int] =
+    for (x <- integers) yield lo + x % (hi - lo)
+def oneOf[T](xs: T*): Generator[T] =
+    for (idx <- choose(0, xs.length)) yield xs(idx)
+```
+- [Exercise] how to implement a generator that creates random `Tree` objects?
+``` scala
+trait Tree
+case class Inner(left: Tree, right: Tree) extends Tree
+case class Leaf(x: Int) extends Tree
+
+// my solution:
+def trees: Generator[Tree] = for {
+    isLeaf <- booleans
+    tree <- if (isLeaf) leafs else inners
+} yield tree
+def leafs: Generator[Leaf] = for (x <- integers) yield Leaf(x)
+def inners: Generator[Inner] = for {
+    left <- trees
+    right <- trees
+} yield new Inner(left, right)
+```
+- random test: generate random test inputs.
+``` scala
+def test[T](g: Generator[T], runTimes: Int = 100)
+    (f: T => Boolean): Unit = {
+    for (i <- 0 until runTimes) {
+        val t = g.generate
+        assert(f(t), "assert failed for " + t)
+    }
+    println("passed %s tests".format(runTimes))
+}
+```
+
+### Lecture 1.4 - Monads
+
+- a `monad` is a parametric type `M[T]` with two operations: `flatMap` (in the literature, flatMap is more commonly called `bind`) and `unit`, that have to satisfy some laws:
+``` scala
+trait M[T] {
+    def flatMap[U](f: T => M[U]): M[U]
+}
+def unit[T](x: T): M[T]
+```
+- `List` is a monad with `unit(x) = List(x)`; `Set` is monad with `unit(x) = Set(x)`; `Generator` is a monad with `unit(x) = single(x)`
+- `map` can be defined for every monad as a combination of `flatMap` and `unit`:
+``` scala
+m map f = m flatMap (x => unit(f(x)))
+```
+- to qualify as a monad, a type has to satisfy three laws:
+    - associativity:
+    ``` scala
+    m flatMap f flatMap g == m flatMap (x => f(x) flatMap g)
+    ```
+    - left unit:
+    ``` scala
+    unix(x) flatMap f == f(x)
+    ```
+    - right unit:
+    ``` scala
+    m flatMap unit == m
+    ```
+- [Note] you might find `List` doesn't obey the `left unit` rule since `List(1) flatMap (Set(_)) = List(1) != Set(1)`, this is because the monad law assumes `f: A => M[A]` (here `f: A => List[A]`). Refer to [link](https://stackoverflow.com/questions/45002864/monads-left-unit-law-does-not-seem-to-hold-for-lists-in-scala-are-scala-lists).
+``` scala
+List(1) flatMap (x => List(x, x)) = List(1, 1) == (x => List(x, x))(1)
+```
+- what is the significance of the laws with respect to `for` syntax?
+    - associativity says essentially that one can “inline” nested for expressions:
+    ``` scala
+    for (y <- for (x <- m; y <- f(x)) yield y
+        z <- g(y)) yield z
+    ==
+    for (x <- m;
+        y <- f(x)
+        z <- g(y)) yield z
+    ```
+    - right unit says:
+    ``` scala
+    for (x <- m) yield x == m
+    ```
+    - left unit  does not have an analogue for for-expressions.
+- `Try` is not a monad since it breaks the `left unit` rule:
+    - `Try(expr) flatMap f != f(expr)`: left-hand side will never raise a non-fatal exception whereas the right-hand side will raise any exception thrown by expr or `f`.
+- `Try` trades one monad law for another law which is more useful in this context:
+    - an expression composed from `Try`, `map`, `flatMap` will never throw a non-fatal exception.
 
 ## Week 2
 ## Week 3
