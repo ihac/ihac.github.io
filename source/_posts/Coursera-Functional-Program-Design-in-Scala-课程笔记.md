@@ -244,5 +244,11 @@ sqrtStream(4) filter (isGoodEnough(_, 4))
 
 ### Lecture 2.5 - Case Study: the Water Pouring Problem
 
+- a **very decent solution** to `Water Pouring Problem`, which is quite worthy of being reviewed.
+- some guiding principles for good design:
+    - name everything you can.
+    - put operations into natural scopes.
+    - keep degrees of freedom for future refinements.
+
 ## Week 3
 ## Week 4
