@@ -8,7 +8,7 @@ categories:
 
 **Note:**
 This blog is intended to record what I learned in *Functional Programming Principles in Scala*, rather than share the course materials. So there are two things that I won't put up: my solution to assignments and topics which I've mastered already.
-PLEASE NOTIFY ME if I obeyed [Coursera Honor Code](https://learner.coursera.help/hc/en-us/articles/209818863-Coursera-Honor-Code) accidentally.
+PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/hc/en-us/articles/209818863-Coursera-Honor-Code) accidentally.
 
 ## Week 1
 
