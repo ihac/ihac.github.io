@@ -275,5 +275,43 @@ for (i <- 1 until 3; j <- "abc") println(i + " " + j)
 
 ### Lecture 3.6 - Discrete Event Simulation: Implementation and Test
 
-
 ## Week 4
+
+### Lecture 4.1 - Imperative Event Handling: The Observer Pattern
+
+- the `Observer Pattern` is widely used when views need to react to changes in a model. Variants of it are also called:
+    - publish/subscribe.
+    - mode/view/controller (MVC).
+### Lecture 4.2 - Functional Reactive Programming
+
+- imperative reactive programming is about reacting to sequences of events that happen in time, while in functional view: aggregate an event sequence into a signal.
+- generally, an indexted argument like `f(E1,...,En) = E` is translated to `f.update(E1,...,En, E)`, which also works if `n = 0`.
+- `sig.update(5)` can be abbreviated to `sig() = 5`.
+- we cannot update signal value by `s() = s() + 1`, since this statement tries to define a signal to be at *all points in time* one larger than itself.
+
+### Lecture 4.3 - A Simple FRP Implementation
+
+### Lecture 4.4 - Latency as an Effect 1
+
+### Lecture 4.5 - Latency as an Effect 2
+
+### Lecture 4.6 - Combinators on Futures 1
+
+### Lecture 4.7 - Combinators on Futures 2
+
+- do not block when you have asynchronous computation.
+
+### Lecture 4.8 - Composing Futures 1
+
+### Lecture 4.9 - Implementation of flatMap on Future
+
+### Lecture 4.10 - Composing Futures 2
+
+## Conclusions
+
+### How to Apply Functional Design Elements in Applications
+- lazy evaluation and infinite data structures
+- distinction between computations and values (e.g. a random value acctually is a computation).
+- monads to abstract over properties of computation (randomness, delays, effects).
+- running computations at some later time.
+
