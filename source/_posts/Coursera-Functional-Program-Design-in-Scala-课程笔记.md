@@ -251,4 +251,29 @@ sqrtStream(4) filter (isGoodEnough(_, 4))
     - keep degrees of freedom for future refinements.
 
 ## Week 3
+
+### Lecture 3.1 - Functions and State
+
+### Lecture 3.2 - Identity and Change
+
+- the precise meaning of "being the same" is defined by the property of `operational equivalence`.
+    - `x` and `y` are operationally equivalent if `no possible test` can distinguish between them.
+
+### Lecture 3.3 - Loops
+
+- `for-loops` is not `for-expression` (end with `yield`).
+- for-loops translate similarly to for-expression, but using `foreach` combinator instead of `map` and `flatMap`.
+``` scala
+for (i <- 1 until 3; j <- "abc") println(i + " " + j)
+// is translated to
+(1 until 3) foreach (i => "abc" foreach (j => println(i + " " + j)))
+```
+
+### Lecture 3.4 - Extended Example: Discrete Event Simulation
+
+### Lecture 3.5 - Discrete Event Simulation: API and Usage
+
+### Lecture 3.6 - Discrete Event Simulation: Implementation and Test
+
+
 ## Week 4
