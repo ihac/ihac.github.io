@@ -53,3 +53,17 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
     - then, parts of the program are compiled into machine code.
     - later, the JVM may choose to apply additional dynamic optimizations.
     - eventually, the program reaches steady state.
+
+## Week 2
+
+### Parallel Sorting
+
+### Data Operations and Parallel Mapping
+
+### Parallel Fold (Reduce) Operation
+
+### Associativity I
+
+### Associativity II
+
+### Parallel Scan (Prefix Sum) Operation
