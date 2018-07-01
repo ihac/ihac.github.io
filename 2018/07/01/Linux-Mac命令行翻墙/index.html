@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Algorithm,C/C++," />
+  <meta name="keywords" content="Shadowsocks,Tutorial," />
 
 
 
@@ -79,18 +79,23 @@
 
 
 
-<meta name="description" content="题目：Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length. Do not allocate extra space for another array, you must do this by modifying">
-<meta name="keywords" content="Algorithm,C&#x2F;C++">
+<meta name="description" content="之前翻墙的方式比较2——用ShadowSocks GUI做代理客户端，然后将Network Manager设置为Proxy模式，通过手动切换ShadowSocks GUI的代理模式来决定是否使用代理。这样配置起来很方便，但说实话，用起来还是挺难受的。主要有这么几点原因：  暑期实习让我养成了禁用Network Manager的习惯，直接配置/etc/network/interfaces或/etc/">
+<meta name="keywords" content="Shadowsocks,Tutorial">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[LeetCode] 26. Remove Duplicates from Sorted Array">
-<meta property="og:url" content="https://ihac.xyz/2018/03/28/LeetCode-26-Remove-Duplicates-from-Sorted-Array/index.html">
+<meta property="og:title" content="Linux&#x2F;Mac命令行翻墙">
+<meta property="og:url" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length. Do not allocate extra space for another array, you must do this by modifying">
+<meta property="og:description" content="之前翻墙的方式比较2——用ShadowSocks GUI做代理客户端，然后将Network Manager设置为Proxy模式，通过手动切换ShadowSocks GUI的代理模式来决定是否使用代理。这样配置起来很方便，但说实话，用起来还是挺难受的。主要有这么几点原因：  暑期实习让我养成了禁用Network Manager的习惯，直接配置/etc/network/interfaces或/etc/">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-28T02:05:17.000Z">
+<meta property="og:image" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/shadowsocks-privoxy.png">
+<meta property="og:image" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/proxy.png">
+<meta property="og:image" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/auto-switch.png">
+<meta property="og:image" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/add-condition.png">
+<meta property="og:updated_time" content="2018-07-01T15:46:56.605Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[LeetCode] 26. Remove Duplicates from Sorted Array">
-<meta name="twitter:description" content="题目：Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length. Do not allocate extra space for another array, you must do this by modifying">
+<meta name="twitter:title" content="Linux&#x2F;Mac命令行翻墙">
+<meta name="twitter:description" content="之前翻墙的方式比较2——用ShadowSocks GUI做代理客户端，然后将Network Manager设置为Proxy模式，通过手动切换ShadowSocks GUI的代理模式来决定是否使用代理。这样配置起来很方便，但说实话，用起来还是挺难受的。主要有这么几点原因：  暑期实习让我养成了禁用Network Manager的习惯，直接配置/etc/network/interfaces或/etc/">
+<meta name="twitter:image" content="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/shadowsocks-privoxy.png">
 
 
 
@@ -120,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/2018/03/28/LeetCode-26-Remove-Duplicates-from-Sorted-Array/"/>
+  <link rel="canonical" href="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/"/>
 
 
 
 
 
-  <title>[LeetCode] 26. Remove Duplicates from Sorted Array | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Linux/Mac命令行翻墙 | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -297,7 +302,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/28/LeetCode-26-Remove-Duplicates-from-Sorted-Array/">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/07/01/Linux-Mac命令行翻墙/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Xiao An">
@@ -314,7 +319,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[LeetCode] 26. Remove Duplicates from Sorted Array</h1>
+          <h1 class="post-title" itemprop="name headline">Linux/Mac命令行翻墙</h1>
         
 
         <div class="post-meta">
@@ -326,8 +331,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-28T09:49:42+08:00">
-                2018-03-28
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-01T23:45:30+08:00">
+                2018-07-01
               </time>
             
 
@@ -336,39 +341,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/LeetCode/" itemprop="url" rel="index">
-                    <span itemprop="name">LeetCode</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -397,16 +369,90 @@
       
 
       
-        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length.
-Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory.
-
-Example:
-Given nums = [1,1,2],
-Your function should return length = 2, with the first two elements of nums being 1 and 2 respectively.
-It doesn&apos;t matter what you leave beyond the new length.
-</code></pre><h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p><code>Array</code>, <code>Two Pointers</code></p>
-<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>数组是排好序的，因此重复数字一定相邻。</p>
-<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">removeDuplicates</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nums.size() &lt;= <span class="number">1</span>) <span class="keyword">return</span> nums.size();</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (j &lt; nums.size()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[i] == nums[j++]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">else</span> nums[++i] = nums[j<span class="number">-1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> i+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+        <p>之前翻墙的方式比较2——用<code>ShadowSocks GUI</code>做代理客户端，然后将<code>Network Manager</code>设置为<code>Proxy</code>模式，通过手动切换<code>ShadowSocks GUI</code>的代理模式来决定是否使用代理。这样配置起来很方便，但说实话，用起来还是挺难受的。主要有这么几点原因：</p>
+<ol>
+<li>暑期实习让我养成了禁用<code>Network Manager</code>的习惯，直接配置<code>/etc/network/interfaces</code>或<code>/etc/sysconfig/network-scripts/ifcfg-xxx</code>更加直观方便。</li>
+<li>每次切换代理模式都要先打开<code>ShadowSocks GUI</code>的设置页面，然后点击选择想要的模式，这样一来还是挺麻烦的，并且会干扰工作状态。</li>
+<li><code>PAC</code>名单的设置非常麻烦，需要自己打开文本，然后手动添加一行规则。试想，一个网站页面打开失败，可能是因为获取脚本没有回应，这时候你需要找到所有失败的请求，将对应的host添加到名单中，这无疑是一个超级麻烦的工作。</li>
+<li>最关键的是，这种翻墙方式只能在桌面环境下使用。桌面环境对服务器来说只是浪费资源，而且远程shell也无法操作桌面。最直观的例子就是，aliyun主机无法使用这种方式翻墙。</li>
+</ol>
+<p>综合以上几点原因，我决定还是花点时间，重新配置一下翻墙方式。网上查询一些资料后，个人感觉<code>ShadowSocks</code>+<code>Privoxy</code>+<code>SwichyOmega</code>最适合我：兼容shell翻墙，不依赖于桌面环境，而且操作简单，唯一的缺点就是配置起来稍微麻烦一点。试用了一段时间，感觉确实不错，于是一口气在我所有的机器（<code>CentOS 7.2</code>, <code>Linux Mint 17.2</code>, <code>Mac OS 10.11.6</code>, <code>Debian 8.6</code>）上配置了代理。</p>
+<p>网上有好几篇文章介绍这种翻墙方式的配置（关键词搜索<code>命令行翻墙</code>、<code>Privoxy</code>即可），我也是参照它们的步骤来实现的。但是感觉它们都不是很完善，因为我在配置的时候还是遇到了不少问题。因此，我还是决定将自己的配置过程贴出来，如果有需求的人正好翻到了我这篇博文，也算是做了一点小贡献；另外，自己以后配置新机器也会更加方便。</p>
+<hr>
+<h2 id="配置ShadowSocks"><a href="#配置ShadowSocks" class="headerlink" title="配置ShadowSocks"></a>配置ShadowSocks</h2><p><code>ShadowSocks</code>分为server端与client端，缺一不可。我的server端部署在<code>Bandwagon</code>的vps上，因此，还需要在自己机器上配置client 端。</p>
+<ol>
+<li><p>安装<code>python</code>、<code>pip</code>，这里可以直接从源安装，Mac好像是自带？</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python-pip # for Debian</span><br><span class="line">sudo yum install python-pip # for RedHat</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装<code>ShadowSocks</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install shadowsocks</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>ShadowSocks</code>启动配置文件<code>/etc/shadowsocks.json</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"server"</span>: <span class="string">"server_ip_addr"</span>,</span><br><span class="line">    <span class="attr">"server_port"</span>: <span class="number">443</span>,</span><br><span class="line">    <span class="attr">"local_address"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"local_port"</span>: <span class="number">1080</span>,</span><br><span class="line">    <span class="attr">"password"</span>: <span class="string">"server_ss_password"</span>,</span><br><span class="line">    <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>各个字段依照server端的配置来填写。</p>
+</li>
+<li><p>从上述配置文件启动client端：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sslocal -c /etc/shadowsocks.json</span><br></pre></td></tr></table></figure>
+<p>此时，<code>ShadowSocks</code>将监听本地的1080端口，将收到请求转发到server端的443端口，从而实现代理的功能。</p>
+</li>
+</ol>
+<p>但这样还不能实现翻墙，因为<code>ShadowSocks</code>使用的是<code>SOCKS5</code>协议，只支持<code>SOCKS5</code>代理，不支持<code>HTTP</code>、<code>HTTPS</code>代理，下面我们继续配置一个可以将<code>SOCKS5</code>代理转换为其他协议代理的工具——<code>Privoxy</code>。</p>
+<h2 id="配置Privoxy"><a href="#配置Privoxy" class="headerlink" title="配置Privoxy"></a>配置Privoxy</h2><p><code>Privoxy</code></p>
+<ol>
+<li><p>安装<code>Privoxy</code>，这里不同操作系统的安装方式不一样。</p>
+<p>Linux是最方便的，直接从源安装即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install privoxy # for Debian</span><br><span class="line">sudo yum install privoxy # for RedHat</span><br></pre></td></tr></table></figure>
+<p>Mac OS可以从官网直接下载安装包（<a href="http://www.privoxy.org/sf-download-mirror/Macintosh%20%28OS%20X%29/3.0.26%20%28stable%29/Privoxy%203.0.26%2064%20bit.pkg" target="_blank" rel="noopener">link</a>），如果无法访问官网，也可以从我这儿下载<code>3.0.26 (stable)</code>版（<a href="http://www.xiaoan.org/share/privoxy_3.0.26_64bit.pkg" target="_blank" rel="noopener">link</a>）</p>
+</li>
+<li><p>修改配置文件。</p>
+<p>对于Linux，配置文件的路径一般为<code>/etc/privoxy/config</code>，而Mac OS上路径稍微有些不同，为<code>/usr/local/etc/privoxy/config</code>。如果你找不到配置文件，建议直接全局搜索关键词<code>privoxy</code>+<code>config</code>。</p>
+<p>在配置文件中找到以下两行，进行修改。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">forward-socks5   /               127.0.0.1:1080 . # 修改为ShadowSocks配置中的local_port</span><br><span class="line">listen-address  localhost:8118</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动<code>Privoxy</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo privoxy /etc/privoxy/config			# for Linux</span><br><span class="line">sudo /Application/Privoxy/startPrivoxy.sh	# for Mac OS</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>现在<code>Privoxy</code>已经在后台运行，监听8118端口，将请求转发到1080端口，实现<code>HTTP</code>、<code>HTTPS</code>代理与<code>SOCKS5</code>代理的转换。</p>
+<h2 id="一些零碎的配置"><a href="#一些零碎的配置" class="headerlink" title="一些零碎的配置"></a>一些零碎的配置</h2><p>安装完<code>ShadowSocks</code>与<code>Privoxy</code>后，我们已经可以命令行翻墙了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sslocal -c /etc/shadowsocks.json 1&gt;/dev/null 2&gt;&amp;1 &amp; # 后台运行ShadowSocks Client</span><br><span class="line">sudo privoxy /etc/privoxy/config					# 开启privoxy服务</span><br><span class="line"><span class="meta">#</span><span class="bash"> sudo /Application/Privoxy/startPrivoxy.sh <span class="keyword">for</span> MacOS</span></span><br><span class="line">export http_proxy=http://localhost:8118				# 设置HTTP代理地址</span><br></pre></td></tr></table></figure>
+<p>效果如下图所示：</p>
+<p><img src="shadowsocks-privoxy.png" alt="ss+privoxy"></p>
+<p>可以看到，本机的外网ip发生了变化，这说明代理配置成功，此时也可以试一试<code>wget www.google.com</code>。</p>
+<p>如果我们不想用代理该怎么办呢？很简单，直接把变量<code>http_proxy</code>给注销掉（<code>unset http_proxy</code>）即可。不过，这样的操作不够优雅，用户并不会关心（甚至讨厌）配置细节，他们要的仅仅是<code>开启代理</code>、<code>关闭代理</code>两个操作而已。而且注意到<code>ShadowSocks</code>一直运行在后台，一旦这个shell被关闭，那么<code>ShadowSocks</code>进程也会被杀死，其他shell想用代理时只能重新运行<code>ShadowSocks</code>，这太糟糕了。</p>
+<p>为了解决以上两个问题，我们可以做一下小配置。</p>
+<ol>
+<li><p>使用<code>nohup</code>让<code>ShadowSocks</code>一直运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sslocal -c /etc/shadowsocks.json 1&gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将所有命令操作封装一下。</p>
+<p>在主目录下新建脚本文件<code>ss.sh</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">! /bin/bash</span></span><br><span class="line">nohup sslocal -c /etc/shadowsocks.json &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line">sudo privoxy /etc/privoxy/config # only for Linux</span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">for</span> Mac OS, sudo /Application/Privoxy/startPrivoxy.sh</span></span><br></pre></td></tr></table></figure>
+<p>在当前shell的profile（<code>.bashrc</code>、<code>.zshrc</code>等等，也可以写在<code>/etc/profile</code>）里，实现两个函数，分别用于开启代理与关闭代理：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function sson() &#123;</span><br><span class="line">    export http_proxy=http://localhost:8118;</span><br><span class="line">    export https_proxy=http://localhost:8118;</span><br><span class="line">    export ftp_proxy=http://localhost:8118;</span><br><span class="line">&#125;</span><br><span class="line">function ssoff() &#123;</span><br><span class="line">    unset http_proxy https_proxy ftp_proxy</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在，你可以运行一次脚本<code>ss.sh</code>，以后想用代理时，直接命令行输入命令<code>sson</code>即可，同理，关闭代理使用<code>ssoff</code>。如果你想实现开机自动运行<code>ShadowSocks</code>和<code>Privoxy</code>（即开机运行<code>ss.sh</code>脚本），直接在<code>/etc/rc.local</code>中添加运行<code>ss.sh</code>的命令即可。</p>
+</li>
+</ol>
+<h2 id="配置Chrome"><a href="#配置Chrome" class="headerlink" title="配置Chrome"></a>配置Chrome</h2><p>最后，我还需要为浏览器配置代理，这步就比较简单了，全部鼠标操作。</p>
+<ol>
+<li><p>下载并安装插件<code>SwitchyOmega</code>，由于未翻墙不能访问chrome webstore，建议从github（<a href="https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.3.21/SwitchyOmega.crx" target="_blank" rel="noopener">link</a>）下载，我这里提供<code>2.3.21</code>版本的下载（<a href="http://www.xiaoan.org/share/SwitchyOmega.crx" target="_blank" rel="noopener">link</a>）。</p>
+</li>
+<li><p>进入<code>SwitchyOmega</code>的<code>options</code>（选项）界面，在侧边栏中选择<code>proxy</code>（代理），按照下图填写：</p>
+<p><img src="proxy.png" alt="proxy"></p>
+</li>
+<li><p>在侧边栏中选择<code>auto switch</code>（自动切换），按照下图填写：</p>
+<p><img src="auto-switch.png" alt="auto-switch"></p>
+<p>注意，填写完<code>Rule List URL</code>后，需要点击下方的<code>Download Profile Now</code>下载翻墙名单<code>gfwlist.txt</code>。</p>
+</li>
+<li><p>填写完后，点击<code>Apply changes</code>（确认修改）。</p>
+</li>
+</ol>
+<p>现在可以使用<code>Chrome</code>翻墙啦。将插件设置为<code>auto switch</code>模式，此时，名单<code>gfwlist.list</code>内的所有网址会自动走代理，而不在名单的网址不走代理。</p>
+<p>回顾最开始我提出来的四个问题，现在好像还剩一个没有解决——<code>PAC</code>列表修改起来很麻烦。其实不然，<code>SwitchyOmega</code>为我们提供了一个很优雅的操作方式。一旦有请求失败，<code>SwitchyOmega</code>会将它们记录下来，此时，我们可以为这些失败的请求设置规则：</p>
+<p><img src="add-condition.png" alt="add condition"></p>
+<p>如上所示，直接点击<code>Add condition</code>即可将<code>*.atdmt.com</code>设置为<code>proxy</code>模式，以后每次访问以<code>.atdmt.com</code>结尾的网址时，浏览器都会自动走代理。终于，我们不需要自己手动设置<code>PAC</code>名单啦。</p>
+<hr>
+<p>以上就是我正在使用的，也是自己非常喜欢的一种翻墙方式，有翻墙需求的朋友不妨尝试一下。</p>
 
       
     </div>
@@ -424,9 +470,9 @@ It doesn&apos;t matter what you leave beyond the new length.
       
         <div class="post-tags">
           
-            <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+            <a href="/tags/Shadowsocks/" rel="tag"># Shadowsocks</a>
           
-            <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            <a href="/tags/Tutorial/" rel="tag"># Tutorial</a>
           
         </div>
       
@@ -439,8 +485,8 @@ It doesn&apos;t matter what you leave beyond the new length.
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/28/LeetCode-25-Reverse-Nodes-in-k-Group/" rel="next" title="[LeetCode] 25. Reverse Nodes in k-Group">
-                <i class="fa fa-chevron-left"></i> [LeetCode] 25. Reverse Nodes in k-Group
+              <a href="/2018/06/28/Coursera-Parallel-Programming-课程笔记/" rel="next" title="[Coursera] Parallel Programming 课程笔记">
+                <i class="fa fa-chevron-left"></i> [Coursera] Parallel Programming 课程笔记
               </a>
             
           </div>
@@ -448,10 +494,6 @@ It doesn&apos;t matter what you leave beyond the new length.
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/03/28/LeetCode-27-Remove-Element/" rel="prev" title="[LeetCode] 27. Remove Element">
-                [LeetCode] 27. Remove Element <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -621,7 +663,7 @@ It doesn&apos;t matter what you leave beyond the new length.
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签："><span class="nav-number">2.</span> <span class="nav-text">标签：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">3.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">4.</span> <span class="nav-text">代码：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置ShadowSocks"><span class="nav-number">1.</span> <span class="nav-text">配置ShadowSocks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Privoxy"><span class="nav-number">2.</span> <span class="nav-text">配置Privoxy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些零碎的配置"><span class="nav-number">3.</span> <span class="nav-text">一些零碎的配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Chrome"><span class="nav-number">4.</span> <span class="nav-text">配置Chrome</span></a></li></ol></div>
             
 
           </div>
