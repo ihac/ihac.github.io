@@ -58,12 +58,40 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
 
 ### Parallel Sorting
 
+- implement `merge sort` in parallel.
+
 ### Data Operations and Parallel Mapping
+
+- operations on `List` are not good for parallel implementation, since spliting a list in half and combining them takes linear time.
+- this section mainly concentrate on the parallel implementation of `Map` operation on `Array` and `Tree`.
 
 ### Parallel Fold (Reduce) Operation
 
+- operation `f: (A, A) => A` is associative iff for every `x`, `y`, `z`: `f(x, f(y, z)) = f(f(x, y), z)`
+
 ### Associativity I
 
+- operation `f: (A, A) => A` is commutative iff for every `x`, `y`: `f(x, y) = f(y, x)`
+- floating point addition is commutative but not associative:
+``` scala
+scala> val e = 1e-200
+e: Double = 1.0E-200
+scala> val x = 1e200
+x: Double = 1.0E200
+scala> val mx = -x
+mx: Double = -1.0E200
+
+scala> (x + mx) + e
+res2: Double = 1.0E-200
+scala> x + (mx + e)
+res3: Double = 0.0
+scala> (x + mx) + e == x + (mx + e)
+res4: Boolean = false
+```
+
 ### Associativity II
+
+- for `E(x,y,z) = f(f(x,y), z)`, we say arguments of E can rotate if E(x,y,z) = E(y,z,x), that is: `f(f(x,y), z) = f(f(y,z), x)`.
+- if `f` is commutative and arguments of `E` can rotate then `f` is also associative.
 
 ### Parallel Scan (Prefix Sum) Operation
