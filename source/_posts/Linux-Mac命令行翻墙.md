@@ -23,14 +23,14 @@ tags: [Shadowsocks, Tutorial]
 
 1. 安装`python`、`pip`，这里可以直接从源安装，Mac好像是自带？
 
-   ```shell
+   ```bash
    sudo apt install python-pip # for Debian
    sudo yum install python-pip # for RedHat
    ```
 
 2. 安装`ShadowSocks`：
 
-   ```shell
+   ```bash
    pip install shadowsocks
    ```
 
@@ -51,7 +51,7 @@ tags: [Shadowsocks, Tutorial]
 
 4. 从上述配置文件启动client端：
 
-   ```shell
+   ```bash
    sslocal -c /etc/shadowsocks.json
    ```
 
@@ -61,18 +61,16 @@ tags: [Shadowsocks, Tutorial]
 
 ## 配置Privoxy
 
-`Privoxy`
-
 1. 安装`Privoxy`，这里不同操作系统的安装方式不一样。
 
    Linux是最方便的，直接从源安装即可：
 
-   ```shell
+   ```bash
    sudo apt install privoxy # for Debian
    sudo yum install privoxy # for RedHat
    ```
 
-   Mac OS可以从官网直接下载安装包（[link](http://www.privoxy.org/sf-download-mirror/Macintosh%20%28OS%20X%29/3.0.26%20%28stable%29/Privoxy%203.0.26%2064%20bit.pkg)），如果无法访问官网，也可以从我这儿下载`3.0.26 (stable)`版（[link](http://www.xiaoan.org/share/privoxy_3.0.26_64bit.pkg)）
+   Mac OS可以从官网直接下载安装包（[link](http://www.privoxy.org/sf-download-mirror/Macintosh%20%28OS%20X%29/3.0.26%20%28stable%29/Privoxy%203.0.26%2064%20bit.pkg)）。
 
 2. 修改配置文件。
 
@@ -80,16 +78,17 @@ tags: [Shadowsocks, Tutorial]
 
    在配置文件中找到以下两行，进行修改。
 
-   ```shell
-   forward-socks5   /               127.0.0.1:1080 . # 修改为ShadowSocks配置中的local_port
+   ```bash
+    # 修改为ShadowSocks配置中的local_port
+   forward-socks5   /               127.0.0.1:1080 .
    listen-address  localhost:8118
    ```
 
 3. 启动`Privoxy`：
 
-   ```shell
-   sudo privoxy /etc/privoxy/config			# for Linux
-   sudo /Application/Privoxy/startPrivoxy.sh	# for Mac OS
+   ```bash
+   sudo privoxy /etc/privoxy/config             # for Linux
+   sudo /Application/Privoxy/startPrivoxy.sh    # for Mac OS
    ```
 
 现在`Privoxy`已经在后台运行，监听8118端口，将请求转发到1080端口，实现`HTTP`、`HTTPS`代理与`SOCKS5`代理的转换。
@@ -98,16 +97,16 @@ tags: [Shadowsocks, Tutorial]
 
 安装完`ShadowSocks`与`Privoxy`后，我们已经可以命令行翻墙了。
 
-```shell
-sslocal -c /etc/shadowsocks.json 1>/dev/null 2>&1 & # 后台运行ShadowSocks Client
-sudo privoxy /etc/privoxy/config					# 开启privoxy服务
+```bash
+sslocal -c /etc/shadowsocks.json 1>/dev/null 2>&1 &     # 后台运行ShadowSocks Client
+sudo privoxy /etc/privoxy/config                        # 开启privoxy服务
 # sudo /Application/Privoxy/startPrivoxy.sh for MacOS
-export http_proxy=http://localhost:8118				# 设置HTTP代理地址
+export http_proxy=http://localhost:8118                 # 设置HTTP代理地址
 ```
 
 效果如下图所示：
 
-![ss+privoxy](shadowsocks-privoxy.png)
+![ss+privoxy](/contents/images/shadowsocks-privoxy.png)
 
 可以看到，本机的外网ip发生了变化，这说明代理配置成功，此时也可以试一试`wget www.google.com`。
 
@@ -117,7 +116,7 @@ export http_proxy=http://localhost:8118				# 设置HTTP代理地址
 
 1. 使用`nohup`让`ShadowSocks`一直运行：
 
-   ```shell
+   ```bash
    nohup sslocal -c /etc/shadowsocks.json 1>/dev/null 2>&1 &
    ```
 
@@ -125,7 +124,7 @@ export http_proxy=http://localhost:8118				# 设置HTTP代理地址
 
    在主目录下新建脚本文件`ss.sh`：
 
-   ```shell
+   ```bash
    #! /bin/bash
    nohup sslocal -c /etc/shadowsocks.json >/dev/null 2>&1 &
    sudo privoxy /etc/privoxy/config # only for Linux
@@ -134,7 +133,7 @@ export http_proxy=http://localhost:8118				# 设置HTTP代理地址
 
    在当前shell的profile（`.bashrc`、`.zshrc`等等，也可以写在`/etc/profile`）里，实现两个函数，分别用于开启代理与关闭代理：
 
-   ```shell
+   ```bash
    function sson() {
        export http_proxy=http://localhost:8118;
        export https_proxy=http://localhost:8118;
@@ -155,11 +154,11 @@ export http_proxy=http://localhost:8118				# 设置HTTP代理地址
 
 2. 进入`SwitchyOmega`的`options`（选项）界面，在侧边栏中选择`proxy`（代理），按照下图填写：
 
-   ![proxy](proxy.png)
+   ![proxy](/contents/images/proxy.png)
 
 3. 在侧边栏中选择`auto switch`（自动切换），按照下图填写：
 
-   ![auto-switch](auto-switch.png)
+   ![auto-switch](/contents/images/auto-switch.png)
 
    注意，填写完`Rule List URL`后，需要点击下方的`Download Profile Now`下载翻墙名单`gfwlist.txt`。
 
@@ -169,7 +168,7 @@ export http_proxy=http://localhost:8118				# 设置HTTP代理地址
 
 回顾最开始我提出来的四个问题，现在好像还剩一个没有解决——`PAC`列表修改起来很麻烦。其实不然，`SwitchyOmega`为我们提供了一个很优雅的操作方式。一旦有请求失败，`SwitchyOmega`会将它们记录下来，此时，我们可以为这些失败的请求设置规则：
 
-![add condition](add-condition.png)
+![add condition](/contents/images/add-condition.png)
 
 如上所示，直接点击`Add condition`即可将`*.atdmt.com`设置为`proxy`模式，以后每次访问以`.atdmt.com`结尾的网址时，浏览器都会自动走代理。终于，我们不需要自己手动设置`PAC`名单啦。
 
