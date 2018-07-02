@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-06-30T15:49:15.471Z">
+<meta property="og:updated_time" content="2018-07-02T08:28:29.771Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Parallel Programming 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
@@ -444,7 +444,26 @@
 </ul>
 </li>
 </ul>
-<h2 id="Week-2"><a href="#Week-2" class="headerlink" title="Week 2"></a>Week 2</h2><h3 id="Parallel-Sorting"><a href="#Parallel-Sorting" class="headerlink" title="Parallel Sorting"></a>Parallel Sorting</h3><h3 id="Data-Operations-and-Parallel-Mapping"><a href="#Data-Operations-and-Parallel-Mapping" class="headerlink" title="Data Operations and Parallel Mapping"></a>Data Operations and Parallel Mapping</h3><h3 id="Parallel-Fold-Reduce-Operation"><a href="#Parallel-Fold-Reduce-Operation" class="headerlink" title="Parallel Fold (Reduce) Operation"></a>Parallel Fold (Reduce) Operation</h3><h3 id="Associativity-I"><a href="#Associativity-I" class="headerlink" title="Associativity I"></a>Associativity I</h3><h3 id="Associativity-II"><a href="#Associativity-II" class="headerlink" title="Associativity II"></a>Associativity II</h3><h3 id="Parallel-Scan-Prefix-Sum-Operation"><a href="#Parallel-Scan-Prefix-Sum-Operation" class="headerlink" title="Parallel Scan (Prefix Sum) Operation"></a>Parallel Scan (Prefix Sum) Operation</h3>
+<h2 id="Week-2"><a href="#Week-2" class="headerlink" title="Week 2"></a>Week 2</h2><h3 id="Parallel-Sorting"><a href="#Parallel-Sorting" class="headerlink" title="Parallel Sorting"></a>Parallel Sorting</h3><ul>
+<li>implement <code>merge sort</code> in parallel.</li>
+</ul>
+<h3 id="Data-Operations-and-Parallel-Mapping"><a href="#Data-Operations-and-Parallel-Mapping" class="headerlink" title="Data Operations and Parallel Mapping"></a>Data Operations and Parallel Mapping</h3><ul>
+<li>operations on <code>List</code> are not good for parallel implementation, since spliting a list in half and combining them takes linear time.</li>
+<li>this section mainly concentrate on the parallel implementation of <code>Map</code> operation on <code>Array</code> and <code>Tree</code>.</li>
+</ul>
+<h3 id="Parallel-Fold-Reduce-Operation"><a href="#Parallel-Fold-Reduce-Operation" class="headerlink" title="Parallel Fold (Reduce) Operation"></a>Parallel Fold (Reduce) Operation</h3><ul>
+<li>operation <code>f: (A, A) =&gt; A</code> is associative iff for every <code>x</code>, <code>y</code>, <code>z</code>: <code>f(x, f(y, z)) = f(f(x, y), z)</code></li>
+</ul>
+<h3 id="Associativity-I"><a href="#Associativity-I" class="headerlink" title="Associativity I"></a>Associativity I</h3><ul>
+<li>operation <code>f: (A, A) =&gt; A</code> is commutative iff for every <code>x</code>, <code>y</code>: <code>f(x, y) = f(y, x)</code></li>
+<li>floating point addition is commutative but not associative:<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">scala&gt; <span class="keyword">val</span> e = <span class="number">1e-200</span></span><br><span class="line">e: <span class="type">Double</span> = <span class="number">1.0E-200</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> x = <span class="number">1e200</span></span><br><span class="line">x: <span class="type">Double</span> = <span class="number">1.0E200</span></span><br><span class="line">scala&gt; <span class="keyword">val</span> mx = -x</span><br><span class="line">mx: <span class="type">Double</span> = <span class="number">-1.0E200</span></span><br><span class="line"></span><br><span class="line">scala&gt; (x + mx) + e</span><br><span class="line">res2: <span class="type">Double</span> = <span class="number">1.0E-200</span></span><br><span class="line">scala&gt; x + (mx + e)</span><br><span class="line">res3: <span class="type">Double</span> = <span class="number">0.0</span></span><br><span class="line">scala&gt; (x + mx) + e == x + (mx + e)</span><br><span class="line">res4: <span class="type">Boolean</span> = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Associativity-II"><a href="#Associativity-II" class="headerlink" title="Associativity II"></a>Associativity II</h3><ul>
+<li>for <code>E(x,y,z) = f(f(x,y), z)</code>, we say arguments of E can rotate if E(x,y,z) = E(y,z,x), that is: <code>f(f(x,y), z) = f(f(y,z), x)</code>.</li>
+<li>if <code>f</code> is commutative and arguments of <code>E</code> can rotate then <code>f</code> is also associative.</li>
+</ul>
+<h3 id="Parallel-Scan-Prefix-Sum-Operation"><a href="#Parallel-Scan-Prefix-Sum-Operation" class="headerlink" title="Parallel Scan (Prefix Sum) Operation"></a>Parallel Scan (Prefix Sum) Operation</h3>
       
     </div>
     
