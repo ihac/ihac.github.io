@@ -95,3 +95,29 @@ res4: Boolean = false
 - if `f` is commutative and arguments of `E` can rotate then `f` is also associative.
 
 ### Parallel Scan (Prefix Sum) Operation
+
+## Week 3
+
+### Data-Parallel Programming
+
+- task-parallel programming: a form of parallelization what distributes execution processes across computing nodes.
+- data-parallel programming: a form of parallelization what distributes data across computing nodes.
+- parallel for loop is the simplest form of data-parallel programming:
+```
+for (i <- (0 until xs.length).par) {
+    xs(i) = i
+}
+```
+- goal of data-parallel scheduler: effiently balance the workload across processors without any knowledge about the `w(i) = #iterations`.
+
+### Data-Parallel Operations I
+
+- most collections in scala can become data-parallel by appending `.par`.
+- operations `reduceLeft`, `reduceRight`, `scanLeft`, `scanRight`, `foldLeft`, `foldRight` must process the elements sequentially.
+- the `fold` operation can process the elements in a reduction tree, so it can execute in parallel.
+
+### Data-Parallel Operations II
+
+### Scala Parallel Collections
+
+### Splitters and Combiners
