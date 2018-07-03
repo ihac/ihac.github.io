@@ -103,7 +103,7 @@ res4: Boolean = false
 - task-parallel programming: a form of parallelization what distributes execution processes across computing nodes.
 - data-parallel programming: a form of parallelization what distributes data across computing nodes.
 - parallel for loop is the simplest form of data-parallel programming:
-```
+``` scala
 for (i <- (0 until xs.length).par) {
     xs(i) = i
 }
@@ -118,6 +118,77 @@ for (i <- (0 until xs.length).par) {
 
 ### Data-Parallel Operations II
 
+- in order for the `fold` operation to work correctly, the following relations must hold:
+``` scala
+f(a, f(b, c)) == f(f(a, b), c) // associativity
+f(z, a) == f(a, z) == a // neutral element
+```
+- we say that the neutral element z and the binary operator f must form a `monoid`.
+- for `f = math.max`, we have `f(a, (b, c)) == f(f(a, b), c)` and `f(Int.MinValue, a) == f(a, IntMinValue) = a`:
+```
+def max(xs: Array[Int]): Int =
+    xs.par.fold(Int.MinValue)(math.max)
+```
+- the `fold` operation can only produce values of the same type as the collection that it is called on.
+
 ### Scala Parallel Collections
 
+- Scala collections hierarchy:
+    - `Traversable[T]` – collection of elements with type `T`, with operations implemented using foreach.
+    - `Iterable[T]` – collection of elements with type `T`, with operations implemented using iterator.
+    - `Seq[T]` – an ordered sequence of elements with type `T`.
+    - `Set[T]` – a set of elements with type `T` (no duplicates).
+    - `Map[K, V]` – a map of keys with type `K` associated with values of type `V` (no duplicate keys).
+- rule: never modify a parallel collection on which a data-parallel operation is in progress.
+    - never write to a collection that is concurrently traversed.
+    - never read from a collection that is concurrently modified
+
 ### Splitters and Combiners
+
+- 4 abstractions for data-parallel collections: `iterators`, `splitters`, `builders`, `combiners`.
+- `Iterator`:
+``` scala
+trait Iterator[A] {
+    def next(): A
+    def hasNext: Boolean
+}
+def iterator: Iterator[A] // on every collection
+```
+- the `Iterator` contract:
+    - `next` can be called only if `hasNext` returns true.
+    - after `hasNext` returns false, it will always return false.
+- `Splitter`:
+``` scala
+trait Splitter[A] extends Iterator[A] {
+    def split: Seq[Splitter[A]]
+    def remaining: Int
+}
+def splitter: Splitter[A] // on every parallel collection
+```
+- the `Splitter` contract:
+    - after calling `split`, the original splitter is left in an undefined state.
+    - the resulting splitters traverse disjoint subsets of the original splitter.
+    - `remaining` is an estimate on the number of remaining elements.
+    - `split` is an efficient method – $O(log n)$ or better.
+- `Builder`:
+``` scala
+trait Builder[A, Repr] {
+    def +=(elem: A): Builder[A, Repr]
+    def result: Repr
+}
+def newBuilder: Builder[A, Repr] // on every collection
+```
+- the `Builder` contract:
+    - calling `result` returns a collection of type `Repr`, containing the elements that were previously added with `+=`.
+    - calling `result` leaves the Builder in an undefined state.
+- `Combiner`:
+``` scala
+trait Combiner[A, Repr] extends Builder[A, Repr] {
+    def combine(that: Combiner[A, Repr]): Combiner[A, Repr]
+}
+def newCombiner: Combiner[T, Repr] // on every parallel collection
+```
+- the `Combiner` contract:
+    - calling `combine` returns a new combiner that contains elements of input combiners.
+    - calling `combine` leaves both original Combiners in an undefined state.
+    - `combine` is an efficient method – $O(log n)$ or better.
