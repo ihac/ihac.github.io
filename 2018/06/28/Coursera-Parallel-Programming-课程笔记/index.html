@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-03T03:26:18.262Z">
+<meta property="og:updated_time" content="2018-07-03T13:14:00.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Parallel Programming 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
@@ -546,7 +546,62 @@
 </ul>
 </li>
 </ul>
-
+<h2 id="Week-4"><a href="#Week-4" class="headerlink" title="Week 4"></a>Week 4</h2><h3 id="Implementing-Combiners"><a href="#Implementing-Combiners" class="headerlink" title="Implementing Combiners"></a>Implementing Combiners</h3><ul>
+<li><p><code>Builder</code> is used in sequential collection methods:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Builder</span>[<span class="type">T</span>, <span class="type">Repr</span>] </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">+=</span></span>(elem: <span class="type">T</span>): <span class="keyword">this</span>.<span class="keyword">type</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">result</span></span>: <span class="type">Repr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>to implement parallel transformer operations, we need an abstraction called a combiner:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Combiner</span>[<span class="type">T</span>, <span class="type">Repr</span>] <span class="keyword">extends</span> <span class="title">Builder</span>[<span class="type">T</span>, <span class="type">Repr</span>] </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">combine</span></span>(that: <span class="type">Combiner</span>[<span class="type">T</span>, <span class="type">Repr</span>]): <span class="type">Combiner</span>[<span class="type">T</span>, <span class="type">Repr</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>combine</code> operation must be efficient, i.e. execute in $O(log n + log m)$ time, where n and m are the sizes of two input combiners.</p>
+</li>
+<li>array cannot be efficiently concatenated.</li>
+<li>most of these data structures do not have an efficient concatenation or union, providing a <code>combiner</code> for the corresponding collections is not straight forward.<ul>
+<li>but it is indeed possible.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Parallel-Two-Phase-Construction"><a href="#Parallel-Two-Phase-Construction" class="headerlink" title="Parallel Two-Phase Construction"></a>Parallel Two-Phase Construction</h3><ul>
+<li>most data structures can be constructed in parallel using two-phase construction.</li>
+<li>the intermediate data structure is a data structure that:<ul>
+<li>has an efficient <code>combine</code> method – $O(log n + log m)$ or better.</li>
+<li>has an efficient <code>+=</code> method.</li>
+<li>can be converted to the resulting data structure in $O(n/P)$ time (P is the number of processors).</li>
+</ul>
+</li>
+<li>two-phase construction works for in a similar way for other data structures. First, partition the elements, then construct parts of the final data structure in parallel:<ul>
+<li>partition the indices into subintervals.</li>
+<li>initialize the array in parallel.</li>
+</ul>
+</li>
+<li>two-phase construction for hash tables:<ul>
+<li>partition the hash codes into buckets.</li>
+<li>allocate the table, and map hash codes from different buckets into different regions.</li>
+</ul>
+</li>
+<li>two-phase construction for search trees:<ul>
+<li>partition the elements into non-overlapping intervals according to their ordering.</li>
+<li>construct search trees in parallel, and link non-overlapping trees.</li>
+</ul>
+</li>
+<li>two-phase construction for spatial data structures:<ul>
+<li>spatially partition the elements.</li>
+<li>construct non-overlapping subsets and link them.</li>
+</ul>
+</li>
+<li>how can we implement combiners?<ul>
+<li>two-phase construction – the combiner uses an intermediate data structure with an efficient combine method to partition the elements. When result is called, the final data structure is constructed in parallel from the intermediate data structure.</li>
+<li>an efficient concatenation or union operation – a preferred way when the resulting data structure allows this.</li>
+<li>concurrent data structure – different combiners share the same underlying data structure, and rely on synchronization to correctly update the data structure when += is called.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Conc-tree-Data-Structure"><a href="#Conc-tree-Data-Structure" class="headerlink" title="Conc-tree Data Structure"></a>Conc-tree Data Structure</h3><ul>
+<li>Lists are built for sequential computations – they are traversed from left to right.</li>
+<li>Trees allow parallel computations – their subtrees can be traversed in parallel.</li>
+<li>Trees are not good for parallelism unless they are balanced.</li>
+</ul>
+<h3 id="Amortized-Constant-time-Append-Operation"><a href="#Amortized-Constant-time-Append-Operation" class="headerlink" title="Amortized, Constant-time Append Operation"></a>Amortized, Constant-time Append Operation</h3><h3 id="Conc-Tree-Combiners"><a href="#Conc-Tree-Combiners" class="headerlink" title="Conc-Tree Combiners"></a>Conc-Tree Combiners</h3>
       
     </div>
     
@@ -762,7 +817,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-to-Parallel-Computing"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction to Parallel Computing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallelism-on-the-JVM-I"><span class="nav-number">1.2.</span> <span class="nav-text">Parallelism on the JVM I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallelism-on-the-JVM-II"><span class="nav-number">1.3.</span> <span class="nav-text">Parallelism on the JVM II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Running-Computations-in-Parallel"><span class="nav-number">1.4.</span> <span class="nav-text">Running Computations in Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Fast-are-Parallel-Programs"><span class="nav-number">1.5.</span> <span class="nav-text">How Fast are Parallel Programs?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Benchmarking-Parallel-Programs"><span class="nav-number">1.6.</span> <span class="nav-text">Benchmarking Parallel Programs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Sorting"><span class="nav-number">2.1.</span> <span class="nav-text">Parallel Sorting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Operations-and-Parallel-Mapping"><span class="nav-number">2.2.</span> <span class="nav-text">Data Operations and Parallel Mapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Fold-Reduce-Operation"><span class="nav-number">2.3.</span> <span class="nav-text">Parallel Fold (Reduce) Operation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Associativity-I"><span class="nav-number">2.4.</span> <span class="nav-text">Associativity I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Associativity-II"><span class="nav-number">2.5.</span> <span class="nav-text">Associativity II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scan-Prefix-Sum-Operation"><span class="nav-number">2.6.</span> <span class="nav-text">Parallel Scan (Prefix Sum) Operation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Programming"><span class="nav-number">3.1.</span> <span class="nav-text">Data-Parallel Programming</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Operations-I"><span class="nav-number">3.2.</span> <span class="nav-text">Data-Parallel Operations I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Operations-II"><span class="nav-number">3.3.</span> <span class="nav-text">Data-Parallel Operations II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scala-Parallel-Collections"><span class="nav-number">3.4.</span> <span class="nav-text">Scala Parallel Collections</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Splitters-and-Combiners"><span class="nav-number">3.5.</span> <span class="nav-text">Splitters and Combiners</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-to-Parallel-Computing"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction to Parallel Computing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallelism-on-the-JVM-I"><span class="nav-number">1.2.</span> <span class="nav-text">Parallelism on the JVM I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallelism-on-the-JVM-II"><span class="nav-number">1.3.</span> <span class="nav-text">Parallelism on the JVM II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Running-Computations-in-Parallel"><span class="nav-number">1.4.</span> <span class="nav-text">Running Computations in Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Fast-are-Parallel-Programs"><span class="nav-number">1.5.</span> <span class="nav-text">How Fast are Parallel Programs?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Benchmarking-Parallel-Programs"><span class="nav-number">1.6.</span> <span class="nav-text">Benchmarking Parallel Programs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Sorting"><span class="nav-number">2.1.</span> <span class="nav-text">Parallel Sorting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Operations-and-Parallel-Mapping"><span class="nav-number">2.2.</span> <span class="nav-text">Data Operations and Parallel Mapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Fold-Reduce-Operation"><span class="nav-number">2.3.</span> <span class="nav-text">Parallel Fold (Reduce) Operation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Associativity-I"><span class="nav-number">2.4.</span> <span class="nav-text">Associativity I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Associativity-II"><span class="nav-number">2.5.</span> <span class="nav-text">Associativity II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scan-Prefix-Sum-Operation"><span class="nav-number">2.6.</span> <span class="nav-text">Parallel Scan (Prefix Sum) Operation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Programming"><span class="nav-number">3.1.</span> <span class="nav-text">Data-Parallel Programming</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Operations-I"><span class="nav-number">3.2.</span> <span class="nav-text">Data-Parallel Operations I</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-Operations-II"><span class="nav-number">3.3.</span> <span class="nav-text">Data-Parallel Operations II</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scala-Parallel-Collections"><span class="nav-number">3.4.</span> <span class="nav-text">Scala Parallel Collections</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Splitters-and-Combiners"><span class="nav-number">3.5.</span> <span class="nav-text">Splitters and Combiners</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-4"><span class="nav-number">4.</span> <span class="nav-text">Week 4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-Combiners"><span class="nav-number">4.1.</span> <span class="nav-text">Implementing Combiners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Two-Phase-Construction"><span class="nav-number">4.2.</span> <span class="nav-text">Parallel Two-Phase Construction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conc-tree-Data-Structure"><span class="nav-number">4.3.</span> <span class="nav-text">Conc-tree Data Structure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Amortized-Constant-time-Append-Operation"><span class="nav-number">4.4.</span> <span class="nav-text">Amortized, Constant-time Append Operation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conc-Tree-Combiners"><span class="nav-number">4.5.</span> <span class="nav-text">Conc-Tree Combiners</span></a></li></ol></li></ol></div>
             
 
           </div>
