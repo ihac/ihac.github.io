@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-02T14:30:36.127Z">
+<meta property="og:updated_time" content="2018-07-03T03:26:18.262Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Parallel Programming 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Parallel Programming, rather than share the course materials. So there are two things that I won’t put up: my solution to assignments and topics">
@@ -467,7 +467,7 @@
 <li>task-parallel programming: a form of parallelization what distributes execution processes across computing nodes.</li>
 <li>data-parallel programming: a form of parallelization what distributes data across computing nodes.</li>
 <li><p>parallel for loop is the simplest form of data-parallel programming:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for (i &lt;- (0 until xs.length).par) &#123;</span><br><span class="line">    xs(i) = i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i &lt;- (<span class="number">0</span> until xs.length).par) &#123;</span><br><span class="line">    xs(i) = i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>goal of data-parallel scheduler: effiently balance the workload across processors without any knowledge about the <code>w(i) = #iterations</code>.</p>
 </li>
@@ -477,7 +477,76 @@
 <li>operations <code>reduceLeft</code>, <code>reduceRight</code>, <code>scanLeft</code>, <code>scanRight</code>, <code>foldLeft</code>, <code>foldRight</code> must process the elements sequentially.</li>
 <li>the <code>fold</code> operation can process the elements in a reduction tree, so it can execute in parallel.</li>
 </ul>
-<h3 id="Data-Parallel-Operations-II"><a href="#Data-Parallel-Operations-II" class="headerlink" title="Data-Parallel Operations II"></a>Data-Parallel Operations II</h3><h3 id="Scala-Parallel-Collections"><a href="#Scala-Parallel-Collections" class="headerlink" title="Scala Parallel Collections"></a>Scala Parallel Collections</h3><h3 id="Splitters-and-Combiners"><a href="#Splitters-and-Combiners" class="headerlink" title="Splitters and Combiners"></a>Splitters and Combiners</h3>
+<h3 id="Data-Parallel-Operations-II"><a href="#Data-Parallel-Operations-II" class="headerlink" title="Data-Parallel Operations II"></a>Data-Parallel Operations II</h3><ul>
+<li><p>in order for the <code>fold</code> operation to work correctly, the following relations must hold:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f(a, f(b, c)) == f(f(a, b), c) <span class="comment">// associativity</span></span><br><span class="line">f(z, a) == f(a, z) == a <span class="comment">// neutral element</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>we say that the neutral element z and the binary operator f must form a <code>monoid</code>.</p>
+</li>
+<li><p>for <code>f = math.max</code>, we have <code>f(a, (b, c)) == f(f(a, b), c)</code> and <code>f(Int.MinValue, a) == f(a, IntMinValue) = a</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def max(xs: Array[Int]): Int =</span><br><span class="line">    xs.par.fold(Int.MinValue)(math.max)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>fold</code> operation can only produce values of the same type as the collection that it is called on.</p>
+</li>
+</ul>
+<h3 id="Scala-Parallel-Collections"><a href="#Scala-Parallel-Collections" class="headerlink" title="Scala Parallel Collections"></a>Scala Parallel Collections</h3><ul>
+<li>Scala collections hierarchy:<ul>
+<li><code>Traversable[T]</code> – collection of elements with type <code>T</code>, with operations implemented using foreach.</li>
+<li><code>Iterable[T]</code> – collection of elements with type <code>T</code>, with operations implemented using iterator.</li>
+<li><code>Seq[T]</code> – an ordered sequence of elements with type <code>T</code>.</li>
+<li><code>Set[T]</code> – a set of elements with type <code>T</code> (no duplicates).</li>
+<li><code>Map[K, V]</code> – a map of keys with type <code>K</code> associated with values of type <code>V</code> (no duplicate keys).</li>
+</ul>
+</li>
+<li>rule: never modify a parallel collection on which a data-parallel operation is in progress.<ul>
+<li>never write to a collection that is concurrently traversed.</li>
+<li>never read from a collection that is concurrently modified</li>
+</ul>
+</li>
+</ul>
+<h3 id="Splitters-and-Combiners"><a href="#Splitters-and-Combiners" class="headerlink" title="Splitters and Combiners"></a>Splitters and Combiners</h3><ul>
+<li>4 abstractions for data-parallel collections: <code>iterators</code>, <code>splitters</code>, <code>builders</code>, <code>combiners</code>.</li>
+<li><p><code>Iterator</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Iterator</span>[<span class="type">A</span>] </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">next</span></span>(): <span class="type">A</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hasNext</span></span>: <span class="type">Boolean</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">iterator</span></span>: <span class="type">Iterator</span>[<span class="type">A</span>] <span class="comment">// on every collection</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>Iterator</code> contract:</p>
+<ul>
+<li><code>next</code> can be called only if <code>hasNext</code> returns true.</li>
+<li>after <code>hasNext</code> returns false, it will always return false.</li>
+</ul>
+</li>
+<li><p><code>Splitter</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Splitter</span>[<span class="type">A</span>] <span class="keyword">extends</span> <span class="title">Iterator</span>[<span class="type">A</span>] </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">split</span></span>: <span class="type">Seq</span>[<span class="type">Splitter</span>[<span class="type">A</span>]]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">remaining</span></span>: <span class="type">Int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitter</span></span>: <span class="type">Splitter</span>[<span class="type">A</span>] <span class="comment">// on every parallel collection</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>Splitter</code> contract:</p>
+<ul>
+<li>after calling <code>split</code>, the original splitter is left in an undefined state.</li>
+<li>the resulting splitters traverse disjoint subsets of the original splitter.</li>
+<li><code>remaining</code> is an estimate on the number of remaining elements.</li>
+<li><code>split</code> is an efficient method – $O(log n)$ or better.</li>
+</ul>
+</li>
+<li><p><code>Builder</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Builder</span>[<span class="type">A</span>, <span class="type">Repr</span>] </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">+=</span></span>(elem: <span class="type">A</span>): <span class="type">Builder</span>[<span class="type">A</span>, <span class="type">Repr</span>]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">result</span></span>: <span class="type">Repr</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newBuilder</span></span>: <span class="type">Builder</span>[<span class="type">A</span>, <span class="type">Repr</span>] <span class="comment">// on every collection</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>Builder</code> contract:</p>
+<ul>
+<li>calling <code>result</code> returns a collection of type <code>Repr</code>, containing the elements that were previously added with <code>+=</code>.</li>
+<li>calling <code>result</code> leaves the Builder in an undefined state.</li>
+</ul>
+</li>
+<li><p><code>Combiner</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Combiner</span>[<span class="type">A</span>, <span class="type">Repr</span>] <span class="keyword">extends</span> <span class="title">Builder</span>[<span class="type">A</span>, <span class="type">Repr</span>] </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">combine</span></span>(that: <span class="type">Combiner</span>[<span class="type">A</span>, <span class="type">Repr</span>]): <span class="type">Combiner</span>[<span class="type">A</span>, <span class="type">Repr</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newCombiner</span></span>: <span class="type">Combiner</span>[<span class="type">T</span>, <span class="type">Repr</span>] <span class="comment">// on every parallel collection</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>the <code>Combiner</code> contract:</p>
+<ul>
+<li>calling <code>combine</code> returns a new combiner that contains elements of input combiners.</li>
+<li>calling <code>combine</code> leaves both original Combiners in an undefined state.</li>
+<li><code>combine</code> is an efficient method – $O(log n)$ or better.</li>
+</ul>
+</li>
+</ul>
+
       
     </div>
     
