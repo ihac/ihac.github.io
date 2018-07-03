@@ -192,3 +192,60 @@ def newCombiner: Combiner[T, Repr] // on every parallel collection
     - calling `combine` returns a new combiner that contains elements of input combiners.
     - calling `combine` leaves both original Combiners in an undefined state.
     - `combine` is an efficient method – $O(log n)$ or better.
+
+## Week 4
+
+### Implementing Combiners
+
+- `Builder` is used in sequential collection methods:
+``` scala
+trait Builder[T, Repr] {
+  def +=(elem: T): this.type
+  def result: Repr
+}
+```
+- to implement parallel transformer operations, we need an abstraction called a combiner:
+``` scala
+trait Combiner[T, Repr] extends Builder[T, Repr] {
+  def combine(that: Combiner[T, Repr]): Combiner[T, Repr]
+}
+```
+- the `combine` operation must be efficient, i.e. execute in $O(log n + log m)$ time, where n and m are the sizes of two input combiners.
+- array cannot be efficiently concatenated.
+- most of these data structures do not have an efficient concatenation or union, providing a `combiner` for the corresponding collections is not straight forward.
+    - but it is indeed possible.
+
+### Parallel Two-Phase Construction
+
+- most data structures can be constructed in parallel using two-phase construction.
+- the intermediate data structure is a data structure that:
+    - has an efficient `combine` method – $O(log n + log m)$ or better.
+    - has an efficient `+=` method.
+    - can be converted to the resulting data structure in $O(n/P)$ time (P is the number of processors).
+- two-phase construction works for in a similar way for other data structures. First, partition the elements, then construct parts of the final data structure in parallel:
+    - partition the indices into subintervals.
+    - initialize the array in parallel.
+- two-phase construction for hash tables:
+    - partition the hash codes into buckets.
+    - allocate the table, and map hash codes from different buckets into different regions.
+- two-phase construction for search trees:
+    - partition the elements into non-overlapping intervals according to their ordering.
+    - construct search trees in parallel, and link non-overlapping trees.
+- two-phase construction for spatial data structures:
+    - spatially partition the elements.
+    - construct non-overlapping subsets and link them.
+- how can we implement combiners?
+    - two-phase construction – the combiner uses an intermediate data structure with an efficient combine method to partition the elements. When result is called, the final data structure is constructed in parallel from the intermediate data structure.
+    - an efficient concatenation or union operation – a preferred way when the resulting data structure allows this.
+    - concurrent data structure – different combiners share the same underlying data structure, and rely on synchronization to correctly update the data structure when += is called.
+
+### Conc-tree Data Structure
+
+- Lists are built for sequential computations – they are traversed from left to right.
+- Trees allow parallel computations – their subtrees can be traversed in parallel.
+- Trees are not good for parallelism unless they are balanced.
+
+### Amortized, Constant-time Append Operation
+
+### Conc-Tree Combiners
+
