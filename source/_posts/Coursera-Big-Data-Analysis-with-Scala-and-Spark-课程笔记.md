@@ -28,3 +28,15 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
     - Advanced Analytics with Spark (2015) (Sandy Ryza): mainly focusing on data science.
     - Mastering Apache Spark 2 (Jacek Laskowski).
 
+### Data-Parallel to Distributed Data-Parallel
+
+- shared memory data parallelism:
+    - split the data.
+    - workers/threads independently operate on the data shards in parallel.
+    - combine when done (if necessary) .
+- distributed data parallelism:
+    - split the data over several nodes.
+    - nodes independently operate on the data shards in parallel.
+    - combine when done ( if necessary).
+- distributed data parallalism has a new concern: network latency between workers.
+- Spark implements a distributed data parallel model called Resilient Distributed Datasets (RDDs).
