@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Cheet Sheet,Network Programming,C," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,18 +79,13 @@
 
 
 
-<meta name="description" content="Mainly from Unix Network Programming  Data Types, Functions and Macros IP Address  1234567891011// IPv4struct in_addr &amp;#123;    in_addr_t s_addr;&amp;#125;;struct sockaddr_in &amp;#123;    uint8_t sin_len;">
-<meta name="keywords" content="Cheet Sheet,Network Programming,C">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Network Programming Cheet Sheet">
-<meta property="og:url" content="https://ihac.xyz/2018/07/09/Network-Programming-Cheet-Sheet/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Coding">
+<meta property="og:url" content="https://ihac.xyz/page/4/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="Mainly from Unix Network Programming  Data Types, Functions and Macros IP Address  1234567891011// IPv4struct in_addr &amp;#123;    in_addr_t s_addr;&amp;#125;;struct sockaddr_in &amp;#123;    uint8_t sin_len;">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-09T15:25:13.129Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Network Programming Cheet Sheet">
-<meta name="twitter:description" content="Mainly from Unix Network Programming  Data Types, Functions and Macros IP Address  1234567891011// IPv4struct in_addr &amp;#123;    in_addr_t s_addr;&amp;#125;;struct sockaddr_in &amp;#123;    uint8_t sin_len;">
+<meta name="twitter:title" content="Coding">
 
 
 
@@ -120,13 +115,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/2018/07/09/Network-Programming-Cheet-Sheet/"/>
+  <link rel="canonical" href="https://ihac.xyz/page/4/"/>
 
 
 
 
 
-  <title>Network Programming Cheet Sheet | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -145,7 +140,8 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -282,9 +278,10 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
+        
 
   
 
@@ -297,7 +294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/07/09/Network-Programming-Cheet-Sheet/">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2016/05/03/Buffer-Overflow理论/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Xiao An">
@@ -314,7 +311,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Network Programming Cheet Sheet</h1>
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/03/Buffer-Overflow理论/" itemprop="url">Buffer Overflow理论</a></h1>
         
 
         <div class="post-meta">
@@ -326,8 +325,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-09T23:21:43+08:00">
-                2018-07-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-03T10:02:52+08:00">
+                2016-05-03
               </time>
             
 
@@ -364,80 +363,21 @@
       
 
       
-        <p>Mainly from <em>Unix Network Programming</em></p>
-<hr>
-<h2 id="Data-Types-Functions-and-Macros"><a href="#Data-Types-Functions-and-Macros" class="headerlink" title="Data Types, Functions and Macros"></a>Data Types, Functions and Macros</h2><blockquote>
-<p><strong>IP Address</strong></p>
-</blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IPv4</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> &#123;</span></span><br><span class="line">    <span class="keyword">in_addr_t</span> s_addr;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> sin_len;</span><br><span class="line">    <span class="keyword">sa_family_t</span> sin_family;</span><br><span class="line">    <span class="keyword">in_port_t</span> sin_port;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">sin_addr</span>;</span></span><br><span class="line">    <span class="keyword">char</span> sin_zero[<span class="number">8</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IPv6</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> s6_addr[<span class="number">16</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SIN6_LEN <span class="comment">/* required for compile-time tests */</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockadd_in6</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> sin6_len;</span><br><span class="line">    <span class="keyword">sa_family_t</span> sin6_family;</span><br><span class="line">    <span class="keyword">in_port_t</span> sin6_port;</span><br><span class="line">    <span class="keyword">uint32_t</span> sin6_flowinfo;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> <span class="title">sin6_addr</span>;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> sin6_scope_id;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// general</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> sa_len;</span><br><span class="line">    <span class="keyword">sa_family_t</span> sa_family;</span><br><span class="line">    <span class="keyword">char</span> sa_data[<span class="number">14</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><br></p>
-<blockquote>
-<p><strong>MACRO</strong></p>
-</blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INET_ADDRSTRLEN 16</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INET6_ADDRSTRLEN 46</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// family</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AF_INET <span class="comment">// IPv4</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AF_INET6 <span class="comment">// IPv6</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AF_LOCAL <span class="comment">// Unix域协议</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AF_ROUTE <span class="comment">// 路由套接字</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AF_KEY <span class="comment">// 密钥套接字</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// type</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SOCK_STREAM <span class="comment">// 字节流套接字</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SOCK_DGRAM <span class="comment">// 数据包套接字</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SOCK_SEQPACKET <span class="comment">// 有序分组套接字</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SOCK_RAW <span class="comment">// 原始套接字</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// protocol</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IPPROTO_TCP <span class="comment">// tcp</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IPPROTO_UDP <span class="comment">// udp</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IPPROTO_SCTP <span class="comment">//sctp</span></span></span><br></pre></td></tr></table></figure>
-<p><br></p>
-<blockquote>
-<p><strong>family + type</strong></p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">\</th>
-<th style="text-align:center">AF_INET</th>
-<th style="text-align:center">AF_INET6</th>
-<th style="text-align:center">AF_LOCAL</th>
-<th style="text-align:center">AF_ROUTE</th>
-<th style="text-align:center">AF_KEY</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">SOCK_STREAM</td>
-<td style="text-align:center">TCP\</td>
-<td style="text-align:center">SCTP</td>
-<td style="text-align:center">TCP\</td>
-<td style="text-align:center">SCTP</td>
-<td style="text-align:center">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center">SOCK_DGRAM</td>
-<td style="text-align:center">UDP</td>
-<td style="text-align:center">UDP</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">-</td>
-<td style="text-align:center">-</td>
-</tr>
-<tr>
-<td style="text-align:center">SOCK_SEQPACKET</td>
-<td style="text-align:center">SCTP</td>
-<td style="text-align:center">SCTP</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">-</td>
-<td style="text-align:center">-</td>
-</tr>
-<tr>
-<td style="text-align:center">SOCK_RAW</td>
-<td style="text-align:center">IPv4</td>
-<td style="text-align:center">IPv6</td>
-<td style="text-align:center">-</td>
-<td style="text-align:center">Yes</td>
-<td style="text-align:center">Yes</td>
-</tr>
-</tbody>
-</table>
-<p><br></p>
-<blockquote>
-<p><strong>main-Functions</strong></p>
-</blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"sys/socket.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">socket</span><span class="params">(<span class="keyword">int</span> family, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span>; <span class="comment">// return non-negative sockfd if succeed; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">connect</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *servaddr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line">    <span class="comment">// return 0 if succeed; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bind</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> struct sockaddr *myaddr, <span class="keyword">socklen_t</span> addrlen)</span></span>;</span><br><span class="line">    <span class="comment">// return 0 if succeed; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">listen</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">int</span> backlog)</span></span>; <span class="comment">// return 0 if succeed; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *cliaddr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line">    <span class="comment">// return non-negative sockfd if succeed; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">close</span><span class="params">(sockfd)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// sock</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getsockname</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *localaddr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getpeername</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr *peeraddr, <span class="keyword">socklen_t</span> *addrlen)</span></span>;</span><br><span class="line">    <span class="comment">// both return 0 if succeed; -1 if error</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// fork() and exec()</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"unistd.h"</span></span></span><br><span class="line"><span class="keyword">pid_t</span> fork(<span class="keyword">void</span>);</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execl</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pathname, <span class="keyword">const</span> <span class="keyword">char</span> *arg0, ... <span class="comment">/* (char *) 0 */</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pathname,  <span class="keyword">char</span> *<span class="keyword">const</span> *argv[])</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execle</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pathname, <span class="keyword">const</span> <span class="keyword">char</span> *arg0, ... <span class="comment">/* (char *) 0, char *const envp[] */</span> )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execve</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pathname, <span class="keyword">char</span> *<span class="keyword">const</span> *argv[], <span class="keyword">char</span> *<span class="keyword">const</span> envp[])</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execlp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *filename, <span class="keyword">const</span> <span class="keyword">char</span> *arg0, ... <span class="comment">/* (char *) 0 */</span> )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execvp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *filename, <span class="keyword">char</span> *<span class="keyword">const</span> argv[])</span></span>;</span><br><span class="line">    <span class="comment">// for all exec(), return -1 if error</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><strong>co-Functions</strong></p>
-</blockquote>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// byte-ordering</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"netinet/in.h"</span></span></span><br><span class="line"><span class="keyword">uint16_t</span> htons(<span class="keyword">uint16_t</span> host16bitvalue);</span><br><span class="line"><span class="keyword">uint32_t</span> htonl(<span class="keyword">uint32_t</span> host32bitvalue);</span><br><span class="line"><span class="keyword">uint16_t</span> ntohs(<span class="keyword">uint16_t</span> net16bitvalue);</span><br><span class="line"><span class="keyword">uint32_t</span> ntohl(<span class="keyword">uint32_t</span> net32bitvalue);</span><br><span class="line"></span><br><span class="line"><span class="comment">// address transform</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"arpa/inet.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_aton</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *strptr, struct in_addr *addrptr)</span></span>; <span class="comment">// return 1 if valid; non-0 if unvalid</span></span><br><span class="line"><span class="keyword">in_addr_t</span> inet_addr(<span class="keyword">const</span> <span class="keyword">char</span> *strptr); <span class="comment">// return IPv4 addr if valid; INADDR_NONE if unvalid</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">inet_ntoa</span><span class="params">(struct in_addr inaddr)</span></span>; <span class="comment">// return a pointer which points to a decimal-dot string</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_pton</span><span class="params">(<span class="keyword">int</span> family, <span class="keyword">const</span> <span class="keyword">char</span> *strptr, <span class="keyword">void</span> *addrptr)</span></span>; </span><br><span class="line">    <span class="comment">// return 1 if succeed; 0 if unvalid expression; -1 if error</span></span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span> *<span class="title">inet_ntop</span><span class="params">(<span class="keyword">int</span> family, <span class="keyword">const</span> <span class="keyword">void</span> *addrptr, <span class="keyword">char</span> *strptr, <span class="keyword">size_t</span> len)</span></span>;</span><br><span class="line">    <span class="comment">// return pointer if succeed; NULL if error</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// byte-operating</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"string.h"</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bzero</span><span class="params">(<span class="keyword">void</span> *dest, <span class="keyword">size_t</span> nbytes)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bcopy</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *src, <span class="keyword">void</span> *dest, <span class="keyword">size_t</span> nbytes)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bcmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *ptrl, <span class="keyword">const</span> <span class="keyword">void</span> *ptr2, <span class="keyword">size_t</span> nbytes)</span></span>; <span class="comment">// return 0 if equal; non-0 if not equal</span></span><br></pre></td></tr></table></figure>
+        
+          
+          
+MIT OpencoursewareComputer System Security 6-858
 
+IntroConsider the following simplified example code from a Web server.1234567int read_req() &#123; 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/03/Buffer-Overflow理论/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
     
@@ -452,44 +392,14 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/Cheet-Sheet/" rel="tag"># Cheet Sheet</a>
-          
-            <a href="/tags/Network-Programming/" rel="tag"># Network Programming</a>
-          
-            <a href="/tags/C/" rel="tag"># C</a>
-          
-        </div>
+
+      
+
       
 
       
       
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/07/01/Linux-Mac命令行翻墙/" rel="next" title="Linux/Mac命令行翻墙">
-                <i class="fa fa-chevron-left"></i> Linux/Mac命令行翻墙
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/15/Coursera-Big-Data-Analysis-with-Scala-and-Spark-课程笔记/" rel="prev" title="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
-                [Coursera] Big Data Analysis with Scala and Spark 课程笔记 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -499,11 +409,15 @@
   </article>
 
 
-
-    <div class="post-spread">
       
-    </div>
-  </div>
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
 
 
           </div>
@@ -511,10 +425,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -535,17 +445,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -643,22 +544,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Types-Functions-and-Macros"><span class="nav-number">1.</span> <span class="nav-text">Data Types, Functions and Macros</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -792,10 +677,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
