@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-15T14:50:04.671Z">
+<meta property="og:updated_time" content="2018-07-15T14:59:17.024Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -417,6 +417,22 @@
 </ul>
 </li>
 </ul>
+<h3 id="Data-Parallel-to-Distributed-Data-Parallel"><a href="#Data-Parallel-to-Distributed-Data-Parallel" class="headerlink" title="Data-Parallel to Distributed Data-Parallel"></a>Data-Parallel to Distributed Data-Parallel</h3><ul>
+<li>shared memory data parallelism:<ul>
+<li>split the data.</li>
+<li>workers/threads independently operate on the data shards in parallel.</li>
+<li>combine when done (if necessary) .</li>
+</ul>
+</li>
+<li>distributed data parallelism:<ul>
+<li>split the data over several nodes.</li>
+<li>nodes independently operate on the data shards in parallel.</li>
+<li>combine when done ( if necessary).</li>
+</ul>
+</li>
+<li>distributed data parallalism has a new concern: network latency between workers.</li>
+<li>Spark implements a distributed data parallel model called Resilient Distributed Datasets (RDDs).</li>
+</ul>
 
       
     </div>
@@ -629,7 +645,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li></ol></li></ol></div>
             
 
           </div>
