@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-15T14:59:17.024Z">
+<meta property="og:updated_time" content="2018-07-17T15:09:46.026Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -433,6 +433,24 @@
 <li>distributed data parallalism has a new concern: network latency between workers.</li>
 <li>Spark implements a distributed data parallel model called Resilient Distributed Datasets (RDDs).</li>
 </ul>
+<h3 id="Latency"><a href="#Latency" class="headerlink" title="Latency"></a>Latency</h3><ul>
+<li>distribution introduces important concerns beyond what we had to worry about when dealing with parallelism in the shared memory case:<ul>
+<li>partial failure: crash failures of a subset of the machines involved in a distributed computation .</li>
+<li>latency: certain operations have a much higher latency than other operations due to network communication.</li>
+</ul>
+</li>
+<li>latency cannot be masked completely.</li>
+<li>fault-tolerance in Hadoop/MapReduce comes at a cost.<ul>
+<li>between each map and reduce step, in order to recover from potential failures, Hadoop/MapReduce shuffles its data and write intermediate data to disk.</li>
+</ul>
+</li>
+<li>while spark achieves fault tolerance using ideas from functional programming.<ul>
+<li>keep all data immutable and in-memory.</li>
+<li>all operations on data are just functional transformations, like regular Scala collections.</li>
+<li>fault tolerance is achieved by replaying functional transformations over original dataset.</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -645,7 +663,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li></ol></li></ol></div>
             
 
           </div>
