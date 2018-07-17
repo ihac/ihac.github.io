@@ -40,3 +40,16 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
     - combine when done ( if necessary).
 - distributed data parallalism has a new concern: network latency between workers.
 - Spark implements a distributed data parallel model called Resilient Distributed Datasets (RDDs).
+
+### Latency
+
+- distribution introduces important concerns beyond what we had to worry about when dealing with parallelism in the shared memory case:
+    - partial failure: crash failures of a subset of the machines involved in a distributed computation .
+    - latency: certain operations have a much higher latency than other operations due to network communication.
+- latency cannot be masked completely.
+- fault-tolerance in Hadoop/MapReduce comes at a cost.
+    - between each map and reduce step, in order to recover from potential failures, Hadoop/MapReduce shuffles its data and write intermediate data to disk.
+- while spark achieves fault tolerance using ideas from functional programming.
+    - keep all data immutable and in-memory.
+    - all operations on data are just functional transformations, like regular Scala collections.
+    - fault tolerance is achieved by replaying functional transformations over original dataset.
