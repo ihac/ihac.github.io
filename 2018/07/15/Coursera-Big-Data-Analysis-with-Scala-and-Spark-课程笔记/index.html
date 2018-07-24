@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-17T15:09:46.026Z">
+<meta property="og:updated_time" content="2018-07-24T14:26:35.720Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -451,6 +451,22 @@
 </ul>
 </li>
 </ul>
+<h3 id="RDDs-Spark’s-Distributed-Collection"><a href="#RDDs-Spark’s-Distributed-Collection" class="headerlink" title="RDDs, Spark’s Distributed Collection"></a>RDDs, Spark’s Distributed Collection</h3><ul>
+<li>RDDs seem a lot like <strong>immutable</strong> sequential or parallel Scala collections.<ul>
+<li>combinators on RDDs: <code>map</code>, <code>flatMap</code>, <code>filter</code>, <code>reduce</code>, <code>fold</code>, <code>aggregate</code>, …</li>
+</ul>
+</li>
+<li><p>difference between two signatures of <code>aggregate</code> methods:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">aggregate[<span class="type">B</span>](z: =&gt; <span class="type">B</span>)(seqop: (<span class="type">B</span>, <span class="type">A</span>)=&gt; <span class="type">B</span>, combop: (<span class="type">B</span>, <span class="type">B</span>) =&gt; <span class="type">B</span>): <span class="type">B</span> <span class="comment">// Scala, by-name</span></span><br><span class="line">aggregate[<span class="type">B</span>](z: <span class="type">B</span>)(seqop: (<span class="type">B</span>, <span class="type">A</span>)=&gt; <span class="type">B</span>, combop: (<span class="type">B</span>, <span class="type">B</span>) =&gt; <span class="type">B</span>): <span class="type">B</span> <span class="comment">// Spark RDD, by-value</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * I guess aggregate of Spark RDD does not use by-name evaluation because</span></span><br><span class="line"><span class="comment">  * the computation actually occurs on every worker node, which means the</span></span><br><span class="line"><span class="comment">  * initial value (by-name parameter) would be evaluated same times as</span></span><br><span class="line"><span class="comment">  * the number of worker nodes. It does cause performance loss, I guess.</span></span><br><span class="line"><span class="comment">  */</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>RDDs can be created in two ways:</p>
+<ul>
+<li>transforming an existing RDD by high-order functions.</li>
+<li>from a <code>SparkContext</code> (or <code>SparkSession</code>) object, which defines a handful of methods which can be used to create and populate a new RDD:<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">parallelize <span class="comment">// convert a local Scala collection to an RDD .</span></span><br><span class="line">textFile <span class="comment">// read a text file from HDFS or a local file system and return an RDD of String</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -663,7 +679,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li></ol></li></ol></div>
             
 
           </div>

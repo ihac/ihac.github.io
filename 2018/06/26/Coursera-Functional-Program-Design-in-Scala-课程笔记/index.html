@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Functional Program Design in Scala, rather than share the course materials. So there are two things that I won’t put up: my solution to assignmen">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-06-28T09:12:22.188Z">
+<meta property="og:updated_time" content="2018-07-18T03:12:33.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Functional Program Design in Scala 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Functional Program Design in Scala, rather than share the course materials. So there are two things that I won’t put up: my solution to assignmen">
@@ -524,14 +524,14 @@
 </li>
 </ul>
 <h3 id="Lecture-3-4-Extended-Example-Discrete-Event-Simulation"><a href="#Lecture-3-4-Extended-Example-Discrete-Event-Simulation" class="headerlink" title="Lecture 3.4 - Extended Example: Discrete Event Simulation"></a>Lecture 3.4 - Extended Example: Discrete Event Simulation</h3><h3 id="Lecture-3-5-Discrete-Event-Simulation-API-and-Usage"><a href="#Lecture-3-5-Discrete-Event-Simulation-API-and-Usage" class="headerlink" title="Lecture 3.5 - Discrete Event Simulation: API and Usage"></a>Lecture 3.5 - Discrete Event Simulation: API and Usage</h3><h3 id="Lecture-3-6-Discrete-Event-Simulation-Implementation-and-Test"><a href="#Lecture-3-6-Discrete-Event-Simulation-Implementation-and-Test" class="headerlink" title="Lecture 3.6 - Discrete Event Simulation: Implementation and Test"></a>Lecture 3.6 - Discrete Event Simulation: Implementation and Test</h3><h2 id="Week-4"><a href="#Week-4" class="headerlink" title="Week 4"></a>Week 4</h2><h3 id="Lecture-4-1-Imperative-Event-Handling-The-Observer-Pattern"><a href="#Lecture-4-1-Imperative-Event-Handling-The-Observer-Pattern" class="headerlink" title="Lecture 4.1 - Imperative Event Handling: The Observer Pattern"></a>Lecture 4.1 - Imperative Event Handling: The Observer Pattern</h3><ul>
-<li><p>the <code>Observer Pattern</code> is widely used when views need to react to changes in a model. Variants of it are also called:</p>
-<ul>
+<li>the <code>Observer Pattern</code> is widely used when views need to react to changes in a model. Variants of it are also called:<ul>
 <li>publish/subscribe.</li>
-<li>mode/view/controller (MVC).<h3 id="Lecture-4-2-Functional-Reactive-Programming"><a href="#Lecture-4-2-Functional-Reactive-Programming" class="headerlink" title="Lecture 4.2 - Functional Reactive Programming"></a>Lecture 4.2 - Functional Reactive Programming</h3></li>
+<li>mode/view/controller (MVC).</li>
 </ul>
 </li>
-<li><p>imperative reactive programming is about reacting to sequences of events that happen in time, while in functional view: aggregate an event sequence into a signal.</p>
-</li>
+</ul>
+<h3 id="Lecture-4-2-Functional-Reactive-Programming"><a href="#Lecture-4-2-Functional-Reactive-Programming" class="headerlink" title="Lecture 4.2 - Functional Reactive Programming"></a>Lecture 4.2 - Functional Reactive Programming</h3><ul>
+<li>imperative reactive programming is about reacting to sequences of events that happen in time, while in functional view: aggregate an event sequence into a signal.</li>
 <li>generally, an indexted argument like <code>f(E1,...,En) = E</code> is translated to <code>f.update(E1,...,En, E)</code>, which also works if <code>n = 0</code>.</li>
 <li><code>sig.update(5)</code> can be abbreviated to <code>sig() = 5</code>.</li>
 <li>we cannot update signal value by <code>s() = s() + 1</code>, since this statement tries to define a signal to be at <em>all points in time</em> one larger than itself.</li>
