@@ -140,7 +140,8 @@ def test[T](g: Generator[T], runTimes: Int = 100)
 trait M[T] {
     def flatMap[U](f: T => M[U]): M[U]
 }
-def unit[T](x: T): M[T] ```
+def unit[T](x: T): M[T]
+```
 - `List` is a monad with `unit(x) = List(x)`; `Set` is monad with `unit(x) = Set(x)`; `Generator` is a monad with `unit(x) = single(x)`
 - `map` can be defined for every monad as a combination of `flatMap` and `unit`:
 ``` scala
@@ -282,6 +283,7 @@ for (i <- 1 until 3; j <- "abc") println(i + " " + j)
 - the `Observer Pattern` is widely used when views need to react to changes in a model. Variants of it are also called:
     - publish/subscribe.
     - mode/view/controller (MVC).
+
 ### Lecture 4.2 - Functional Reactive Programming
 
 - imperative reactive programming is about reacting to sequences of events that happen in time, while in functional view: aggregate an event sequence into a signal.

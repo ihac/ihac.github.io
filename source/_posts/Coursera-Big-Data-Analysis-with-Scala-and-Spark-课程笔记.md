@@ -53,3 +53,26 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
     - keep all data immutable and in-memory.
     - all operations on data are just functional transformations, like regular Scala collections.
     - fault tolerance is achieved by replaying functional transformations over original dataset.
+
+### RDDs, Spark's Distributed Collection
+
+- RDDs seem a lot like **immutable** sequential or parallel Scala collections.
+    - combinators on RDDs: `map`, `flatMap`, `filter`, `reduce`, `fold`, `aggregate`, ...
+- difference between two signatures of `aggregate` methods:
+```scala
+aggregate[B](z: => B)(seqop: (B, A)=> B, combop: (B, B) => B): B // Scala, by-name
+aggregate[B](z: B)(seqop: (B, A)=> B, combop: (B, B) => B): B // Spark RDD, by-value
+/**
+  * I guess aggregate of Spark RDD does not use by-name evaluation because
+  * the computation actually occurs on every worker node, which means the
+  * initial value (by-name parameter) would be evaluated same times as
+  * the number of worker nodes. It does cause performance loss, I guess.
+  */
+```
+- RDDs can be created in two ways:
+    - transforming an existing RDD by high-order functions.
+    - from a `SparkContext` (or `SparkSession`) object, which defines a handful of methods which can be used to create and populate a new RDD:
+    ```scala
+    parallelize // convert a local Scala collection to an RDD .
+    textFile // read a text file from HDFS or a local file system and return an RDD of String
+    ```
