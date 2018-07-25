@@ -117,3 +117,44 @@ val firstlogsWithErrors = lastYearslogs.filter(_.contains("ERROR")) .take(10)
     - `takeOrdered`: `takeOrdered(num: Int)(implicit ord: Ordering[T]): Array[T]`, return the first `n` elements of the RDDs using either their natural order or a custom comparator.
     - `saveAsTextFile`: `saveAsTextFile(path: String): Unit`, write the elements of the dataset as a text file in the local filesystem or HDFS.
     - `saveAsSequenceFile`: `saveAsSequenceFile(path: String): Unit`, write the elements of the dataset as a Hadoop SequenceFile in the local filesystem or HDFS.
+
+### Evaluation in Spark: Unlike Scala Collections!
+
+- by default, RDDs are re-computed every time you run an action on them, which can be expensive if the dataset is used more than once.
+- luckily, Spark allows us to control what is cached in memory.
+    - to tell Spark to cache an RDD in memory, simply call `persist()` or `cache()` on it.
+    ```scala
+    val lastYearsLogs: RDD[String] = ...
+    // logsWithErrors is cached in memory.
+    val logsWithErrors = lastYearsLogs.filter(_.contains("error")).persist()
+    val firstLogsWithErrors = logsWithErrors.take(10)
+    val numErrors = logsWithErrors.count() // faster than no-caching
+    ```
+- there are many ways to configure how your data is persisted.
+    - in memory as regular Java objects.
+    - on disk as regular Java objects.
+    - in memory as serialized Java objects (more compact).
+    - on disk as serialized regular Java objects (more compact).
+    - both in memory and disk (spills over to disk to avoid re-computation).
+- one of the most common performance bottlenecks of newcomers to Spark arises from unknownly re-evaluating several transformations when caching coud be used.
+
+### Cluster Topology Matters!
+
+- a Spark application is a set of processes running on a cluster.
+- all these processes are coordinated by the `driver program`.
+- the driver is:
+    - the process where the main() method of your program runs.
+    - the process running the code that creates a `SparkContext`, creates RDDs, and stages up or sends off transformations and actions.
+- these processes that run computations and store data for your application are `executor`s.
+- executors:
+    - run the tasks that represent the application.
+    - return computed results to the driver.
+    - provide in-memory storage for cached RDDs.
+- execution of a Spark program:
+    - the driver program runs the Spark application, which creates a SparkContext upon start-up.
+    - the SparkContext connects to a cluster manager (e.g., Mesos/YARN) which allocates resources.
+    - spark acquires executors on nodes in the cluster, which are processes that run computations and store data for your application.
+    - next, driver program sends your application code to the executors.
+    - finally, SparkContext sends tasks for the executors to run.
+- programmers should know where their code is running to avoid unexpected output or side-effects.
+
