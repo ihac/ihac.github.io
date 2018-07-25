@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-25T02:21:38.406Z">
+<meta property="og:updated_time" content="2018-07-25T13:39:00.040Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -514,6 +514,50 @@
 </ul>
 </li>
 </ul>
+<h3 id="Evaluation-in-Spark-Unlike-Scala-Collections"><a href="#Evaluation-in-Spark-Unlike-Scala-Collections" class="headerlink" title="Evaluation in Spark: Unlike Scala Collections!"></a>Evaluation in Spark: Unlike Scala Collections!</h3><ul>
+<li>by default, RDDs are re-computed every time you run an action on them, which can be expensive if the dataset is used more than once.</li>
+<li><p>luckily, Spark allows us to control what is cached in memory.</p>
+<ul>
+<li>to tell Spark to cache an RDD in memory, simply call <code>persist()</code> or <code>cache()</code> on it.<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> lastYearsLogs: <span class="type">RDD</span>[<span class="type">String</span>] = ...</span><br><span class="line"><span class="comment">// logsWithErrors is cached in memory.</span></span><br><span class="line"><span class="keyword">val</span> logsWithErrors = lastYearsLogs.filter(_.contains(<span class="string">"error"</span>)).persist()</span><br><span class="line"><span class="keyword">val</span> firstLogsWithErrors = logsWithErrors.take(<span class="number">10</span>)</span><br><span class="line"><span class="keyword">val</span> numErrors = logsWithErrors.count() <span class="comment">// faster than no-caching</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>there are many ways to configure how your data is persisted.</p>
+<ul>
+<li>in memory as regular Java objects.</li>
+<li>on disk as regular Java objects.</li>
+<li>in memory as serialized Java objects (more compact).</li>
+<li>on disk as serialized regular Java objects (more compact).</li>
+<li>both in memory and disk (spills over to disk to avoid re-computation).</li>
+</ul>
+</li>
+<li>one of the most common performance bottlenecks of newcomers to Spark arises from unknownly re-evaluating several transformations when caching coud be used.</li>
+</ul>
+<h3 id="Cluster-Topology-Matters"><a href="#Cluster-Topology-Matters" class="headerlink" title="Cluster Topology Matters!"></a>Cluster Topology Matters!</h3><ul>
+<li>a Spark application is a set of processes running on a cluster.</li>
+<li>all these processes are coordinated by the <code>driver program</code>.</li>
+<li>the driver is:<ul>
+<li>the process where the main() method of your program runs.</li>
+<li>the process running the code that creates a <code>SparkContext</code>, creates RDDs, and stages up or sends off transformations and actions.</li>
+</ul>
+</li>
+<li>these processes that run computations and store data for your application are <code>executor</code>s.</li>
+<li>executors:<ul>
+<li>run the tasks that represent the application.</li>
+<li>return computed results to the driver.</li>
+<li>provide in-memory storage for cached RDDs.</li>
+</ul>
+</li>
+<li>execution of a Spark program:<ul>
+<li>the driver program runs the Spark application, which creates a SparkContext upon start-up.</li>
+<li>the SparkContext connects to a cluster manager (e.g., Mesos/YARN) which allocates resources.</li>
+<li>spark acquires executors on nodes in the cluster, which are processes that run computations and store data for your application.</li>
+<li>next, driver program sends your application code to the executors.</li>
+<li>finally, SparkContext sends tasks for the executors to run.</li>
+</ul>
+</li>
+<li>programmers should know where their code is running to avoid unexpected output or side-effects.</li>
+</ul>
 
       
     </div>
@@ -726,7 +770,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li></ol></div>
             
 
           </div>
