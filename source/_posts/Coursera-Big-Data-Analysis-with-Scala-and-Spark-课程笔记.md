@@ -76,3 +76,44 @@ aggregate[B](z: B)(seqop: (B, A)=> B, combop: (B, B) => B): B // Spark RDD, by-v
     parallelize // convert a local Scala collection to an RDD .
     textFile // read a text file from HDFS or a local file system and return an RDD of String
     ```
+
+### RDDs: Transformation and Actions
+
+- for Scala collection:
+    - transformers: return new collections as results. `map`, `filter`, `flatMap`, `groupBy`.
+    - accessors: return singles values. `reduce`, `fold`, `aggregate`.
+- similarly, Spark defines transformations and actions on RDDs:
+    - transformations: return new RDDs. It's `lazy` that its result is not immediately computed.
+    - actions: compute a result based on an RDD, and either returned or saved to an external storage system. It's `eager` (instead of `lazy`).
+- laziness/eagerness is how we can limit network communication using the programming model.
+- common transformations (lazy):
+    - `map`: `map[B](f: A => B): RDD[B]`.
+    - `flatMap`: `flatMap[B](f: A => TraversableOnce[B])`.
+    - `filter`: `filter(pred: A => Boolean)`.
+    - `distinct`: `distinct(): RDD[B]`.
+- common actions (eager):
+    - `collect`: `collect(): Array[T]`, return all elements from RDD.
+    - `count`: `count(): Long`, return the number of elements in the RDD.
+    - `take`: `take(n: Int): Array[T]`, return the first `n` elements of the RDD.
+    - `reduce`: `reduce(op: (A, A) => A)`.
+    - `foreach`: `foreach(f: T => Unit)`.
+- Spark computes RDDs the first time they are used in an action, which helps when processing large amounts of data.
+- Spark leverages this by analyzing and optimizing the chain of operations before executing it.
+```scala
+val firstlogsWithErrors = lastYearslogs.filter(_.contains("ERROR")) .take(10)
+/**
+  * The execution of filter is deferred until the take action is applied.
+  * As soon as 10 elements of the filtered RDD have been computed,
+  * firstLogsWithErrors is done.
+  */
+```
+- transformations on two RDDs:
+    - `union`: `union(other: RDD[T]): RDD[T]`.
+    - `intersection`: `intersection(other: RDD[T]): RDD[T]`.
+    - `subtract`: `subtract(other: RDD[T]): RDD[T]`.
+    - `cartesian`: `cartesian[U](other: RDD[U]): RDD[(T, U)]`.
+- other useful actions
+    - `takeSample`: `takeSample(withRepl: Boolean, num: Int): Array[T]`, return an array of a random sample of `num` elements of the dataset, with or without replacement.
+    - `takeOrdered`: `takeOrdered(num: Int)(implicit ord: Ordering[T]): Array[T]`, return the first `n` elements of the RDDs using either their natural order or a custom comparator.
+    - `saveAsTextFile`: `saveAsTextFile(path: String): Unit`, write the elements of the dataset as a text file in the local filesystem or HDFS.
+    - `saveAsSequenceFile`: `saveAsSequenceFile(path: String): Unit`, write the elements of the dataset as a Hadoop SequenceFile in the local filesystem or HDFS.
