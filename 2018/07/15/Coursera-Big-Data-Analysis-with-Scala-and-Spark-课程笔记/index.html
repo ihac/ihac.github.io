@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-24T14:26:35.720Z">
+<meta property="og:updated_time" content="2018-07-25T02:21:38.406Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -467,6 +467,53 @@
 </ul>
 </li>
 </ul>
+<h3 id="RDDs-Transformation-and-Actions"><a href="#RDDs-Transformation-and-Actions" class="headerlink" title="RDDs: Transformation and Actions"></a>RDDs: Transformation and Actions</h3><ul>
+<li>for Scala collection:<ul>
+<li>transformers: return new collections as results. <code>map</code>, <code>filter</code>, <code>flatMap</code>, <code>groupBy</code>.</li>
+<li>accessors: return singles values. <code>reduce</code>, <code>fold</code>, <code>aggregate</code>.</li>
+</ul>
+</li>
+<li>similarly, Spark defines transformations and actions on RDDs:<ul>
+<li>transformations: return new RDDs. It’s <code>lazy</code> that its result is not immediately computed.</li>
+<li>actions: compute a result based on an RDD, and either returned or saved to an external storage system. It’s <code>eager</code> (instead of <code>lazy</code>).</li>
+</ul>
+</li>
+<li>laziness/eagerness is how we can limit network communication using the programming model.</li>
+<li>common transformations (lazy):<ul>
+<li><code>map</code>: <code>map[B](f: A =&gt; B): RDD[B]</code>.</li>
+<li><code>flatMap</code>: <code>flatMap[B](f: A =&gt; TraversableOnce[B])</code>.</li>
+<li><code>filter</code>: <code>filter(pred: A =&gt; Boolean)</code>.</li>
+<li><code>distinct</code>: <code>distinct(): RDD[B]</code>.</li>
+</ul>
+</li>
+<li>common actions (eager):<ul>
+<li><code>collect</code>: <code>collect(): Array[T]</code>, return all elements from RDD.</li>
+<li><code>count</code>: <code>count(): Long</code>, return the number of elements in the RDD.</li>
+<li><code>take</code>: <code>take(n: Int): Array[T]</code>, return the first <code>n</code> elements of the RDD.</li>
+<li><code>reduce</code>: <code>reduce(op: (A, A) =&gt; A)</code>.</li>
+<li><code>foreach</code>: <code>foreach(f: T =&gt; Unit)</code>.</li>
+</ul>
+</li>
+<li>Spark computes RDDs the first time they are used in an action, which helps when processing large amounts of data.</li>
+<li><p>Spark leverages this by analyzing and optimizing the chain of operations before executing it.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> firstlogsWithErrors = lastYearslogs.filter(_.contains(<span class="string">"ERROR"</span>)) .take(<span class="number">10</span>)</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * The execution of filter is deferred until the take action is applied.</span></span><br><span class="line"><span class="comment">  * As soon as 10 elements of the filtered RDD have been computed,</span></span><br><span class="line"><span class="comment">  * firstLogsWithErrors is done.</span></span><br><span class="line"><span class="comment">  */</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>transformations on two RDDs:</p>
+<ul>
+<li><code>union</code>: <code>union(other: RDD[T]): RDD[T]</code>.</li>
+<li><code>intersection</code>: <code>intersection(other: RDD[T]): RDD[T]</code>.</li>
+<li><code>subtract</code>: <code>subtract(other: RDD[T]): RDD[T]</code>.</li>
+<li><code>cartesian</code>: <code>cartesian[U](other: RDD[U]): RDD[(T, U)]</code>.</li>
+</ul>
+</li>
+<li>other useful actions<ul>
+<li><code>takeSample</code>: <code>takeSample(withRepl: Boolean, num: Int): Array[T]</code>, return an array of a random sample of <code>num</code> elements of the dataset, with or without replacement.</li>
+<li><code>takeOrdered</code>: <code>takeOrdered(num: Int)(implicit ord: Ordering[T]): Array[T]</code>, return the first <code>n</code> elements of the RDDs using either their natural order or a custom comparator.</li>
+<li><code>saveAsTextFile</code>: <code>saveAsTextFile(path: String): Unit</code>, write the elements of the dataset as a text file in the local filesystem or HDFS.</li>
+<li><code>saveAsSequenceFile</code>: <code>saveAsSequenceFile(path: String): Unit</code>, write the elements of the dataset as a Hadoop SequenceFile in the local filesystem or HDFS.</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -679,7 +726,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li></ol></li></ol></div>
             
 
           </div>
