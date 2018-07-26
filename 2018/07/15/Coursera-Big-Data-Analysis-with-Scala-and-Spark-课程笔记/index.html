@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-25T13:39:00.040Z">
+<meta property="og:updated_time" content="2018-07-26T15:31:56.901Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -558,6 +558,52 @@
 </li>
 <li>programmers should know where their code is running to avoid unexpected output or side-effects.</li>
 </ul>
+<h2 id="Week-2"><a href="#Week-2" class="headerlink" title="Week 2"></a>Week 2</h2><h3 id="Reduction-Operations"><a href="#Reduction-Operations" class="headerlink" title="Reduction Operations"></a>Reduction Operations</h3><ul>
+<li>reduction operations: walk through a collection and combine neighboring elements of the collection together to produce a single combined result.</li>
+<li>properties of <code>aggregate</code>:<ul>
+<li>parallelizable. (like ‘fold’)</li>
+<li>possible to change the return type. (like ‘foldLeft’)</li>
+</ul>
+</li>
+<li>Spark does not support serial <code>foldLeft</code> or <code>foldRight</code> because doing things serially across a cluster requires lots of synchronization, which is actually difficult.</li>
+<li>as you will realize after experimenting with Spark a bit, much of the time when working with large-scale data, your goal is to <strong>project down from larger/more complex data types</strong>.</li>
+</ul>
+<h3 id="Pair-RDDs"><a href="#Pair-RDDs" class="headerlink" title="Pair RDDs"></a>Pair RDDs</h3><ul>
+<li>most common in world of big data processing: operating on data in the form of key-value pairs.</li>
+<li>in Spark, distributed key-value pairs are <code>PairRDD</code>.</li>
+</ul>
+<h3 id="Transformations-and-Actions-on-Pair-RDDs"><a href="#Transformations-and-Actions-on-Pair-RDDs" class="headerlink" title="Transformations and Actions on Pair RDDs"></a>Transformations and Actions on Pair RDDs</h3><ul>
+<li>transformations:<ul>
+<li><code>groupByKey</code>: <code>def groupByKey(): RDD[(K, Iterable[V])]</code>.</li>
+<li><code>reduceByKey</code>: <code>def reduceByKey(func: (V, V) =&gt; V): RDD[(K, V)]</code>, can be thought of as a combination of <code>groupByKey</code> and <code>reduce</code>-ing on all the values per key. It’s more efficient though, than using each separately.</li>
+<li><code>mapValues</code>: <code>def mapValues[U] (f: V =&gt; U) : RDD [(K, U)]</code>.</li>
+<li><code>keys</code>: <code>def keys: RDD[K]</code>, return an RDD with the keys of each tuple.</li>
+<li><code>join</code>.</li>
+<li><code>leftOuterJoin</code>/<code>rightOuterJoin</code>.</li>
+</ul>
+</li>
+<li>actions:<ul>
+<li><code>countByKey</code>: <code>def countByKey(): Map[K, Long]</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a>Joins</h3><ul>
+<li>two kinds of joins:<ul>
+<li>inner joins (<code>join</code>).</li>
+<li>outer joins (<code>leftOuterJoin</code>, <code>rightOuterJoin</code>).</li>
+</ul>
+</li>
+<li>the key difference between the two is what happens to the keys when both RDDs don’t contain the same key.</li>
+<li>inner joins return a new RDD containing combined pairs whose keys are present in both input RDDs.<ul>
+<li><code>def join[W](other: RDD[(K, W)]): RDD[(K, (V, W))]</code>.</li>
+</ul>
+</li>
+<li>outer joins return a new RDD containing combined pairs whose keys don’t have to be present in both input RDDs.<ul>
+<li><code>def leftOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (V, Option[W]))]</code></li>
+<li><code>def rightOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (Option[V], W))]</code></li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -770,7 +816,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li></ol></div>
             
 
           </div>
