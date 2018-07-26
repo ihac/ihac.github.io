@@ -158,3 +158,42 @@ val firstlogsWithErrors = lastYearslogs.filter(_.contains("ERROR")) .take(10)
     - finally, SparkContext sends tasks for the executors to run.
 - programmers should know where their code is running to avoid unexpected output or side-effects.
 
+## Week 2
+
+### Reduction Operations
+
+- reduction operations: walk through a collection and combine neighboring elements of the collection together to produce a single combined result.
+- properties of `aggregate`:
+    - parallelizable. (like 'fold')
+    - possible to change the return type. (like 'foldLeft')
+- Spark does not support serial `foldLeft` or `foldRight` because doing things serially across a cluster requires lots of synchronization, which is actually difficult.
+- as you will realize after experimenting with Spark a bit, much of the time when working with large-scale data, your goal is to **project down from larger/more complex data types**.
+
+### Pair RDDs
+
+- most common in world of big data processing: operating on data in the form of key-value pairs.
+- in Spark, distributed key-value pairs are `PairRDD`.
+
+### Transformations and Actions on Pair RDDs
+
+- transformations:
+    - `groupByKey`: `def groupByKey(): RDD[(K, Iterable[V])]`.
+    - `reduceByKey`: `def reduceByKey(func: (V, V) => V): RDD[(K, V)]`, can be thought of as a combination of `groupByKey` and `reduce`-ing on all the values per key. It's more efficient though, than using each separately.
+    - `mapValues`: ` def mapValues[U] (f: V => U) : RDD [(K, U)]`.
+    - `keys`: `def keys: RDD[K]`, return an RDD with the keys of each tuple.
+    - `join`.
+    - `leftOuterJoin`/`rightOuterJoin`.
+- actions:
+    - `countByKey`: `def countByKey(): Map[K, Long]`.
+
+### Joins
+
+- two kinds of joins:
+    - inner joins (`join`).
+    - outer joins (`leftOuterJoin`, `rightOuterJoin`).
+- the key difference between the two is what happens to the keys when both RDDs don't contain the same key.
+- inner joins return a new RDD containing combined pairs whose keys are present in both input RDDs.
+    - `def join[W](other: RDD[(K, W)]): RDD[(K, (V, W))]`.
+- outer joins return a new RDD containing combined pairs whose keys don't have to be present in both input RDDs.
+    - `def leftOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (V, Option[W]))]`
+    - `def rightOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (Option[V], W))]`
