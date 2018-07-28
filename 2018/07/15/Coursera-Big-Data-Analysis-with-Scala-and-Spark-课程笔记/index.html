@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-26T15:31:56.901Z">
+<meta property="og:updated_time" content="2018-07-28T14:46:44.075Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -604,6 +604,90 @@
 </ul>
 </li>
 </ul>
+<h2 id="Week-3"><a href="#Week-3" class="headerlink" title="Week 3"></a>Week 3</h2><h3 id="Shuffling-What-it-is-and-why-it’s-important"><a href="#Shuffling-What-it-is-and-why-it’s-important" class="headerlink" title="Shuffling: What it is and why it’s important"></a>Shuffling: What it is and why it’s important</h3><ul>
+<li>shuffling: move data from one node to another to be grouped with its key.<ul>
+<li>shuffles can be an enormous hit due to network latency.</li>
+</ul>
+</li>
+<li><code>groupByKey</code> results in one key-value pair per key. And this single key-value pair cannot span across multiple worker nodes.</li>
+<li>conceptually, <code>reduceByKey</code> can be thought of as a combination of first doing <code>groupByKey</code> and then <code>reduce</code>-ing on all the values grouped per key.<ul>
+<li>but it’s more efficient though, than using each separately.</li>
+<li>it is because an pre-<code>reduceByKey</code> can be done in each executor to reduce the amount of data sent over the network.</li>
+<li>this can result in non-trival gains in performance!</li>
+</ul>
+</li>
+</ul>
+<h3 id="Partitioning"><a href="#Partitioning" class="headerlink" title="Partitioning"></a>Partitioning</h3><ul>
+<li>partitioning: how Spark know which key to put on which machine. The data within an RDD is split into several partitions.</li>
+<li>properties of partitions:<ul>
+<li>partitions never span multiple machines. i.e., tuples in the same partitions are guaranteed to be on the same machine.</li>
+<li>each machine in the cluster contains one or more partitions.</li>
+<li>the number of partitions to use is configurable. By default, it equals to the total number of cores on all executor nodes.</li>
+</ul>
+</li>
+<li>two kinds of partitioning available in Spark:<ul>
+<li>hash partitioning: attempts to spread data evenly across partitions based on the key.</li>
+<li>range partitioning: may be more efficient when Pair RDDs contain keys that have an ordering defined (<code>Int</code>, <code>String</code>).</li>
+</ul>
+</li>
+<li>customizing a partitioning is only possible on Pair RDDs.</li>
+<li>using a range partitioner, keys are partitioned according to:<ul>
+<li>an ordering of keys.</li>
+<li>a set of sorted ranges of keys.</li>
+</ul>
+</li>
+<li>there are two ways to create RDDs with specific partitionings:<ul>
+<li>call <code>partitionBy</code> on an RDD, providing an explicit Partitioner.</li>
+<li>using transformations that return RDDs with specific partitioners.</li>
+</ul>
+</li>
+</ul>
+<p><strong>call <code>partitionBy</code> on an RDD</strong>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> pairs = purchasesRdd.map(p =&gt; (p.customerld, p.price))</span><br><span class="line"><span class="keyword">val</span> tunedPartitioner = <span class="keyword">new</span> <span class="type">RangePartitioner</span>(<span class="number">8</span>, pairs)</span><br><span class="line"><span class="keyword">val</span> partitioned = pairs.partitionBy(tunedPartitioner).persist()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>creating a <code>RangePartitioner</code> requires:<ul>
+<li>specifying the desired number of partitions.</li>
+<li>providing a Pair RDD with ordered keys. This RDD is sampled to create a suitable set of sorted ranges.</li>
+</ul>
+</li>
+<li><strong>NOTE</strong>: the result of <code>partitionBy</code> should always be persisted. Otherwise, the partitioning is repeatedly applyed (involving shuffling) each time the partitioned RDD is used.</li>
+</ul>
+<p><strong> partitioning data using transformations</strong>:</p>
+<ul>
+<li>partitioner from parent RDD:<ul>
+<li>Pair RDDs that are the result of a transformation on a partitioned Pair RDD typically is configured to use the hash partitioner that was used to construct it.</li>
+</ul>
+</li>
+<li>automatically-set partitioners:<ul>
+<li>some operations on RDDs automatically result in an RDD with a known partitioner - for when it makes sense.</li>
+<li>by default, when using <code>sortByKey</code>, a RangePartitioner is used. Further, the default partitioner when using <code>groupByKey</code>, is a HashPartitioner.</li>
+</ul>
+</li>
+<li>operations on Pair RDDs that hold to (and propagate) a partitioner:<ul>
+<li><code>cogroup</code>.</li>
+<li><code>groupWith</code>.</li>
+<li><code>join</code>.</li>
+<li><code>leftOuterJoin</code>.</li>
+<li><code>rightOuterJoin</code>.</li>
+<li><code>groupByKey</code>.</li>
+<li><code>reduceByKey</code>.</li>
+<li><code>foldByKey</code>.</li>
+<li><code>combineByKey</code>.</li>
+<li><code>partitionBy</code>.</li>
+<li><code>sort</code>.</li>
+<li><code>mapValues</code> (if parent has a partitioner).</li>
+<li><code>flatMapValues</code> (if parent has a partitioner).</li>
+<li><code>filter</code> (if parent has a partitioner).</li>
+</ul>
+</li>
+<li>all other operations will produce a result without a partitioner.</li>
+<li>why <code>map</code> or <code>flatMap</code> do not preserve partitioner in their result RDDs?<ul>
+<li>because it’s possible for <code>map</code> or <code>flatMap</code> to change the key.</li>
+<li>the previous partitioner would no longer make sense when key is changed.</li>
+<li>hence <code>mapValues</code> enables us to still do <code>map</code> transformations without changing the keys, thereby preserving the partitioner.</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -816,7 +900,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li></ol></li></ol></div>
             
 
           </div>
