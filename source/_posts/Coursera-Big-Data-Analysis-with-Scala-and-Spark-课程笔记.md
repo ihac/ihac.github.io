@@ -197,3 +197,72 @@ val firstlogsWithErrors = lastYearslogs.filter(_.contains("ERROR")) .take(10)
 - outer joins return a new RDD containing combined pairs whose keys don't have to be present in both input RDDs.
     - `def leftOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (V, Option[W]))]`
     - `def rightOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (Option[V], W))]`
+
+## Week 3
+
+### Shuffling: What it is and why it's important
+
+- shuffling: move data from one node to another to be grouped with its key.
+    - shuffles can be an enormous hit due to network latency.
+- `groupByKey` results in one key-value pair per key. And this single key-value pair cannot span across multiple worker nodes.
+- conceptually, `reduceByKey` can be thought of as a combination of first doing `groupByKey` and then `reduce`-ing on all the values grouped per key.
+    - but it's more efficient though, than using each separately.
+    - it is because an pre-`reduceByKey` can be done in each executor to reduce the amount of data sent over the network.
+    - this can result in non-trival gains in performance!
+
+### Partitioning
+
+- partitioning: how Spark know which key to put on which machine. The data within an RDD is split into several partitions.
+- properties of partitions:
+    - partitions never span multiple machines. i.e., tuples in the same partitions are guaranteed to be on the same machine.
+    - each machine in the cluster contains one or more partitions.
+    - the number of partitions to use is configurable. By default, it equals to the total number of cores on all executor nodes.
+- two kinds of partitioning available in Spark:
+    - hash partitioning: attempts to spread data evenly across partitions based on the key.
+    - range partitioning: may be more efficient when Pair RDDs contain keys that have an ordering defined (`Int`, `String`).
+- customizing a partitioning is only possible on Pair RDDs.
+- using a range partitioner, keys are partitioned according to:
+    - an ordering of keys.
+    - a set of sorted ranges of keys.
+- there are two ways to create RDDs with specific partitionings:
+    - call `partitionBy` on an RDD, providing an explicit Partitioner.
+    - using transformations that return RDDs with specific partitioners.
+
+**call `partitionBy` on an RDD**:
+
+``` scala
+val pairs = purchasesRdd.map(p => (p.customerld, p.price))
+val tunedPartitioner = new RangePartitioner(8, pairs)
+val partitioned = pairs.partitionBy(tunedPartitioner).persist()
+```
+- creating a `RangePartitioner` requires:
+    - specifying the desired number of partitions.
+    - providing a Pair RDD with ordered keys. This RDD is sampled to create a suitable set of sorted ranges.
+- **NOTE**: the result of `partitionBy` should always be persisted. Otherwise, the partitioning is repeatedly applyed (involving shuffling) each time the partitioned RDD is used.
+
+** partitioning data using transformations**:
+- partitioner from parent RDD:
+    - Pair RDDs that are the result of a transformation on a partitioned Pair RDD typically is configured to use the hash partitioner that was used to construct it.
+- automatically-set partitioners:
+    - some operations on RDDs automatically result in an RDD with a known partitioner - for when it makes sense.
+    - by default, when using `sortByKey`, a RangePartitioner is used. Further, the default partitioner when using `groupByKey`, is a HashPartitioner.
+- operations on Pair RDDs that hold to (and propagate) a partitioner:
+    - `cogroup`.
+    - `groupWith`.
+    - `join`.
+    - `leftOuterJoin`.
+    - `rightOuterJoin`.
+    - `groupByKey`.
+    - `reduceByKey`.
+    - `foldByKey`.
+    - `combineByKey`.
+    - `partitionBy`.
+    - `sort`.
+    - `mapValues` (if parent has a partitioner).
+    - `flatMapValues` (if parent has a partitioner).
+    - `filter` (if parent has a partitioner).
+- all other operations will produce a result without a partitioner.
+- why `map` or `flatMap` do not preserve partitioner in their result RDDs?
+    - because it's possible for `map` or `flatMap` to change the key.
+    - the previous partitioner would no longer make sense when key is changed.
+    - hence `mapValues` enables us to still do `map` transformations without changing the keys, thereby preserving the partitioner.
