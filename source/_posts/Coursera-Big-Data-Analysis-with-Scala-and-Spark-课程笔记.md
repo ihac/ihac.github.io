@@ -266,3 +266,92 @@ val partitioned = pairs.partitionBy(tunedPartitioner).persist()
     - because it's possible for `map` or `flatMap` to change the key.
     - the previous partitioner would no longer make sense when key is changed.
     - hence `mapValues` enables us to still do `map` transformations without changing the keys, thereby preserving the partitioner.
+
+### Optimizing with Partitioners
+
+- using range partitioners we can optimize our earlier use of `reduceByKey` so that it does not involve any shuffling over the network at all!
+- grouping (`groupByKey`) is done using a hash partitioner with default parameters.
+- rule of thumb: a shuffle can occur when the resulting RDD depends on other elements from the same RDD or another RDD.
+- sometimes one can be clever and avoid much or all network communication while still using an operation like join via smart partitioning
+- we can figure out whether a shuffle has been planned/executed via:
+    - the return type of certain transformations (`ShuffledRDD`).
+    - using function `toDebugString` to see its execution plan.
+    ```scala
+    partitioned.reduceByKey((v1, v2) => (v1 ._1 + v2._1, v1 ._2 + v2._2))
+            .toDebugString
+    ```
+- operations that might cause a shuffle:
+    - `cogroup`.
+    - `groupWith`.
+    - `join`.
+    - `leftOuterJoin`.
+    - `rightOuterJoin`.
+    - `groupByKey`.
+    - `reduceByKey`.
+    - `combineByKey`.
+    - `distinct`.
+    - `intersection`.
+    - `repartition`.
+    - `coalesce`.
+- there are a few ways to use operations that might cause a shuffle and to still avoid much or all network shuffling.
+    - `reduceByKey` running on a pre-partitioned ROD will cause the values to be computed locally, requiring only the final reduced value has to be sent from the worker to the driver.
+    - `join` called on two RDDs that are pre-partitioned with the same partitioner and cached on the same machine will cause the `join` to be computed locally, with no shuffling across the network.
+
+### Wide vs Narrow Dependencies
+
+- computations on RDDs are represented as a lineage graph: a Directed Acyclic Graph (DAG) representing the computations done on the RDD.
+- RDDs are made up of 2 important parts (but are made up of 4 parts in total):
+    - `Partitions`: atomic pieces of the dataset; one or many per compute node.
+    - `Dependencies`. models relationship between this RDD and its partitions with the RDD(s) it was derived from.
+    - `A function` for computing the dataset based on its parent RDDs.
+    - `Metadata` about its partitioning scheme and data placement.
+- in fact, RDD dependencies encode when data must move across the network.
+- transformations can have two kinds of dependencies:
+    - narrow dependencies: each partition of the parent RDD is used by at most one partition of the child RDD.
+    - wide dependencies: each partition of the parent RDD may be depended on by multiple child partitions.
+- narrow dependencies mean the transformation can be:
+    - fast.
+    - no shuffle necessary.
+    - optimizations like pipelining possible.
+- while wide dependencies are:
+    - slow.
+    - require all or some data to be shuffled over the network.
+- transformations with narrow dependencies:
+    - `map`.
+    - `mapValues`.
+    - `flatMap`.
+    - `filter`.
+    - `mapPartitions`.
+    - `mapPartitionsWithIndex`.
+- transformations with wide dependencies:
+    - `cogroup`.
+    - `groupWith`.
+    - `join`.
+    - `leftOuterJoin`.
+    - `rightOuterJoin`.
+    - `groupByKey`.
+    - `reduceByKey`.
+    - `combineByKey`.
+    - `distinct`.
+    - `intersection`.
+    - `repartition`.
+    - `coalesce`.
+- we could use `dependencies` method on RDD to return a sequence of denpendency objects, which are actually the dependencies used by Spark's scheduler to know how this RDD depends on other RDDs.
+``` scala
+val pairs = wordsRdd.map(c => (c, 1))
+        .groupByKey()
+        .dependencies
+```
+- narrow dependency objects:
+    - `OneToOneDependency`.
+    - `PruneDependency`.
+    - `RangeDependency`.
+- wide dependency objects:
+    - `ShuffleDependency`.
+- `toDebugString` prints out a visualization of the RDD's lineage, and other information pertinent to scheduling.
+- lineage graphs are the key to fault tolerance in Spark.
+    - along with keeping track of dependency information between partitions as well, this allows us to:
+    - recover from failures by recomputing lost partitions from lineage graphs.
+- recomputing missing partitions fast for narrow dependencies, but slow for wide dependencies.
+
+
