@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-28T14:46:44.075Z">
+<meta property="og:updated_time" content="2018-08-01T14:37:36.156Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -688,6 +688,112 @@
 </ul>
 </li>
 </ul>
+<h3 id="Optimizing-with-Partitioners"><a href="#Optimizing-with-Partitioners" class="headerlink" title="Optimizing with Partitioners"></a>Optimizing with Partitioners</h3><ul>
+<li>using range partitioners we can optimize our earlier use of <code>reduceByKey</code> so that it does not involve any shuffling over the network at all!</li>
+<li>grouping (<code>groupByKey</code>) is done using a hash partitioner with default parameters.</li>
+<li>rule of thumb: a shuffle can occur when the resulting RDD depends on other elements from the same RDD or another RDD.</li>
+<li>sometimes one can be clever and avoid much or all network communication while still using an operation like join via smart partitioning</li>
+<li><p>we can figure out whether a shuffle has been planned/executed via:</p>
+<ul>
+<li>the return type of certain transformations (<code>ShuffledRDD</code>).</li>
+<li>using function <code>toDebugString</code> to see its execution plan.<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">partitioned.reduceByKey((v1, v2) =&gt; (v1 ._1 + v2._1, v1 ._2 + v2._2))</span><br><span class="line">        .toDebugString</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>operations that might cause a shuffle:</p>
+<ul>
+<li><code>cogroup</code>.</li>
+<li><code>groupWith</code>.</li>
+<li><code>join</code>.</li>
+<li><code>leftOuterJoin</code>.</li>
+<li><code>rightOuterJoin</code>.</li>
+<li><code>groupByKey</code>.</li>
+<li><code>reduceByKey</code>.</li>
+<li><code>combineByKey</code>.</li>
+<li><code>distinct</code>.</li>
+<li><code>intersection</code>.</li>
+<li><code>repartition</code>.</li>
+<li><code>coalesce</code>.</li>
+</ul>
+</li>
+<li>there are a few ways to use operations that might cause a shuffle and to still avoid much or all network shuffling.<ul>
+<li><code>reduceByKey</code> running on a pre-partitioned ROD will cause the values to be computed locally, requiring only the final reduced value has to be sent from the worker to the driver.</li>
+<li><code>join</code> called on two RDDs that are pre-partitioned with the same partitioner and cached on the same machine will cause the <code>join</code> to be computed locally, with no shuffling across the network.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Wide-vs-Narrow-Dependencies"><a href="#Wide-vs-Narrow-Dependencies" class="headerlink" title="Wide vs Narrow Dependencies"></a>Wide vs Narrow Dependencies</h3><ul>
+<li>computations on RDDs are represented as a lineage graph: a Directed Acyclic Graph (DAG) representing the computations done on the RDD.</li>
+<li>RDDs are made up of 2 important parts (but are made up of 4 parts in total):<ul>
+<li><code>Partitions</code>: atomic pieces of the dataset; one or many per compute node.</li>
+<li><code>Dependencies</code>. models relationship between this RDD and its partitions with the RDD(s) it was derived from.</li>
+<li><code>A function</code> for computing the dataset based on its parent RDDs.</li>
+<li><code>Metadata</code> about its partitioning scheme and data placement.</li>
+</ul>
+</li>
+<li>in fact, RDD dependencies encode when data must move across the network.</li>
+<li>transformations can have two kinds of dependencies:<ul>
+<li>narrow dependencies: each partition of the parent RDD is used by at most one partition of the child RDD.</li>
+<li>wide dependencies: each partition of the parent RDD may be depended on by multiple child partitions.</li>
+</ul>
+</li>
+<li>narrow dependencies mean the transformation can be:<ul>
+<li>fast.</li>
+<li>no shuffle necessary.</li>
+<li>optimizations like pipelining possible.</li>
+</ul>
+</li>
+<li>while wide dependencies are:<ul>
+<li>slow.</li>
+<li>require all or some data to be shuffled over the network.</li>
+</ul>
+</li>
+<li>transformations with narrow dependencies:<ul>
+<li><code>map</code>.</li>
+<li><code>mapValues</code>.</li>
+<li><code>flatMap</code>.</li>
+<li><code>filter</code>.</li>
+<li><code>mapPartitions</code>.</li>
+<li><code>mapPartitionsWithIndex</code>.</li>
+</ul>
+</li>
+<li>transformations with wide dependencies:<ul>
+<li><code>cogroup</code>.</li>
+<li><code>groupWith</code>.</li>
+<li><code>join</code>.</li>
+<li><code>leftOuterJoin</code>.</li>
+<li><code>rightOuterJoin</code>.</li>
+<li><code>groupByKey</code>.</li>
+<li><code>reduceByKey</code>.</li>
+<li><code>combineByKey</code>.</li>
+<li><code>distinct</code>.</li>
+<li><code>intersection</code>.</li>
+<li><code>repartition</code>.</li>
+<li><code>coalesce</code>.</li>
+</ul>
+</li>
+<li><p>we could use <code>dependencies</code> method on RDD to return a sequence of denpendency objects, which are actually the dependencies used by Spark’s scheduler to know how this RDD depends on other RDDs.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> pairs = wordsRdd.map(c =&gt; (c, <span class="number">1</span>))</span><br><span class="line">        .groupByKey()</span><br><span class="line">        .dependencies</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>narrow dependency objects:</p>
+<ul>
+<li><code>OneToOneDependency</code>.</li>
+<li><code>PruneDependency</code>.</li>
+<li><code>RangeDependency</code>.</li>
+</ul>
+</li>
+<li>wide dependency objects:<ul>
+<li><code>ShuffleDependency</code>.</li>
+</ul>
+</li>
+<li><code>toDebugString</code> prints out a visualization of the RDD’s lineage, and other information pertinent to scheduling.</li>
+<li>lineage graphs are the key to fault tolerance in Spark.<ul>
+<li>along with keeping track of dependency information between partitions as well, this allows us to:</li>
+<li>recover from failures by recomputing lost partitions from lineage graphs.</li>
+</ul>
+</li>
+<li>recomputing missing partitions fast for narrow dependencies, but slow for wide dependencies.</li>
+</ul>
 
       
     </div>
@@ -900,7 +1006,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-with-Partitioners"><span class="nav-number">3.3.</span> <span class="nav-text">Optimizing with Partitioners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wide-vs-Narrow-Dependencies"><span class="nav-number">3.4.</span> <span class="nav-text">Wide vs Narrow Dependencies</span></a></li></ol></li></ol></div>
             
 
           </div>
