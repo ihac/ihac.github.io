@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-01T14:37:36.156Z">
+<meta property="og:updated_time" content="2018-08-02T10:05:16.748Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -794,6 +794,80 @@
 </li>
 <li>recomputing missing partitions fast for narrow dependencies, but slow for wide dependencies.</li>
 </ul>
+<h2 id="Week-4"><a href="#Week-4" class="headerlink" title="Week 4"></a>Week 4</h2><h3 id="Structured-vs-Unstructured-Data"><a href="#Structured-vs-Unstructured-Data" class="headerlink" title="Structured vs Unstructured Data"></a>Structured vs Unstructured Data</h3><ul>
+<li>all data isn’t equal, structurally. It falls on a spectrum from unstructured to structured.<ul>
+<li>unstructured: image, log files.</li>
+<li>semi-structured: json, xml.</li>
+<li>structured: database tables.</li>
+</ul>
+</li>
+<li>Spark + regular RDDs does not know anything about the schema of the data it’s dealing with, which makes it difficult to optimize aggressively.</li>
+<li>Spark SQL makes it possible to do optimization work for users.</li>
+</ul>
+<h3 id="Spark-SQL"><a href="#Spark-SQL" class="headerlink" title="Spark SQL"></a>Spark SQL</h3><ul>
+<li>Spark SQL supports:<ul>
+<li>seamlessly intermixing SQL queries with Scala.</li>
+<li>all of optimizations we’re used in the databases community on Spark jobs.</li>
+</ul>
+</li>
+<li>three main goals of Spark SQL:<ul>
+<li>support relational processing both within Spark programs (on RDDs) and on external data sources with a friendly API.</li>
+<li>high performance, achieved by using techniques from research in databases.</li>
+<li>easily support new data sources such as semi-structured data and external databases.</li>
+</ul>
+</li>
+<li>DataFrames are, conceptually, RDDs full of records with a known schema.</li>
+<li>DataFrames are untyped, which means Scala compiler won’t check the types in the schema.</li>
+<li>transformations on DataFrames are also untyped.</li>
+<li><p>DataFrames can be created in two ways:</p>
+<ul>
+<li><p>from an existing RDD: either with schema inference, or with an explicit schema.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> tupleRDD = ... <span class="comment">// Assume RDD[(Int, String String, String)]</span></span><br><span class="line"><span class="keyword">val</span> tupleDF = tupleRDD.toDF(<span class="string">"id"</span>, <span class="string">"name"</span>, <span class="string">"city"</span>, <span class="string">"country"</span>) <span class="comment">// column names</span></span><br><span class="line"><span class="comment">// or</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">id: <span class="type">Int</span>, name: <span class="type">String</span>, city: <span class="type">String</span></span>)</span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">peopleRDD</span> </span>= ... <span class="comment">// Assume RDD[Person]</span></span><br><span class="line"><span class="keyword">val</span> peopleDF = peopleRDD.toDF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>reading a specific data source from file: common structured or semi-structured formats such as JSON.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="DataFrames-1"><a href="#DataFrames-1" class="headerlink" title="DataFrames (1)"></a>DataFrames (1)</h3><ul>
+<li>complex Spark SQL data types:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Scala Type</th>
+<th style="text-align:left">SQL Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Array[T]</td>
+<td style="text-align:left">ArrayType(elementType, containsNull)</td>
+</tr>
+<tr>
+<td style="text-align:left">Map[K, V]</td>
+<td style="text-align:left">MapType(keyType, valueType, valueContainsNull)</td>
+</tr>
+<tr>
+<td style="text-align:left">case class</td>
+<td style="text-align:left">StructType(List[StructFields])</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>we can select and work with <code>column</code>s in these ways:<ul>
+<li>using $-notation: <code>df.filter($&quot;age&quot; &gt; 18)</code>.</li>
+<li>referring to the DataFrame: <code>df.filter(df(&quot;age&quot; &gt; 18))</code>.</li>
+<li>using SQL query string: <code>df.filter(&quot;age &gt; 18&quot;)</code>.</li>
+</ul>
+</li>
+<li>one of the most common tasks on tables is to (1) group data by a certain attribute, and then (2) do some kind of aggregation on it like a count.</li>
+<li>for grouping &amp; aggregating, Spark SQL provides:<ul>
+<li>a <code>groupBy</code> function which returns a <code>RelationalGroupedDataset</code>.</li>
+<li>which has several standard aggregation functions defined on it like <code>count</code>, <code>sum</code>, <code>max</code>, <code>min</code>, and <code>avg</code>.</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -1006,7 +1080,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-with-Partitioners"><span class="nav-number">3.3.</span> <span class="nav-text">Optimizing with Partitioners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wide-vs-Narrow-Dependencies"><span class="nav-number">3.4.</span> <span class="nav-text">Wide vs Narrow Dependencies</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-with-Partitioners"><span class="nav-number">3.3.</span> <span class="nav-text">Optimizing with Partitioners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wide-vs-Narrow-Dependencies"><span class="nav-number">3.4.</span> <span class="nav-text">Wide vs Narrow Dependencies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-4"><span class="nav-number">4.</span> <span class="nav-text">Week 4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Structured-vs-Unstructured-Data"><span class="nav-number">4.1.</span> <span class="nav-text">Structured vs Unstructured Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spark-SQL"><span class="nav-number">4.2.</span> <span class="nav-text">Spark SQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrames-1"><span class="nav-number">4.3.</span> <span class="nav-text">DataFrames (1)</span></a></li></ol></li></ol></div>
             
 
           </div>
