@@ -354,4 +354,59 @@ val pairs = wordsRdd.map(c => (c, 1))
     - recover from failures by recomputing lost partitions from lineage graphs.
 - recomputing missing partitions fast for narrow dependencies, but slow for wide dependencies.
 
+## Week 4
+
+### Structured vs Unstructured Data
+
+- all data isn't equal, structurally. It falls on a spectrum from unstructured to structured.
+    - unstructured: image, log files.
+    - semi-structured: json, xml.
+    - structured: database tables.
+- Spark + regular RDDs does not know anything about the schema of the data it's dealing with, which makes it difficult to optimize aggressively.
+- Spark SQL makes it possible to do optimization work for users.
+
+### Spark SQL
+
+- Spark SQL supports:
+    - seamlessly intermixing SQL queries with Scala.
+    - all of optimizations we're used in the databases community on Spark jobs.
+- three main goals of Spark SQL:
+    - support relational processing both within Spark programs (on RDDs) and on external data sources with a friendly API.
+    - high performance, achieved by using techniques from research in databases.
+    - easily support new data sources such as semi-structured data and external databases.
+- DataFrames are, conceptually, RDDs full of records with a known schema.
+- DataFrames are untyped, which means Scala compiler won't check the types in the schema.
+- transformations on DataFrames are also untyped.
+- DataFrames can be created in two ways:
+    - from an existing RDD: either with schema inference, or with an explicit schema.
+    ``` scala
+    val tupleRDD = ... // Assume RDD[(Int, String String, String)]
+    val tupleDF = tupleRDD.toDF("id", "name", "city", "country") // column names
+    // or
+    case class Person(id: Int, name: String, city: String)
+    val peopleRDD = ... // Assume RDD[Person]
+    val peopleDF = peopleRDD.toDF
+    ```
+    - reading a specific data source from file: common structured or semi-structured formats such as JSON.
+
+### DataFrames (1)
+
+- complex Spark SQL data types:
+
+| Scala Type | SQL Type |
+|:---|:---|
+| Array[T] | ArrayType(elementType, containsNull) |
+| Map[K, V] | MapType(keyType, valueType, valueContainsNull) |
+| case class | StructType(List[StructFields]) |
+
+- we can select and work with `column`s in these ways:
+    - using $-notation: `df.filter($"age" > 18)`.
+    - referring to the DataFrame: `df.filter(df("age" > 18))`.
+    - using SQL query string: `df.filter("age > 18")`.
+- one of the most common tasks on tables is to (1) group data by a certain attribute, and then (2) do some kind of aggregation on it like a count.
+- for grouping & aggregating, Spark SQL provides:
+    - a `groupBy` function which returns a `RelationalGroupedDataset`.
+    - which has several standard aggregation functions defined on it like `count`, `sum`, `max`, `min`, and `avg`.
+
+
 
