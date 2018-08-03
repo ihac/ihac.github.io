@@ -44,7 +44,7 @@ PLEASE NOTIFY ME if I broke [Coursera Honor Code](https://learner.coursera.help/
 ### Latency
 
 - distribution introduces important concerns beyond what we had to worry about when dealing with parallelism in the shared memory case:
-    - partial failure: crash failures of a subset of the machines involved in a distributed computation .
+    - partial failure: crash failures of a subset of the machines involved in a distributed computation.
     - latency: certain operations have a much higher latency than other operations due to network communication.
 - latency cannot be masked completely.
 - fault-tolerance in Hadoop/MapReduce comes at a cost.
@@ -379,6 +379,7 @@ val pairs = wordsRdd.map(c => (c, 1))
 - transformations on DataFrames are also untyped.
 - DataFrames can be created in two ways:
     - from an existing RDD: either with schema inference, or with an explicit schema.
+    - reading a specific data source from file: common structured or semi-structured formats such as JSON.
     ``` scala
     val tupleRDD = ... // Assume RDD[(Int, String String, String)]
     val tupleDF = tupleRDD.toDF("id", "name", "city", "country") // column names
@@ -387,7 +388,6 @@ val pairs = wordsRdd.map(c => (c, 1))
     val peopleRDD = ... // Assume RDD[Person]
     val peopleDF = peopleRDD.toDF
     ```
-    - reading a specific data source from file: common structured or semi-structured formats such as JSON.
 
 ### DataFrames (1)
 
