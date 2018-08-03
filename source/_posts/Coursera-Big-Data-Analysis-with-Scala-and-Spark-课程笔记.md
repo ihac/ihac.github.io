@@ -408,5 +408,104 @@ val pairs = wordsRdd.map(c => (c, 1))
     - a `groupBy` function which returns a `RelationalGroupedDataset`.
     - which has several standard aggregation functions defined on it like `count`, `sum`, `max`, `min`, and `avg`.
 
+### DataFrames (2)
 
+- dropping records with unwanted values:
+    - `drop()`: drops rows that contain `null` or `NaN` values in **any** column and returns a new DF.
+    - `drop("all")`: drops rows that contain `null` or `NaN` values in **all** columns and returns a new DF.
+    - `drop(Array("id", "name"))`: drops rows that contain `null` or `NaN` values in the **specified** columns and returns a new DF.
+- replacing unwanted values:
+    - `fill(0)`: replaces all occurrences of `null` or `NaN` in **numeric** columns with **specified** value and returns a new DF.
+    - `fill(Map("minBalance" -> 0))`: replaces all occurrences of `null` or `NaN` in **specified** column with **specified** value and returns a new DF.
+    - `fill(Array("id"), Map(123 -> 1234))`: replaces **specified** value (123) in **specified** column ("id") with **specified replacement** value (1234) and returns a new DF.
+- common actions on DataFrames:
+    - `collect(): Array[Row]`: returns an array that contains all of rows in this DataFrame.
+    - `count(): Long`: returns the number of rows in the DataFrame.
+    - `first(): Row / head(): Row`: return the first row in the DataFrame.
+    - `show(): Unit`: displays the top 20 rows of the DataFrame in tabular form.
+    - `take(n: Int): Array[Row]`: returns the first `n` rows in the DataFrame.
+- several types of joins are available: `inner`, `outer`, `left_outer`, `right_outer`, `leftsemi`.
+``` scala
+df1.join(df2, $"df1.id" === $"df2.id")
+df1.join(df2, $"df1.id" === $"df2.id", "right_outer")
+```
+- Spark SQL comes with two specialized backend components:
+    - Catalyst: query optimizer.
+    - Tungsten: off-heap serializer.
+- Catalyst compiles Spark SQL programs down to an RDD.
+    - reordering operations: laziness and structure gives us the ability to anaylyze and rearrange the DAG of computation.
+    - reduce the amount of data we must read: skip reading in, serializing, and sending around parts of the data set that aren't needed for computation.
+    - pruning unneeded partitioning: analyze DataFrame and filter operations to figure out and skip partitions that are unneeded in computation.
+- Tungsten can provides:
+    - highly-specialized data encoders: take schema information and tightly pack serialized data into memory.
+    - column-based: when storing data, group data by column instead of row for faster lookups of data associated with specific attributes/columns.
+    - off-heap (free from garbage collection overhead): regions of memory off heap, manually managed by Tungsten, so as to avoid GC overhead and pauses.
+- limitations of DataFrames:
+    - untyped: Scala compiler does not check whether a column exists.
+    - limited data types: difficult to ensure that a Tungsten encoder exist for your data type.
+    - requires semi-structured/structured data: better to use regular RDDs for unstructured data.
 
+### Datasets
+
+- DataFrames are actually Datasets.
+``` scala
+type DataFrame = Dataset[Row]
+```
+- what is Dataset?
+    - Datasets can be thought of as typed distributed collections of data.
+    - Dataset API unifies the DataFrame and RDD APIs. Mix and match!
+    - Datasets require structured/semi-structured data. Schemas and Encoders core part of Datasets.
+- we can think of Datasets as a compromise between RDDs and DataFrames:
+    - more type information than DF.
+    - more optimizations than RDDs.
+- the Dataset API includes both untyped and typed transformations:
+    - untyped transformations: the transformations we learned on DataFrames.
+    - typed transformations: typed variants of many DataFrame transformations + additional transformations such as RDD-like higher-order functions `map`, `flatMap`, etc.
+- common (typed) transformations on Datasets:
+    - `map`: `map[U](f: T => U): Dataset[U]`.
+    - `flatMap`: `flatMap[U](f: T => TraversableOnce[U]): Dataset[U]`.
+    - `filter`: `filter(pred: T => Boolean): Dataset[T]`.
+    - `distinct`: `distinct(): Dataset[T]`.
+    - `groupByKey`: `groupByKey[K](f: T => K): KeyValueGroupedDataset[K, T]`.
+    - `coalesce`: `coalesce(numPartitions: Int): Dataset[T]`.
+    - `repartition`: `repartition(numPartitions: Int): Dataset[T]`.
+- like on DataFrames, Datasets have a special set of aggregation operations meant to be used after a call to `groupByKey` on a Dataset .
+    - calling `groupByKey` on a Dataset returns a `KeyValueGroupedDataset`.
+    - `KeyValueGroupedDataset` contains a number of aggregation operations which return Datasets.
+- some `KeyValueGroupedDataset` aggregation operations:
+    - `reduceGroups`: `reduceGroups(f: (V, V) => V): Dataset[(K, V)]`.
+    - `agg`: `agg[U](col: TypedColumn[V, U]): Dataset[(K, U)]`.
+    - `mapGroups`: `mapGroups[U](f: (K, Iterator[V]) => U): Dataset[U]`.
+    - `flatMapGroups`: `flatMapGroups[U](f: (K, Iterator[V]) => TraversableOnce[U]): Dataset[U]`.
+- `Aggregator`: A class that helps you generically aggregate data. Kind of like the aggregate method we saw on RDDs.
+``` scala
+val myAgg = new Aggregator[IN, BUF, OUT] {
+    def zero: BUF = ... // initial value
+    def reduce(b: BUF, a: IN) : BUF = ... // add an element to the running total
+    def merge(b1: BUF, b2: BUF): BUF = ... // merge the intermediate values
+    def finish(b: BUF): OUT = ... // return the final result
+}.toColumn
+```
+- `Encoder`s are what convert your data between JVM objects and Spark SQL's specialized internal (tabular) representation. They're required by all Datasets!
+- two ways to introduce encoders:
+    - automatically via implicits from a `SparkSession`: `import spark.implicits._`.
+    - explicitly via `org.apache.spark.sql.Encoder` which contains a large selection of methods for creating `Encoder`s from Scala primitive types and `Prouct`s.
+- when to use DataFrames vs DataSets vs RDDs?
+- use Datasets when:
+    - you have structured/ semi-structured data.
+    - you want typesafety.
+    - you need to work with functional APls.
+    - you need good performance, but it doesn't have to be the best.
+- use DataFrames when:
+    - you have structured/semi-structured data.
+    - you want the best possible performance, automatically optimized for you.
+- use RDDs when:
+    - you have unstructured data.
+    - you need to fine-tune and manage low-level details of RDD computations.
+    - you have complex data types that cannot be serialized with Encoders.
+- limitations of Datasets:
+    - Catalyst cannot optimize all operations.
+    - all other limitations of DataFrames except `untyped`: limited data types and requiring semi-structured/structured data.
+- when using Datasets with higher-order functions like `map`, you miss out on many Catalyst optimizations .
+- when using Datasets with relational operations like select, you get all of Catalyst's optimizations .
+- though not all operations on Datasets benefit from Catalyst's optimizations, Tungsten is still always running under the hood of Datasets, storing and organizing data in a highly optimized way, which can result in large speedups over RDDs.
