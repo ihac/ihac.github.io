@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-03T02:24:17.327Z">
+<meta property="og:updated_time" content="2018-08-03T09:16:11.119Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -865,6 +865,136 @@
 </ul>
 </li>
 </ul>
+<h3 id="DataFrames-2"><a href="#DataFrames-2" class="headerlink" title="DataFrames (2)"></a>DataFrames (2)</h3><ul>
+<li>dropping records with unwanted values:<ul>
+<li><code>drop()</code>: drops rows that contain <code>null</code> or <code>NaN</code> values in <strong>any</strong> column and returns a new DF.</li>
+<li><code>drop(&quot;all&quot;)</code>: drops rows that contain <code>null</code> or <code>NaN</code> values in <strong>all</strong> columns and returns a new DF.</li>
+<li><code>drop(Array(&quot;id&quot;, &quot;name&quot;))</code>: drops rows that contain <code>null</code> or <code>NaN</code> values in the <strong>specified</strong> columns and returns a new DF.</li>
+</ul>
+</li>
+<li>replacing unwanted values:<ul>
+<li><code>fill(0)</code>: replaces all occurrences of <code>null</code> or <code>NaN</code> in <strong>numeric</strong> columns with <strong>specified</strong> value and returns a new DF.</li>
+<li><code>fill(Map(&quot;minBalance&quot; -&gt; 0))</code>: replaces all occurrences of <code>null</code> or <code>NaN</code> in <strong>specified</strong> column with <strong>specified</strong> value and returns a new DF.</li>
+<li><code>fill(Array(&quot;id&quot;), Map(123 -&gt; 1234))</code>: replaces <strong>specified</strong> value (123) in <strong>specified</strong> column (“id”) with <strong>specified replacement</strong> value (1234) and returns a new DF.</li>
+</ul>
+</li>
+<li>common actions on DataFrames:<ul>
+<li><code>collect(): Array[Row]</code>: returns an array that contains all of rows in this DataFrame.</li>
+<li><code>count(): Long</code>: returns the number of rows in the DataFrame.</li>
+<li><code>first(): Row / head(): Row</code>: return the first row in the DataFrame.</li>
+<li><code>show(): Unit</code>: displays the top 20 rows of the DataFrame in tabular form.</li>
+<li><code>take(n: Int): Array[Row]</code>: returns the first <code>n</code> rows in the DataFrame.</li>
+</ul>
+</li>
+<li><p>several types of joins are available: <code>inner</code>, <code>outer</code>, <code>left_outer</code>, <code>right_outer</code>, <code>leftsemi</code>.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df1.join(df2, $<span class="string">"df1.id"</span> === $<span class="string">"df2.id"</span>)</span><br><span class="line">df1.join(df2, $<span class="string">"df1.id"</span> === $<span class="string">"df2.id"</span>, <span class="string">"right_outer"</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Spark SQL comes with two specialized backend components:</p>
+<ul>
+<li>Catalyst: query optimizer.</li>
+<li>Tungsten: off-heap serializer.</li>
+</ul>
+</li>
+<li>Catalyst compiles Spark SQL programs down to an RDD.<ul>
+<li>reordering operations: laziness and structure gives us the ability to anaylyze and rearrange the DAG of computation.</li>
+<li>reduce the amount of data we must read: skip reading in, serializing, and sending around parts of the data set that aren’t needed for computation.</li>
+<li>pruning unneeded partitioning: analyze DataFrame and filter operations to figure out and skip partitions that are unneeded in computation.</li>
+</ul>
+</li>
+<li>Tungsten can provides:<ul>
+<li>highly-specialized data encoders: take schema information and tightly pack serialized data into memory.</li>
+<li>column-based: when storing data, group data by column instead of row for faster lookups of data associated with specific attributes/columns.</li>
+<li>off-heap (free from garbage collection overhead): regions of memory off heap, manually managed by Tungsten, so as to avoid GC overhead and pauses.</li>
+</ul>
+</li>
+<li>limitations of DataFrames:<ul>
+<li>untyped: Scala compiler does not check whether a column exists.</li>
+<li>limited data types: difficult to ensure that a Tungsten encoder exist for your data type.</li>
+<li>requires semi-structured/structured data: better to use regular RDDs for unstructured data.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Datasets"><a href="#Datasets" class="headerlink" title="Datasets"></a>Datasets</h3><ul>
+<li><p>DataFrames are actually Datasets.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">DataFrame</span> </span>= <span class="type">Dataset</span>[<span class="type">Row</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>what is Dataset?</p>
+<ul>
+<li>Datasets can be thought of as typed distributed collections of data.</li>
+<li>Dataset API unifies the DataFrame and RDD APIs. Mix and match!</li>
+<li>Datasets require structured/semi-structured data. Schemas and Encoders core part of Datasets.</li>
+</ul>
+</li>
+<li>we can think of Datasets as a compromise between RDDs and DataFrames:<ul>
+<li>more type information than DF.</li>
+<li>more optimizations than RDDs.</li>
+</ul>
+</li>
+<li>the Dataset API includes both untyped and typed transformations:<ul>
+<li>untyped transformations: the transformations we learned on DataFrames.</li>
+<li>typed transformations: typed variants of many DataFrame transformations + additional transformations such as RDD-like higher-order functions <code>map</code>, <code>flatMap</code>, etc.</li>
+</ul>
+</li>
+<li>common (typed) transformations on Datasets:<ul>
+<li><code>map</code>: <code>map[U](f: T =&gt; U): Dataset[U]</code>.</li>
+<li><code>flatMap</code>: <code>flatMap[U](f: T =&gt; TraversableOnce[U]): Dataset[U]</code>.</li>
+<li><code>filter</code>: <code>filter(pred: T =&gt; Boolean): Dataset[T]</code>.</li>
+<li><code>distinct</code>: <code>distinct(): Dataset[T]</code>.</li>
+<li><code>groupByKey</code>: <code>groupByKey[K](f: T =&gt; K): KeyValueGroupedDataset[K, T]</code>.</li>
+<li><code>coalesce</code>: <code>coalesce(numPartitions: Int): Dataset[T]</code>.</li>
+<li><code>repartition</code>: <code>repartition(numPartitions: Int): Dataset[T]</code>.</li>
+</ul>
+</li>
+<li>like on DataFrames, Datasets have a special set of aggregation operations meant to be used after a call to <code>groupByKey</code> on a Dataset .<ul>
+<li>calling <code>groupByKey</code> on a Dataset returns a <code>KeyValueGroupedDataset</code>.</li>
+<li><code>KeyValueGroupedDataset</code> contains a number of aggregation operations which return Datasets.</li>
+</ul>
+</li>
+<li>some <code>KeyValueGroupedDataset</code> aggregation operations:<ul>
+<li><code>reduceGroups</code>: <code>reduceGroups(f: (V, V) =&gt; V): Dataset[(K, V)]</code>.</li>
+<li><code>agg</code>: <code>agg[U](col: TypedColumn[V, U]): Dataset[(K, U)]</code>.</li>
+<li><code>mapGroups</code>: <code>mapGroups[U](f: (K, Iterator[V]) =&gt; U): Dataset[U]</code>.</li>
+<li><code>flatMapGroups</code>: <code>flatMapGroups[U](f: (K, Iterator[V]) =&gt; TraversableOnce[U]): Dataset[U]</code>.</li>
+</ul>
+</li>
+<li><p><code>Aggregator</code>: A class that helps you generically aggregate data. Kind of like the aggregate method we saw on RDDs.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> myAgg = <span class="keyword">new</span> <span class="type">Aggregator</span>[<span class="type">IN</span>, <span class="type">BUF</span>, <span class="type">OUT</span>] &#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">zero</span></span>: <span class="type">BUF</span> = ... <span class="comment">// initial value</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reduce</span></span>(b: <span class="type">BUF</span>, a: <span class="type">IN</span>) : <span class="type">BUF</span> = ... <span class="comment">// add an element to the running total</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">merge</span></span>(b1: <span class="type">BUF</span>, b2: <span class="type">BUF</span>): <span class="type">BUF</span> = ... <span class="comment">// merge the intermediate values</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">finish</span></span>(b: <span class="type">BUF</span>): <span class="type">OUT</span> = ... <span class="comment">// return the final result</span></span><br><span class="line">&#125;.toColumn</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Encoder</code>s are what convert your data between JVM objects and Spark SQL’s specialized internal (tabular) representation. They’re required by all Datasets!</p>
+</li>
+<li>two ways to introduce encoders:<ul>
+<li>automatically via implicits from a <code>SparkSession</code>: <code>import spark.implicits._</code>.</li>
+<li>explicitly via <code>org.apache.spark.sql.Encoder</code> which contains a large selection of methods for creating <code>Encoder</code>s from Scala primitive types and <code>Prouct</code>s.</li>
+</ul>
+</li>
+<li>when to use DataFrames vs DataSets vs RDDs?</li>
+<li>use Datasets when:<ul>
+<li>you have structured/ semi-structured data.</li>
+<li>you want typesafety.</li>
+<li>you need to work with functional APls.</li>
+<li>you need good performance, but it doesn’t have to be the best.</li>
+</ul>
+</li>
+<li>use DataFrames when:<ul>
+<li>you have structured/semi-structured data.</li>
+<li>you want the best possible performance, automatically optimized for you.</li>
+</ul>
+</li>
+<li>use RDDs when:<ul>
+<li>you have unstructured data.</li>
+<li>you need to fine-tune and manage low-level details of RDD computations.</li>
+<li>you have complex data types that cannot be serialized with Encoders.</li>
+</ul>
+</li>
+<li>limitations of Datasets:<ul>
+<li>Catalyst cannot optimize all operations.</li>
+<li>all other limitations of DataFrames except <code>untyped</code>: limited data types and requiring semi-structured/structured data.</li>
+</ul>
+</li>
+<li>when using Datasets with higher-order functions like <code>map</code>, you miss out on many Catalyst optimizations .</li>
+<li>when using Datasets with relational operations like select, you get all of Catalyst’s optimizations .</li>
+<li>though not all operations on Datasets benefit from Catalyst’s optimizations, Tungsten is still always running under the hood of Datasets, storing and organizing data in a highly optimized way, which can result in large speedups over RDDs.</li>
+</ul>
 
       
     </div>
@@ -1077,7 +1207,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-with-Partitioners"><span class="nav-number">3.3.</span> <span class="nav-text">Optimizing with Partitioners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wide-vs-Narrow-Dependencies"><span class="nav-number">3.4.</span> <span class="nav-text">Wide vs Narrow Dependencies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-4"><span class="nav-number">4.</span> <span class="nav-text">Week 4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Structured-vs-Unstructured-Data"><span class="nav-number">4.1.</span> <span class="nav-text">Structured vs Unstructured Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spark-SQL"><span class="nav-number">4.2.</span> <span class="nav-text">Spark SQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrames-1"><span class="nav-number">4.3.</span> <span class="nav-text">DataFrames (1)</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-1"><span class="nav-number">1.</span> <span class="nav-text">Week 1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-Logistics-What-You’ll-Learn"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction, Logistics, What You’ll Learn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Parallel-to-Distributed-Data-Parallel"><span class="nav-number">1.2.</span> <span class="nav-text">Data-Parallel to Distributed Data-Parallel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Latency"><span class="nav-number">1.3.</span> <span class="nav-text">Latency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Spark’s-Distributed-Collection"><span class="nav-number">1.4.</span> <span class="nav-text">RDDs, Spark’s Distributed Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDDs-Transformation-and-Actions"><span class="nav-number">1.5.</span> <span class="nav-text">RDDs: Transformation and Actions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation-in-Spark-Unlike-Scala-Collections"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation in Spark: Unlike Scala Collections!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Topology-Matters"><span class="nav-number">1.7.</span> <span class="nav-text">Cluster Topology Matters!</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-2"><span class="nav-number">2.</span> <span class="nav-text">Week 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reduction-Operations"><span class="nav-number">2.1.</span> <span class="nav-text">Reduction Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pair-RDDs"><span class="nav-number">2.2.</span> <span class="nav-text">Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transformations-and-Actions-on-Pair-RDDs"><span class="nav-number">2.3.</span> <span class="nav-text">Transformations and Actions on Pair RDDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Joins"><span class="nav-number">2.4.</span> <span class="nav-text">Joins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-3"><span class="nav-number">3.</span> <span class="nav-text">Week 3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Shuffling-What-it-is-and-why-it’s-important"><span class="nav-number">3.1.</span> <span class="nav-text">Shuffling: What it is and why it’s important</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning"><span class="nav-number">3.2.</span> <span class="nav-text">Partitioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizing-with-Partitioners"><span class="nav-number">3.3.</span> <span class="nav-text">Optimizing with Partitioners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wide-vs-Narrow-Dependencies"><span class="nav-number">3.4.</span> <span class="nav-text">Wide vs Narrow Dependencies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Week-4"><span class="nav-number">4.</span> <span class="nav-text">Week 4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Structured-vs-Unstructured-Data"><span class="nav-number">4.1.</span> <span class="nav-text">Structured vs Unstructured Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spark-SQL"><span class="nav-number">4.2.</span> <span class="nav-text">Spark SQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrames-1"><span class="nav-number">4.3.</span> <span class="nav-text">DataFrames (1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataFrames-2"><span class="nav-number">4.4.</span> <span class="nav-text">DataFrames (2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Datasets"><span class="nav-number">4.5.</span> <span class="nav-text">Datasets</span></a></li></ol></li></ol></div>
             
 
           </div>
