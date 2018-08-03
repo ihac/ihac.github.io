@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-02T10:05:16.748Z">
+<meta property="og:updated_time" content="2018-08-03T02:24:17.327Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Coursera] Big Data Analysis with Scala and Spark 课程笔记">
 <meta name="twitter:description" content="Note:This blog is intended to record what I learned in Big Data Analysis with Scala and Spark, rather than share the course materials. So there are two things that I won’t put up: my solution to assig">
@@ -435,7 +435,7 @@
 </ul>
 <h3 id="Latency"><a href="#Latency" class="headerlink" title="Latency"></a>Latency</h3><ul>
 <li>distribution introduces important concerns beyond what we had to worry about when dealing with parallelism in the shared memory case:<ul>
-<li>partial failure: crash failures of a subset of the machines involved in a distributed computation .</li>
+<li>partial failure: crash failures of a subset of the machines involved in a distributed computation.</li>
 <li>latency: certain operations have a much higher latency than other operations due to network communication.</li>
 </ul>
 </li>
@@ -819,12 +819,9 @@
 <li>DataFrames are, conceptually, RDDs full of records with a known schema.</li>
 <li>DataFrames are untyped, which means Scala compiler won’t check the types in the schema.</li>
 <li>transformations on DataFrames are also untyped.</li>
-<li><p>DataFrames can be created in two ways:</p>
-<ul>
-<li><p>from an existing RDD: either with schema inference, or with an explicit schema.</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> tupleRDD = ... <span class="comment">// Assume RDD[(Int, String String, String)]</span></span><br><span class="line"><span class="keyword">val</span> tupleDF = tupleRDD.toDF(<span class="string">"id"</span>, <span class="string">"name"</span>, <span class="string">"city"</span>, <span class="string">"country"</span>) <span class="comment">// column names</span></span><br><span class="line"><span class="comment">// or</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">id: <span class="type">Int</span>, name: <span class="type">String</span>, city: <span class="type">String</span></span>)</span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">peopleRDD</span> </span>= ... <span class="comment">// Assume RDD[Person]</span></span><br><span class="line"><span class="keyword">val</span> peopleDF = peopleRDD.toDF</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>reading a specific data source from file: common structured or semi-structured formats such as JSON.</p>
+<li>DataFrames can be created in two ways:<ul>
+<li>from an existing RDD: either with schema inference, or with an explicit schema.</li>
+<li>reading a specific data source from file: common structured or semi-structured formats such as JSON.<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> tupleRDD = ... <span class="comment">// Assume RDD[(Int, String String, String)]</span></span><br><span class="line"><span class="keyword">val</span> tupleDF = tupleRDD.toDF(<span class="string">"id"</span>, <span class="string">"name"</span>, <span class="string">"city"</span>, <span class="string">"country"</span>) <span class="comment">// column names</span></span><br><span class="line"><span class="comment">// or</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span>(<span class="params">id: <span class="type">Int</span>, name: <span class="type">String</span>, city: <span class="type">String</span></span>)</span></span><br><span class="line"><span class="class"><span class="title">val</span> <span class="title">peopleRDD</span> </span>= ... <span class="comment">// Assume RDD[Person]</span></span><br><span class="line"><span class="keyword">val</span> peopleDF = peopleRDD.toDF</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
