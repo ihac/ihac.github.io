@@ -401,7 +401,7 @@ val pairs = wordsRdd.map(c => (c, 1))
 
 - we can select and work with `column`s in these ways:
     - using $-notation: `df.filter($"age" > 18)`.
-    - referring to the DataFrame: `df.filter(df("age" > 18))`.
+    - referring to the DataFrame: `df.filter(df("age") > 18)`.
     - using SQL query string: `df.filter("age > 18")`.
 - one of the most common tasks on tables is to (1) group data by a certain attribute, and then (2) do some kind of aggregation on it like a count.
 - for grouping & aggregating, Spark SQL provides:
