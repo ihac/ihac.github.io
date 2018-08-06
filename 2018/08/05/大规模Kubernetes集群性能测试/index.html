@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 以下是本文将用到的相关名词：  kubemark集群：表示模拟的Kubernetes集群； kubemark-master：表示kubemark集群的master节点，以vm形式存在； kubemark-hollow-node：表示kubemark集群的ho">
+<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
 <meta name="keywords" content="Kubernetes,Kubemark,Benchmark">
 <meta property="og:type" content="article">
 <meta property="og:title" content="大规模Kubernetes集群性能测试">
 <meta property="og:url" content="https://ihac.xyz/2018/08/05/大规模Kubernetes集群性能测试/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 以下是本文将用到的相关名词：  kubemark集群：表示模拟的Kubernetes集群； kubemark-master：表示kubemark集群的master节点，以vm形式存在； kubemark-hollow-node：表示kubemark集群的ho">
+<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-05T14:59:19.127Z">
+<meta property="og:updated_time" content="2018-08-06T08:30:51.039Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="大规模Kubernetes集群性能测试">
-<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 以下是本文将用到的相关名词：  kubemark集群：表示模拟的Kubernetes集群； kubemark-master：表示kubemark集群的master节点，以vm形式存在； kubemark-hollow-node：表示kubemark集群的ho">
+<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
 
 
 
@@ -365,7 +365,14 @@
 
       
         <p>本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。</p>
-<p>以下是本文将用到的相关名词：</p>
+<p><strong>NOTE</strong><br>本次测试</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个可行且易用的benchmark工具。</p>
+<p>那为什么我想要将这次测试记录成博文呢？事实上，目前kubemark的易用性仅在GCE平台上有效，查看<code>start-kubemark.sh</code>脚本可以发现，GCE是kubemark目前唯一支持的cloud provider，虽然还留有<code>pre-existing</code>这么一个可选项，理论上来说可以支持任意Kubernetes平台，但官方文档对这一feature言之甚少，仅有一句：</p>
+<blockquote>
+<p>The pre-existing provider is an advanced use case that requires the developer to have knowledge of setting up a kubemark master.</p>
+</blockquote>
+<p>我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、攻克多个难关的肯定，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。</p>
+<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>以下是本文将用到的相关名词：</p>
 <ul>
 <li>kubemark集群：表示模拟的Kubernetes集群；</li>
 <li>kubemark-master：表示kubemark集群的master节点，以vm形式存在；</li>
@@ -373,9 +380,33 @@
 <li>物理集群：表示以pod形式运行hollow node的底层集群；</li>
 <li>工作机：表示用于编译Kubernetes、运行kubemark脚本的机器，可以是个人主机。</li>
 </ul>
-<p>大致原理：</p>
-<p>首先创建一台虚拟机，运行Kubernetes相关组件（比如apiserver、scheduler等等），作为kubemark集群的master节点；然后在物理集群上运行大量pod，向kubemark-master注册，成为kubemark集群中的slave节点；最后在搭建完成的kubemark集群上运行e2e测试。</p>
-<h2 id="GCE"><a href="#GCE" class="headerlink" title="GCE"></a>GCE</h2><h2 id="Aliyun"><a href="#Aliyun" class="headerlink" title="Aliyun"></a>Aliyun</h2><p>走的一些弯路</p>
+<h2 id="大致流程（原理）"><a href="#大致流程（原理）" class="headerlink" title="大致流程（原理）"></a>大致流程（原理）</h2><p>首先创建一台虚拟机，运行Kubernetes相关组件（比如apiserver、scheduler等等），作为kubemark集群的master节点；然后在物理集群上运行大量pod，向kubemark-master注册，成为kubemark集群中的slave节点；最后在搭建完成的kubemark集群上运行e2e测试。</p>
+<h2 id="GCE-kubemark"><a href="#GCE-kubemark" class="headerlink" title="GCE + kubemark"></a>GCE + kubemark</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>在GCE平台搭建kubemark集群比较简单，大致步骤如下：</p>
+<ol>
+<li>创建一个Kubernetes集群（即物理集群）与一个VM实例（即工作机）；</li>
+<li>在工作机上配置kubeconfig（具体命令参见集群connect说明），使其可以直接通过kubectl访问物理集群；</li>
+<li>在工作机上克隆Kubernetes仓库，在repo根目录下，执行命令<code>make quick-release</code>进行编译打包；</li>
+<li>在repo根目录下，执行<code>test/kubemark/start-kubemark.sh</code>脚本，自动创建kubemark集群；</li>
+<li>kubemark集群创建成功后，执行<code>test/kubemark/run-e2e-tests.sh</code>脚本，运行e2e性能测试。</li>
+</ol>
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><ol>
+<li><p>默认创建的kubemark集群只有10个hollow node，如何指定hollow node的个数，比如1000个？<br> <strong>answer</strong>:<br> 参见代码：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NUM_NODES=<span class="variable">$&#123;KUBEMARK_NUM_NODES:-10&#125;</span> <span class="comment"># cluster/kubemark/gce/config-default.sh</span></span><br></pre></td></tr></table></figure>
+<p> 可知，将环境变量<code>KUBEMARK_NUM_NODES</code>设置为1000即可创建1000-node规模的kubemark集群。</p>
+</li>
+<li><p>创建kubemark集群失败，报错信息如下，大致意思是找不到相应的subnetwork。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ERROR: (gcloud.compute.instances.create) Could not fetch resource:</span><br><span class="line"> - Invalid value <span class="keyword">for</span> field <span class="string">'resource.networkInterfaces[0].subnetwork'</span>: <span class="string">'https://www.googleapis.com/compute/v1/projects/xxx/regions/us-central1/subnetworks/e2e'</span>. The refer</span><br><span class="line">enced subnetwork resource cannot be found.</span><br><span class="line">Attempt 1 failed to gcloud compute instances. Retrying.</span><br></pre></td></tr></table></figure>
+<p> <strong>answer</strong>:<br> 查看GCE上的安全组与subnetwork信息，可以发现其默认名字是<code>default</code>，而非<code>e2e</code>。参见代码：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NETWORK=<span class="variable">$&#123;KUBE_GCE_NETWORK:-e2e&#125;</span> <span class="comment"># cluster/kubemark/gce/config-default.sh</span></span><br></pre></td></tr></table></figure>
+<p> 可知，将环境变量<code>KUBE_GCE_NETWORK</code>设置为<code>default</code>即可。</p>
+</li>
+<li><p>具体使用的命令？<br> <strong>answer</strong>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">KUBE_GCE_NETWORK=default KUBEMARK_NUM_NODES=20 <span class="built_in">test</span>/kubemark/start-kubemark.sh</span><br><span class="line"><span class="built_in">test</span>/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-metrics-at-teardown=<span class="literal">true</span> --output-print-type=json --report-dir=/xxx/yyy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为什么不使用GCE测试1000节点规模的集群？<br> <strong>answer</strong>:<br> 因为GCE免费账户限制了资源使用量，参见<a href="https://cloud.google.com/free/docs/frequently-asked-questions#limitations" target="_blank" rel="noopener">官方说明</a>，几十个node估计就是上限了。</p>
+</li>
+</ol>
+<h2 id="Aliyun"><a href="#Aliyun" class="headerlink" title="Aliyun"></a>Aliyun</h2><p>走的一些弯路</p>
 <ol>
 <li>直接运行start-kubemark-master.sh脚本</li>
 <li>使用kubeadm搭建kubemark-master</li>
@@ -592,7 +623,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE"><span class="nav-number">1.</span> <span class="nav-text">GCE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun"><span class="nav-number">2.</span> <span class="nav-text">Aliyun</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">2.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun"><span class="nav-number">5.</span> <span class="nav-text">Aliyun</span></a></li></ol></div>
             
 
           </div>
