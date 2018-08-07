@@ -1,5 +1,5 @@
 ---
-title: 大规模Kubernetes集群性能测试
+title: 使用kubemark进行大规模Kubernetes集群性能测试
 date: 2018-08-05 22:57:19
 tags: [Kubernetes, Kubemark, Benchmark]
 visible: hide
@@ -8,7 +8,8 @@ visible: hide
 本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。
 
 **NOTE**
-本次测试
+本次测试日期为*2018-08-02*，最新commit为*[Merge pull request #66671 from hanxiaoshuai/cleanup07261](https://github.com/kubernetes/kubernetes/commit/0e9b1dd20f8c202d5118b8712c4a9dcfe67dbf4a)*，release版本为*[v1.12.0-alpha.1](https://github.com/kubernetes/kubernetes/releases/tag/v1.12.0-alpha.1)*.
+kubemark目前尚属`开发中`、`不成熟`的状态，在之后的版本中可能会有大量代码改动，因此本文内容并不一定适用于更新或更老的Kubernetes版本，仅作为参考，切忌照搬。
 
 ## 背景
 
@@ -18,7 +19,7 @@ kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规
 
 > The pre-existing provider is an advanced use case that requires the developer to have knowledge of setting up a kubemark master.
 
-我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、攻克多个难关的肯定，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。
+我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、解决多个bug的感慨，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。
 
 ## 名词解释
 
@@ -41,10 +42,11 @@ kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规
 在GCE平台搭建kubemark集群比较简单，大致步骤如下：
 
 1. 创建一个Kubernetes集群（即物理集群）与一个VM实例（即工作机）；
-2. 在工作机上配置kubeconfig（具体命令参见集群connect说明），使其可以直接通过kubectl访问物理集群；
-3. 在工作机上克隆Kubernetes仓库，在repo根目录下，执行命令`make quick-release`进行编译打包；
-4. 在repo根目录下，执行`test/kubemark/start-kubemark.sh`脚本，自动创建kubemark集群；
-5. kubemark集群创建成功后，执行`test/kubemark/run-e2e-tests.sh`脚本，运行e2e性能测试。
+2. 执行命令`gcloud auth login`完成gcloud认证；
+3. 在工作机上配置kubeconfig（具体命令参见集群connect说明），使其可以直接通过kubectl访问物理集群；
+4. 在工作机上克隆Kubernetes仓库，在repo根目录下，执行命令`make quick-release`进行编译打包；
+5. 在repo根目录下，执行`test/kubemark/start-kubemark.sh`脚本，自动创建kubemark集群；
+6. kubemark集群创建成功后，执行`test/kubemark/run-e2e-tests.sh`脚本，运行e2e性能测试。
 
 ### FAQ
 
@@ -81,9 +83,21 @@ test/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-m
     **answer**:
     因为GCE免费账户限制了资源使用量，参见[官方说明](https://cloud.google.com/free/docs/frequently-asked-questions#limitations)，几十个node估计就是上限了。
 
-## Aliyun
+## Aliyun + kubemark
 
-走的一些弯路
+### 一些说明
+
+我接到的任务是，在阿里云的平台上进行大规模Kubernetes集群性能测试，自然就不能采用GCE + kubemark这种简易模式了。本来想着，kubemark集群自身的运行是与底层云平台无关的，只有kubemark集群的搭建过程涉及到云平台的接口交互，因此我需要做的应该就是简单的接口适配了。但万万没想到，实际操作过程中会有如此多的坑（当然很重要的一部分原因是我没仔细读脚本源码），解决完一个（或绕开一个）又出现新的，现在估算一下，我在非常熟悉GCE + kubemark的工作流程的基础上，完成Aliyun + kubemark的工作的有效用时大概为2天1夜（不包括测试用时）。工作量确实不算大，困难之处大概在于需要承受各种坑带来的心理折磨吧。
+
+需要说明的是，这部分内容没办法如GCE + kubemark那样列出完整细致的步骤与具体参数，因为我自己在搭建kubemark集群的时候走了很多弯路，基本一直处于“遇到bug - 解决bug”的循环中，没法总结出一套“一蹴而就”的Aliyun + kubemark攻略，我能做到的，只有介绍大致的步骤流程、可能遇到的问题以及解决这些问题的思路方法。
+
+### 基本思路与流程
+
+根据文档描述，kubemark代码在之后会有一定的重构，方便开发者适配不同的cloud provider，因此我一开始就打消了给脚本添加Aliyun支持的念头，因为不会被merge，且过一段时间可能就失效了。所以，我决定采用`pre-existing`的模式来搭建kubemark集群。
+
+在`pre-existing`模式下，用户需要自己提供一个可用的kubemark-master节点，`start-kubemark.sh`脚本将跳过申请vm资源、创建master的这一步骤，直接访问用户指定的kubemark-master，然后注册hollow node。
+
+## 走的一些弯路
 
 1. 直接运行start-kubemark-master.sh脚本
 2. 使用kubeadm搭建kubemark-master
