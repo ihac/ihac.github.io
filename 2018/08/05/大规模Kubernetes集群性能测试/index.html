@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Coding">
 <meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-07T07:25:47.171Z">
+<meta property="og:updated_time" content="2018-08-07T14:28:13.202Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用kubemark进行大规模Kubernetes集群性能测试">
 <meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
@@ -366,12 +366,6 @@
       
         <p>本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。</p>
 <p><strong>NOTE</strong><br>本次测试日期为<em>2018-08-02</em>，最新commit为<em><a href="https://github.com/kubernetes/kubernetes/commit/0e9b1dd20f8c202d5118b8712c4a9dcfe67dbf4a" target="_blank" rel="noopener">Merge pull request #66671 from hanxiaoshuai/cleanup07261</a></em>，release版本为<em><a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.12.0-alpha.1" target="_blank" rel="noopener">v1.12.0-alpha.1</a></em>.<br>kubemark目前尚属<code>开发中</code>、<code>不成熟</code>的状态，在之后的版本中可能会有大量代码改动，因此本文内容并不一定适用于更新或更老的Kubernetes版本，仅作为参考，切忌照搬。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个可行且易用的benchmark工具。</p>
-<p>那为什么我想要将这次测试记录成博文呢？事实上，目前kubemark的易用性仅在GCE平台上有效，查看<code>start-kubemark.sh</code>脚本可以发现，GCE是kubemark目前唯一支持的cloud provider，虽然还留有<code>pre-existing</code>这么一个可选项，理论上来说可以支持任意Kubernetes平台，但官方文档对这一feature言之甚少，仅有一句：</p>
-<blockquote>
-<p>The pre-existing provider is an advanced use case that requires the developer to have knowledge of setting up a kubemark master.</p>
-</blockquote>
-<p>我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、解决多个bug的感慨，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。</p>
 <h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>以下是本文将用到的相关名词：</p>
 <ul>
 <li>kubemark集群：表示模拟的Kubernetes集群；</li>
@@ -380,6 +374,12 @@
 <li>物理集群：表示以pod形式运行hollow node的底层集群；</li>
 <li>工作机：表示用于编译Kubernetes、运行kubemark脚本的机器，可以是个人主机。</li>
 </ul>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个可行且易用的benchmark工具。</p>
+<p>那为什么我想要将这次测试记录成博文呢？事实上，目前kubemark的易用性仅在GCE平台上有效，查看<code>start-kubemark.sh</code>脚本可以发现，GCE是kubemark目前唯一支持的cloud provider，虽然还留有<code>pre-existing</code>这么一个可选项，理论上来说可以支持任意Kubernetes平台，但官方文档对这一feature言之甚少，仅有一句：</p>
+<blockquote>
+<p>The pre-existing provider is an advanced use case that requires the developer to have knowledge of setting up a kubemark master.</p>
+</blockquote>
+<p>我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、解决多个bug的感慨，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。</p>
 <h2 id="大致流程（原理）"><a href="#大致流程（原理）" class="headerlink" title="大致流程（原理）"></a>大致流程（原理）</h2><p>首先创建一台虚拟机，运行Kubernetes相关组件（比如apiserver、scheduler等等），作为kubemark集群的master节点；然后在物理集群上运行大量pod，向kubemark-master注册，成为kubemark集群中的slave节点；最后在搭建完成的kubemark集群上运行e2e测试。</p>
 <h2 id="GCE-kubemark"><a href="#GCE-kubemark" class="headerlink" title="GCE + kubemark"></a>GCE + kubemark</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>在GCE平台搭建kubemark集群比较简单，大致步骤如下：</p>
 <ol>
@@ -404,6 +404,10 @@
 <li><p>具体使用的命令？<br> <strong>answer</strong>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">KUBE_GCE_NETWORK=default KUBEMARK_NUM_NODES=20 <span class="built_in">test</span>/kubemark/start-kubemark.sh</span><br><span class="line"><span class="built_in">test</span>/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-metrics-at-teardown=<span class="literal">true</span> --output-print-type=json --report-dir=/xxx/yyy</span><br></pre></td></tr></table></figure>
 </li>
+<li><p>如何彻底删除kubemark集群，重新安装？<br> <strong>answer</strong>:<br> 首先删除kubemark-master实例，然后删除额外绑定的磁盘、静态ip地址、防火墙规则，最后在物理集群中删除kubemark这一namespace。</p>
+</li>
+<li><p>如何立即中断e2e测试，重新运行？<br> <strong>answer</strong>:<br> 连按两次Ctrl+C中断测试，然后在kubemark集群中删除所有与e2e测试相关的namespace。</p>
+</li>
 <li><p>为什么不使用GCE测试1000节点规模的集群？<br> <strong>answer</strong>:<br> 因为GCE免费账户限制了资源使用量，参见<a href="https://cloud.google.com/free/docs/frequently-asked-questions#limitations" target="_blank" rel="noopener">官方说明</a>，几十个node估计就是上限了。</p>
 </li>
 </ol>
@@ -411,10 +415,38 @@
 <p>需要说明的是，这部分内容没办法如GCE + kubemark那样列出完整细致的步骤与具体参数，因为我自己在搭建kubemark集群的时候走了很多弯路，基本一直处于“遇到bug - 解决bug”的循环中，没法总结出一套“一蹴而就”的Aliyun + kubemark攻略，我能做到的，只有介绍大致的步骤流程、可能遇到的问题以及解决这些问题的思路方法。</p>
 <h3 id="基本思路与流程"><a href="#基本思路与流程" class="headerlink" title="基本思路与流程"></a>基本思路与流程</h3><p>根据文档描述，kubemark代码在之后会有一定的重构，方便开发者适配不同的cloud provider，因此我一开始就打消了给脚本添加Aliyun支持的念头，因为不会被merge，且过一段时间可能就失效了。所以，我决定采用<code>pre-existing</code>的模式来搭建kubemark集群。</p>
 <p>在<code>pre-existing</code>模式下，用户需要自己提供一个可用的kubemark-master节点，<code>start-kubemark.sh</code>脚本将跳过申请vm资源、创建master的这一步骤，直接访问用户指定的kubemark-master，然后注册hollow node。</p>
-<h2 id="走的一些弯路"><a href="#走的一些弯路" class="headerlink" title="走的一些弯路"></a>走的一些弯路</h2><ol>
-<li>直接运行start-kubemark-master.sh脚本</li>
-<li>使用kubeadm搭建kubemark-master</li>
+<h3 id="整体建议"><a href="#整体建议" class="headerlink" title="整体建议"></a>整体建议</h3><p>在Aliyun平台（或任意标准Kubernetes集群）上部署kubemark的几点建议：</p>
+<ol>
+<li>仔细阅读kubemark官方<a href="https://github.com/kubernetes/community/blob/master/contributors/devel/kubemark-guide.md" target="_blank" rel="noopener">文档</a>以及pre-existing相关<a href="https://github.com/kubernetes/kubernetes/blob/master/test/kubemark/pre-existing/README.md" target="_blank" rel="noopener">文档</a>；</li>
+<li>预先在GCE上搭建kubemark，熟悉其架构，<strong>释放资源时保留kubemark-master与工作机</strong>；</li>
+<li>仔细阅读脚本源码，包括但不限于<code>start-kubemark.sh</code>、<code>start-kubemark-master.sh</code>，结合文档，熟悉kubemark集群的搭建步骤（比如证书、manifest文件的生成）；</li>
+<li>不要使用kubeadm或其它方式搭建kubemark-master；</li>
+<li>自行安装kubelet，但其它kubernetes组件均采用kubemark提供的manifest文件；</li>
+<li>使用GCE上保留的工作机单独生成证书与token，即仅执行<code>generate-pki-config</code>函数，注意需要将master ip地址替换为新kubemark-master的地址，否则证书无法在新机器上使用；</li>
+<li>注意<code>known_token.csv</code>文件中随机生成的token，确保kubernetes各组件、hollow node各组件的manifest与其保持一致，否则apiserver会报认证失败的错误；</li>
+<li>如果遇到容器（比如apiserver）一启动就异常退出的问题，一个好的debug方法是，将manifest中的command字段替换为一段循环语句，比如<code>while true; do echo 123; sleep 1; done</code>，在容器正常运行以后，通过<code>docker exec</code>获取终端，然后手动运行原command，观察命令报错原因；</li>
+<li>保留GCE上的kubemark-master的好处在于，我们在搭建新的kubemark-master时，可以经常和正常运行的kubemark-master进行对比，找到自己出错的原因；</li>
+<li>在使用<code>pre-existing</code>模式时，脚本可能会报错，比如unbound variable或者函数未定义等等，这是kubemark代码对pre-existing支持不完善所致，对于unbound variable，我们可以随便赋值声明一下即可，对于未定义的函数，建议参照GCE模式下该函数的定义，自己重写一个；</li>
 </ol>
+<h3 id="如何搭建kubemark-master？"><a href="#如何搭建kubemark-master？" class="headerlink" title="如何搭建kubemark-master？"></a>如何搭建kubemark-master？</h3><ol>
+<li>申请一台vm，用于搭建kubemark-master；</li>
+<li>安装docker以及kubelet（v1.11.1）；</li>
+<li><p>创建用户kubernetes，并将工作机的公钥写入authorized_keys中，使其能够以kubernetes用户的身份免密码ssh登入kubemark-master；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adduser kubernetes <span class="comment"># 创建用户kubernetes</span></span><br><span class="line">sudo vim /etc/sudoers <span class="comment"># 追加一行：kubernetes ALL=(ALL) NOPASSWD:ALL，赋予无密码sudo权限</span></span><br><span class="line">sudo usermod -aG docker kubernetes <span class="comment"># 加入docker组，允许直接操作docker</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>阅读<code>start-kubemark.sh</code>脚本中的<code>copy-resource-files-to-master</code>函数源码，手动将对应文件拷贝到kubemark-master节点上；</p>
+</li>
+<li><p>准备一块磁盘（或单独分一个分区），用于etcd存储，（假设分区名为<code>/dev/vdb1</code>，注意到<code>start-kubemark-master.sh</code>源码中通过<code>/dev/disk/by-id/google-master-pd</code>来索引该分区，这只在GCE下生效，我们需要修改源码，如下所示；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># local -r pd_path="/dev/disk/by-id/$&#123;pd_name&#125;"</span></span><br><span class="line"><span class="built_in">local</span> -r pd_path=<span class="string">"/dev/vdb1"</span></span><br><span class="line"><span class="comment">### 在mount-pd函数中，注释第一行，改为第二行</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>start-kubemark-master.sh</code>脚本中，删除<code>params+=&quot; --cloud-provider=gce&quot;</code>一行，并注释掉<code>start-kubelet</code>函数调用；</p>
+</li>
+<li>尝试第一次运行<code>start-kubemark-master.sh</code>脚本，这一步主要是为了挂载磁盘、加载编译好的kubernetes镜像、填写各组件manifest模板等等，脚本最后会因为apiserver无响应而超时结束；</li>
+<li>使用GCE上保留的工作机来生成证书，即执行<code>start-kubemark.sh</code>中的<code>generate-pki-config</code>函数，并仿照<code>write-pki-config-to-master</code>函数将证书、token写到本地，注意需要跟踪到<code>create-certs</code>函数内部，将机器ip地址替换为新的kubemark-master的IP地址，否则证书无法在新机器中使用，最后将生成的所有文件按原目录结构拷贝到新master节点的<code>/etc/srv/kubernetes</code>目录下;</li>
+<li>根据生成的<code>known_tokens.csv</code>，修改<code>start-kubemark.sh</code>源码，修改hollow node中各组件的token，使其保持一致；</li>
+<li>仔细观察kubernetes组件的manifest文件中的command字段，修复其中留空的参数项（具体可以参照GCE中保留的原kubemark-master），否则这会导致组件启动失败。</li>
+</ol>
+<h3 id="个人体会"><a href="#个人体会" class="headerlink" title="个人体会"></a>个人体会</h3><p>个人认为，解决这类问题的最佳方法是<strong>对比实验</strong>：比如我不确定apiserver的参数项要怎么填，这时候我可以参照GCE上正常运行的kubemark-master；或是，我不知道该怎么生成证书、token，但我可以跟踪脚本在GCE上的证书生成流程，通过替换代码，直接运行脚本生成在本地可用的证书等等。<br>还有一个重要的点是，遇到问题，比如kubernetes组件无法启动、kubemark集群无法部署应用以及e2e测试失败（这些我都遇到过）等等，第一件事应该是查找日志或具体报错信息。比如我发现apiserver和controller manager两个容器始终无法启动，于是我按照上文提到的方法（参见<code>整体建议 -&gt; 8</code>）找到错误原因在于启动命令的参数存在留空；还有，kubemark集群搭建起来后，集群状态看似正常，但是e2e测试中的Density总会失败，于是我登录到apiserver容器内，查看日志发现有大量实时产生的认证失败信息，于是我猜测是hollow node的证书不对，果不其然，我忘记修改<code>start-kubemark.sh</code>源码（参见<code>如何搭建kubemark-master？ -&gt; 9</code>），hollow node组件的token仍然是随机生成的，将其替换为固定的token即可解决这一问题。</p>
 
       
     </div>
@@ -627,7 +659,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">2.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun-kubemark"><span class="nav-number">5.</span> <span class="nav-text">Aliyun + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些说明"><span class="nav-number">5.1.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思路与流程"><span class="nav-number">5.2.</span> <span class="nav-text">基本思路与流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#走的一些弯路"><span class="nav-number">6.</span> <span class="nav-text">走的一些弯路</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun-kubemark"><span class="nav-number">5.</span> <span class="nav-text">Aliyun + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些说明"><span class="nav-number">5.1.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思路与流程"><span class="nav-number">5.2.</span> <span class="nav-text">基本思路与流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整体建议"><span class="nav-number">5.3.</span> <span class="nav-text">整体建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何搭建kubemark-master？"><span class="nav-number">5.4.</span> <span class="nav-text">如何搭建kubemark-master？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#个人体会"><span class="nav-number">5.5.</span> <span class="nav-text">个人体会</span></a></li></ol></li></ol></div>
             
 
           </div>
