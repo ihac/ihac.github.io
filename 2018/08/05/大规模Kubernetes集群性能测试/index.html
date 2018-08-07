@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
+<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
 <meta name="keywords" content="Kubernetes,Kubemark,Benchmark">
 <meta property="og:type" content="article">
-<meta property="og:title" content="大规模Kubernetes集群性能测试">
+<meta property="og:title" content="使用kubemark进行大规模Kubernetes集群性能测试">
 <meta property="og:url" content="https://ihac.xyz/2018/08/05/大规模Kubernetes集群性能测试/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
+<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-06T08:30:51.039Z">
+<meta property="og:updated_time" content="2018-08-07T07:25:47.171Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="大规模Kubernetes集群性能测试">
-<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试 背景kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个">
+<meta name="twitter:title" content="使用kubemark进行大规模Kubernetes集群性能测试">
+<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>大规模Kubernetes集群性能测试 | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>使用kubemark进行大规模Kubernetes集群性能测试 | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">大规模Kubernetes集群性能测试</h1>
+          <h1 class="post-title" itemprop="name headline">使用kubemark进行大规模Kubernetes集群性能测试</h1>
         
 
         <div class="post-meta">
@@ -365,13 +365,13 @@
 
       
         <p>本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。</p>
-<p><strong>NOTE</strong><br>本次测试</p>
+<p><strong>NOTE</strong><br>本次测试日期为<em>2018-08-02</em>，最新commit为<em><a href="https://github.com/kubernetes/kubernetes/commit/0e9b1dd20f8c202d5118b8712c4a9dcfe67dbf4a" target="_blank" rel="noopener">Merge pull request #66671 from hanxiaoshuai/cleanup07261</a></em>，release版本为<em><a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.12.0-alpha.1" target="_blank" rel="noopener">v1.12.0-alpha.1</a></em>.<br>kubemark目前尚属<code>开发中</code>、<code>不成熟</code>的状态，在之后的版本中可能会有大量代码改动，因此本文内容并不一定适用于更新或更老的Kubernetes版本，仅作为参考，切忌照搬。</p>
 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>kubemark的设计初衷就是为了让用户能够非常方便地模拟任意规模的Kubernetes集群，并对集群进行性能测试，根据我在网上搜集到的资料，kubemark模拟出来的集群与真实集群在性能方面是非常接近的，因此kubemark应当是一个可行且易用的benchmark工具。</p>
 <p>那为什么我想要将这次测试记录成博文呢？事实上，目前kubemark的易用性仅在GCE平台上有效，查看<code>start-kubemark.sh</code>脚本可以发现，GCE是kubemark目前唯一支持的cloud provider，虽然还留有<code>pre-existing</code>这么一个可选项，理论上来说可以支持任意Kubernetes平台，但官方文档对这一feature言之甚少，仅有一句：</p>
 <blockquote>
 <p>The pre-existing provider is an advanced use case that requires the developer to have knowledge of setting up a kubemark master.</p>
 </blockquote>
-<p>我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、攻克多个难关的肯定，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。</p>
+<p>我的实践经历也证明，在其它云平台搭建kubemark集群并进行性能测试确实不是一件容易的差事。因此，我写这篇总结博文主要出于两点考虑：一方面，是对自己连续3天高压工作、解决多个bug的感慨，以及对最终成果的珍惜；另一方面，网上针对kubemark的指导文档几乎不存在，官方文档虽然很赞（详细介绍了kubemark的工作流程），但没能介绍如何在GCE以外的云平台上（或标准Kubernetes集群）搭建kubemark集群，希望我的经验能够帮到后来人吧。</p>
 <h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>以下是本文将用到的相关名词：</p>
 <ul>
 <li>kubemark集群：表示模拟的Kubernetes集群；</li>
@@ -384,6 +384,7 @@
 <h2 id="GCE-kubemark"><a href="#GCE-kubemark" class="headerlink" title="GCE + kubemark"></a>GCE + kubemark</h2><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>在GCE平台搭建kubemark集群比较简单，大致步骤如下：</p>
 <ol>
 <li>创建一个Kubernetes集群（即物理集群）与一个VM实例（即工作机）；</li>
+<li>执行命令<code>gcloud auth login</code>完成gcloud认证；</li>
 <li>在工作机上配置kubeconfig（具体命令参见集群connect说明），使其可以直接通过kubectl访问物理集群；</li>
 <li>在工作机上克隆Kubernetes仓库，在repo根目录下，执行命令<code>make quick-release</code>进行编译打包；</li>
 <li>在repo根目录下，执行<code>test/kubemark/start-kubemark.sh</code>脚本，自动创建kubemark集群；</li>
@@ -406,8 +407,11 @@
 <li><p>为什么不使用GCE测试1000节点规模的集群？<br> <strong>answer</strong>:<br> 因为GCE免费账户限制了资源使用量，参见<a href="https://cloud.google.com/free/docs/frequently-asked-questions#limitations" target="_blank" rel="noopener">官方说明</a>，几十个node估计就是上限了。</p>
 </li>
 </ol>
-<h2 id="Aliyun"><a href="#Aliyun" class="headerlink" title="Aliyun"></a>Aliyun</h2><p>走的一些弯路</p>
-<ol>
+<h2 id="Aliyun-kubemark"><a href="#Aliyun-kubemark" class="headerlink" title="Aliyun + kubemark"></a>Aliyun + kubemark</h2><h3 id="一些说明"><a href="#一些说明" class="headerlink" title="一些说明"></a>一些说明</h3><p>我接到的任务是，在阿里云的平台上进行大规模Kubernetes集群性能测试，自然就不能采用GCE + kubemark这种简易模式了。本来想着，kubemark集群自身的运行是与底层云平台无关的，只有kubemark集群的搭建过程涉及到云平台的接口交互，因此我需要做的应该就是简单的接口适配了。但万万没想到，实际操作过程中会有如此多的坑（当然很重要的一部分原因是我没仔细读脚本源码），解决完一个（或绕开一个）又出现新的，现在估算一下，我在非常熟悉GCE + kubemark的工作流程的基础上，完成Aliyun + kubemark的工作的有效用时大概为2天1夜（不包括测试用时）。工作量确实不算大，困难之处大概在于需要承受各种坑带来的心理折磨吧。</p>
+<p>需要说明的是，这部分内容没办法如GCE + kubemark那样列出完整细致的步骤与具体参数，因为我自己在搭建kubemark集群的时候走了很多弯路，基本一直处于“遇到bug - 解决bug”的循环中，没法总结出一套“一蹴而就”的Aliyun + kubemark攻略，我能做到的，只有介绍大致的步骤流程、可能遇到的问题以及解决这些问题的思路方法。</p>
+<h3 id="基本思路与流程"><a href="#基本思路与流程" class="headerlink" title="基本思路与流程"></a>基本思路与流程</h3><p>根据文档描述，kubemark代码在之后会有一定的重构，方便开发者适配不同的cloud provider，因此我一开始就打消了给脚本添加Aliyun支持的念头，因为不会被merge，且过一段时间可能就失效了。所以，我决定采用<code>pre-existing</code>的模式来搭建kubemark集群。</p>
+<p>在<code>pre-existing</code>模式下，用户需要自己提供一个可用的kubemark-master节点，<code>start-kubemark.sh</code>脚本将跳过申请vm资源、创建master的这一步骤，直接访问用户指定的kubemark-master，然后注册hollow node。</p>
+<h2 id="走的一些弯路"><a href="#走的一些弯路" class="headerlink" title="走的一些弯路"></a>走的一些弯路</h2><ol>
 <li>直接运行start-kubemark-master.sh脚本</li>
 <li>使用kubeadm搭建kubemark-master</li>
 </ol>
@@ -623,7 +627,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">2.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun"><span class="nav-number">5.</span> <span class="nav-text">Aliyun</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">2.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun-kubemark"><span class="nav-number">5.</span> <span class="nav-text">Aliyun + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些说明"><span class="nav-number">5.1.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思路与流程"><span class="nav-number">5.2.</span> <span class="nav-text">基本思路与流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#走的一些弯路"><span class="nav-number">6.</span> <span class="nav-text">走的一些弯路</span></a></li></ol></div>
             
 
           </div>
