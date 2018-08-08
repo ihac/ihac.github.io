@@ -4,7 +4,7 @@ date: 2018-08-05 22:57:19
 tags: [Kubernetes, Kubemark, Benchmark]
 ---
 
-本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。
+本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试。
 
 **NOTE**
 本次测试日期为*2018-08-02*，最新commit为*[Merge pull request #66671 from hanxiaoshuai/cleanup07261](https://github.com/kubernetes/kubernetes/commit/0e9b1dd20f8c202d5118b8712c4a9dcfe67dbf4a)*，release版本为*[v1.12.0-alpha.1](https://github.com/kubernetes/kubernetes/releases/tag/v1.12.0-alpha.1)*.
@@ -122,6 +122,7 @@ test/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-m
 8. 如果遇到容器（比如apiserver）一启动就异常退出的问题，一个好的debug方法是，将manifest中的command字段替换为一段循环语句，比如`while true; do echo 123; sleep 1; done`，在容器正常运行以后，通过`docker exec`获取终端，然后手动运行原command，观察命令报错原因；
 9. 保留GCE上的kubemark-master的好处在于，我们在搭建新的kubemark-master时，可以经常和正常运行的kubemark-master进行对比，找到自己出错的原因；
 10. 在使用`pre-existing`模式时，脚本可能会报错，比如unbound variable或者函数未定义等等，这是kubemark代码对pre-existing支持不完善所致，对于unbound variable，我们可以随便赋值声明一下即可，对于未定义的函数，建议参照GCE模式下该函数的定义，自己重写一个；
+11. hollow node镜像需要上传到远端镜像仓库，这里建议使用DockerHub，在执行`start-kubemark.sh`脚本时传入环境变量`PROJECT="ihac" CONTAINER_REGISTRY="docker.io"`，其中PROJECT即用户名。
 
 
 ### 如何搭建kubemark-master？
@@ -146,6 +147,15 @@ local -r pd_path="/dev/vdb1"
 8. 使用GCE上保留的工作机来生成证书，即执行`start-kubemark.sh`中的`generate-pki-config`函数，并仿照`write-pki-config-to-master`函数将证书、token写到本地，注意需要跟踪到`create-certs`函数内部，将机器ip地址替换为新的kubemark-master的IP地址，否则证书无法在新机器中使用，最后将生成的所有文件按原目录结构拷贝到新master节点的`/etc/srv/kubernetes`目录下;
 9. 根据生成的`known_tokens.csv`，修改`start-kubemark.sh`源码，修改hollow node中各组件的token，使其保持一致；
 10. 仔细观察kubernetes组件的manifest文件中的command字段，修复其中留空的参数项（具体可以参照GCE中保留的原kubemark-master），否则这会导致组件启动失败。
+
+### FAQ
+
+1. 具体使用的命令：
+    **answer**:
+    ``` bash
+    NUM_NODES=1000 CLOUD_PROVIDER="pre-existing" MASTER_IP="192.168.3.184:443" PROJECT="ihac" CONTAINER_REGISTRY="docker.io" KUBEMARK_IMAGE_MAKE_TARGET="push"  test/kubemark/start-kubemark.sh
+    MASTER_IP="192.168.3.184" test/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-metrics-at-teardown=true --output-print-type=json --report-dir=/root/report_1000node
+    ```
 
 ### 个人体会
 
