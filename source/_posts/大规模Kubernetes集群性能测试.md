@@ -122,7 +122,9 @@ test/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-m
 8. 如果遇到容器（比如apiserver）一启动就异常退出的问题，一个好的debug方法是，将manifest中的command字段替换为一段循环语句，比如`while true; do echo 123; sleep 1; done`，在容器正常运行以后，通过`docker exec`获取终端，然后手动运行原command，观察命令报错原因；
 9. 保留GCE上的kubemark-master的好处在于，我们在搭建新的kubemark-master时，可以经常和正常运行的kubemark-master进行对比，找到自己出错的原因；
 10. 在使用`pre-existing`模式时，脚本可能会报错，比如unbound variable或者函数未定义等等，这是kubemark代码对pre-existing支持不完善所致，对于unbound variable，我们可以随便赋值声明一下即可，对于未定义的函数，建议参照GCE模式下该函数的定义，自己重写一个；
-11. hollow node镜像需要上传到远端镜像仓库，这里建议使用DockerHub，在执行`start-kubemark.sh`脚本时传入环境变量`PROJECT="ihac" CONTAINER_REGISTRY="docker.io"`，其中PROJECT即用户名。
+11. hollow node镜像需要上传到远端镜像仓库，这里建议使用DockerHub，在执行`start-kubemark.sh`脚本时传入环境变量`PROJECT="ihac" CONTAINER_REGISTRY="docker.io"`，其中PROJECT即用户名；
+12. e2e测试会尝试使用pprof工具来绘制profiling图，所以事先可以在工作机上安装pprof以及graphviz，这是可选项；
+13. 所有使用到的脚本代码都在`test/kubemark`和`cluster`两个目录下，因此如果要检索某变量、某函数的定义位置，只需在这两个目录下使用grep搜索即可。
 
 
 ### 如何搭建kubemark-master？
