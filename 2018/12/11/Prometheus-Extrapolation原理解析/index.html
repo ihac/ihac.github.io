@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Algorithm,C/C++," />
+  <meta name="keywords" content="Prometheus," />
 
 
 
@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="题目：Given a linked list, remove the nth node from the end of list and return its head. For example,  Given linked list: 1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;5, and n = 2. After removing the second node from the end">
-<meta name="keywords" content="Algorithm,C&#x2F;C++">
+<meta name="description" content="设计初衷Prometheus引入extrapolation机制的主要初衷在于解决align问题。 当用户执行delta、increase或rate等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或折线），因此对一段时间范围的增值（或速率）的求解是非常直观的：直接取区间两个端点对应的数值，相减（并">
+<meta name="keywords" content="Prometheus">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[LeetCode] 19. Remove Nth Node From End of List">
-<meta property="og:url" content="https://ihac.xyz/2018/03/24/LeetCode-19-Remove-Nth-Node-From-End-of-List/index.html">
+<meta property="og:title" content="Prometheus Extrapolation原理解析">
+<meta property="og:url" content="https://ihac.xyz/2018/12/11/Prometheus-Extrapolation原理解析/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="题目：Given a linked list, remove the nth node from the end of list and return its head. For example,  Given linked list: 1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;5, and n = 2. After removing the second node from the end">
+<meta property="og:description" content="设计初衷Prometheus引入extrapolation机制的主要初衷在于解决align问题。 当用户执行delta、increase或rate等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或折线），因此对一段时间范围的增值（或速率）的求解是非常直观的：直接取区间两个端点对应的数值，相减（并">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-03-28T01:58:02.000Z">
+<meta property="og:image" content="https://cloud.githubusercontent.com/assets/538008/6586657/6f05aaa8-c77b-11e4-9fa0-5ebe79eca528.png">
+<meta property="og:updated_time" content="2018-12-11T11:46:52.913Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[LeetCode] 19. Remove Nth Node From End of List">
-<meta name="twitter:description" content="题目：Given a linked list, remove the nth node from the end of list and return its head. For example,  Given linked list: 1-&amp;gt;2-&amp;gt;3-&amp;gt;4-&amp;gt;5, and n = 2. After removing the second node from the end">
+<meta name="twitter:title" content="Prometheus Extrapolation原理解析">
+<meta name="twitter:description" content="设计初衷Prometheus引入extrapolation机制的主要初衷在于解决align问题。 当用户执行delta、increase或rate等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或折线），因此对一段时间范围的增值（或速率）的求解是非常直观的：直接取区间两个端点对应的数值，相减（并">
+<meta name="twitter:image" content="https://cloud.githubusercontent.com/assets/538008/6586657/6f05aaa8-c77b-11e4-9fa0-5ebe79eca528.png">
 
 
 
@@ -120,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://ihac.xyz/2018/03/24/LeetCode-19-Remove-Nth-Node-From-End-of-List/"/>
+  <link rel="canonical" href="https://ihac.xyz/2018/12/11/Prometheus-Extrapolation原理解析/"/>
 
 
 
 
 
-  <title>[LeetCode] 19. Remove Nth Node From End of List | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Prometheus Extrapolation原理解析 | Coding</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -297,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/03/24/LeetCode-19-Remove-Nth-Node-From-End-of-List/">
+    <link itemprop="mainEntityOfPage" href="https://ihac.xyz/2018/12/11/Prometheus-Extrapolation原理解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Xiao An">
@@ -314,7 +316,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[LeetCode] 19. Remove Nth Node From End of List</h1>
+          <h1 class="post-title" itemprop="name headline">Prometheus Extrapolation原理解析</h1>
         
 
         <div class="post-meta">
@@ -326,8 +328,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-24T21:29:16+08:00">
-                2018-03-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-11T19:32:03+08:00">
+                2018-12-11
               </time>
             
 
@@ -336,39 +338,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/LeetCode/" itemprop="url" rel="index">
-                    <span itemprop="name">LeetCode</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -397,18 +366,25 @@
       
 
       
-        <h3 id="题目："><a href="#题目：" class="headerlink" title="题目："></a>题目：</h3><pre><code>Given a linked list, remove the nth node from the end of list and return its head.
-For example,
-
-Given linked list: 1-&gt;2-&gt;3-&gt;4-&gt;5, and n = 2.
-After removing the second node from the end, the linked list becomes 1-&gt;2-&gt;3-&gt;5.
-
-Note:
-Given n will always be valid.
-Try to do this in one pass.
-</code></pre><h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p><code>Linked List</code>, <code>Two Pointers</code></p>
-<h3 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h3><p>给定的是单列表，且要求解法为one-pass，因此可以使用两个指针同时移动，当前面的指针到达链表尾部时，删除后面指针指向的node即可。</p>
-<h3 id="代码："><a href="#代码：" class="headerlink" title="代码："></a>代码：</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Definition for singly-linked list.</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ListNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    ListNode *next;</span><br><span class="line">    ListNode(<span class="keyword">int</span> x) : val(x), next(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode* <span class="title">removeNthFromEnd</span><span class="params">(ListNode* head, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">nullptr</span>) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">        ListNode *a, *b;</span><br><span class="line">        a = b = head;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; n) &#123;</span><br><span class="line">            <span class="comment">// this should not happen</span></span><br><span class="line">            <span class="keyword">if</span> (b-&gt;next == <span class="literal">nullptr</span>) <span class="keyword">break</span>;</span><br><span class="line">            b = b-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ListNode* prev = <span class="literal">nullptr</span>;</span><br><span class="line">        <span class="keyword">while</span> (b-&gt;next != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            prev = a;</span><br><span class="line">            b = b-&gt;next;</span><br><span class="line">            a = a-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (prev == <span class="literal">nullptr</span>)</span><br><span class="line">            head = head-&gt;next; <span class="comment">// remove head</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            prev-&gt;next = a-&gt;next;</span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+        <h2 id="设计初衷"><a href="#设计初衷" class="headerlink" title="设计初衷"></a>设计初衷</h2><p>Prometheus引入extrapolation机制的主要初衷在于解决<a href="https://www.youtube.com/watch?v=67Ulrq6DxwA)" title="Counting with Prometheus [I] - Brian Brazil, Robust Perception" target="_blank" rel="noopener">align问题</a>。</p>
+<p>当用户执行<code>delta</code>、<code>increase</code>或<code>rate</code>等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或折线），因此对一段时间范围的增值（或速率）的求解是非常直观的：直接取区间两个端点对应的数值，相减（并除以区间长度）即可得到增值（速率）。然而，从设计角度上来看，Prometheus显然不可能将metric用一条曲线（折线）来表示，其一是没有足够大的空间来存储线上无数个点，其二是没有足够多的计算资源能够支撑对多个metric的实时收集上报。</p>
+<p>事实上，Prometheus将metric表示为在时间维度上等距（大多数情况下）的多个离散点，其距离即为我们熟知的<code>scrape interval</code>。基于此，我们大致可以猜到为什么会产生align问题：用户指定的区间基本上很难和metric区间对齐，即用户区间端点并没有对应的metric数值，因此我们预想的通过端点取值相减是无法实现的。</p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>下面简单介绍三种解决align问题的思路，它们有各自的优缺点，但在Prometheus社区看来，这三种思路应该是按从劣到优的顺序排列的（不置可否!!!）。</p>
+<h3 id="native-method"><a href="#native-method" class="headerlink" title="native method"></a>native method</h3><p>首先，非常直观地，在区间端点无法取到metric的情况下，我们可以向前取最近的点作为当前的metric值。</p>
+<p>举个例子，假设我们采取到的metric点有：{t=1, v[t]=10}、{t=6, v[t]=12}、{t=11, v[t]=13}，求解[2, 12]区间内的变化速率。根据上述思路，不难求得rate = (v[12] - v[2]) / (12 - 2) ≈ (v[11] - v[1]) / (12 - 2) = 0.3。</p>
+<p>看上去这种思路很符合我们的认知，但试想，如果我们要求[0,10]区间内的变化速率，得到的结果将是1.0（因为零点并没有采值，所以默认为0），这可能和实际速率（比如0.3）相差甚远。因此，在计算<code>rate</code>、<code>increase</code>或<code>delta</code>时，Prometheus并没有采取这种做法，而是通过估计的方法来求解。</p>
+<h3 id="extrapolation-before-v0-16-1"><a href="#extrapolation-before-v0-16-1" class="headerlink" title="extrapolation (before v0.16.1)"></a>extrapolation (before v0.16.1)</h3><p>Prometheus extrapolation思路其实很简单，将metric区间进行等比放大，直至匹配到用户指定的时间范围。</p>
+<p>基于上述案例，假设我们需要求[0, 15]区间范围内的增值，此时求解流程变为了：increase = v[15] - v[0] ≈ (v[11] - v[1]) * (15 - 0) / (11 - 1) = 4.5，其变化速率rate = increase / (15 - 0) = 0.3。</p>
+<p>不难看出，extrapolation本质上就是期望通过类似“线性拟合”的方式来对不存在的区间进行估计求值。因此，这种方法对<code>与时间呈线性关系</code>的metric具有非常良好的效果，对非线性metric的估计则效果不佳。不过Prometheus引入extrapolation本身就不是为了提供一个精确解，而是在无法求得真实解的情况下，提供一个尽可能可靠的参考值而已。</p>
+<p>尽管如此，初版的extrapolation在实际使用上还是存在一定问题，具体参见<a href="https://github.com/prometheus/prometheus/issues/581" title="Issue 581: `rate` and `delta` deal poorly with slow moving data." target="_blank" rel="noopener">issue 581</a>及下图。图一是用户对多个metric序列求和的结果，图二是对多个metric序列分别求速率，然后求和的结果。注意到图二出现了一个非常“刺眼”的尖峰，对应速率高达<code>80 / 4h</code>，显然这与实际情况不符（从06:00到11:00，总共才增长了不到20）。</p>
+<p><img src="https://cloud.githubusercontent.com/assets/538008/6586657/6f05aaa8-c77b-11e4-9fa0-5ebe79eca528.png" alt=""></p>
+<p>造成这一现象的原因非常简单——有一个metric序列在10:40左右前是缺失的，此时对所有序列求和是没有问题的（缺失序列默认为0），但对这些序列求解速率时，extrapolation机制的引入使得缺失部分将基于线性延伸来进行填充，即Prometheus认为缺失部分应当保持未缺失部分的增长速率，显然这与实际情况相悖。因此，我们可以看到图二中出现的尖峰速率（<code>80 / 4h</code>）其实正是10:40后的增长速率，而非整个4h的实际增长速率。</p>
+<h3 id="extrapolation-after-v0-16-1"><a href="#extrapolation-after-v0-16-1" class="headerlink" title="extrapolation (after v0.16.1)"></a>extrapolation (after v0.16.1)</h3><p>为了解决上述问题，更好地应对数据缺失的情况，社区曾有过一段时间的讨论（<a href="https://github.com/prometheus/prometheus/pull/1161" title="PR 1161: promql: Remove extrapolation from rate/increase/delta" target="_blank" rel="noopener">pr 1161</a>, <a href="https://github.com/prometheus/prometheus/pull/1245" title="PR 1245: promql: Limit extrapolation of delta/rate/increase" target="_blank" rel="noopener">pr 1245</a>, <a href="https://github.com/prometheus/prometheus/pull/1295" title="PR 1295: promql: Limit extrapolation of delta/rate/increase" target="_blank" rel="noopener">pr1295</a>），最终通过的方案是：限制extrapolation的作用域，即只对短时间内的缺失做估计，长时间的缺失将一律用0替代。具体逻辑可以参照下一章节的源码分析。</p>
+<p>延续上述速率爆炸的问题，以10:50时刻为例，新版extrapolation在计算增值时，不会再将未缺失部分（时长为10m左右）放大成完整的4h，而只会在前面补齐短短几分钟（实际为未缺失部分的平均sample间隔 / 2），求得增值后再除以4h作为估计的速率。因此，速率不会再出现爆炸的现象。</p>
+<h2 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h2><p>下面结合源码，介绍Prometheus v2.6.5计算<code>delta</code>、<code>increase</code>或<code>rate</code>的实际流程。如下所示，三种query function都通过一个函数<code>extrapolatedRate</code>实现，具体通过<code>isCounter</code>和 <code>isRate</code>两个参数来进行区分。</p>
+<p>PS：读懂源码需要对Prometheus内部数据结构（Vector、Matrix）有一定的了解。对于不熟悉的读者，建议将Vector理解为单个metric在时间维度上的采样序列，而Matrix是多个同类Vector的聚合（用label进行区分）。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">extrapolatedRate</span><span class="params">(vals []Value, args Expressions, enh *EvalNodeHelper, isCounter <span class="keyword">bool</span>, isRate <span class="keyword">bool</span>)</span> <span class="title">Vector</span></span> &#123;</span><br><span class="line">    ms := args[<span class="number">0</span>].(*MatrixSelector)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> (</span><br><span class="line">        matrix     = vals[<span class="number">0</span>].(Matrix)</span><br><span class="line">        rangeStart = enh.ts - durationMilliseconds(ms.Range+ms.Offset)</span><br><span class="line">        rangeEnd   = enh.ts - durationMilliseconds(ms.Offset)</span><br><span class="line">    )</span><br><span class="line">    <span class="comment">// 遍历多个vector，分别求解delta/increase/rate。</span></span><br><span class="line">    <span class="keyword">for</span> _, samples := <span class="keyword">range</span> matrix &#123;</span><br><span class="line">        <span class="comment">// 忽略少于两个点的vector。</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(samples.Points) &lt; <span class="number">2</span> &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> (</span><br><span class="line">            counterCorrection <span class="keyword">float64</span></span><br><span class="line">            lastValue         <span class="keyword">float64</span></span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 由于counter存在reset的可能性，因此可能会出现0, 10, 5, ...这样的序列，</span></span><br><span class="line">        <span class="comment">// Prometheus认为从0到5实际的增值为10 + 5 = 15，而非5。</span></span><br><span class="line">        <span class="comment">// 这里的代码逻辑相当于将10累计到了couterCorrection中，最后补偿到总增值中。</span></span><br><span class="line">        <span class="keyword">for</span> _, sample := <span class="keyword">range</span> samples.Points &#123;</span><br><span class="line">            <span class="keyword">if</span> isCounter &amp;&amp; sample.V &lt; lastValue &#123;</span><br><span class="line">                counterCorrection += lastValue</span><br><span class="line">            &#125;</span><br><span class="line">            lastValue = sample.V</span><br><span class="line">        &#125;</span><br><span class="line">        resultValue := lastValue - samples.Points[<span class="number">0</span>].V + counterCorrection</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 采样序列与用户请求的区间边界的距离。</span></span><br><span class="line">        <span class="comment">// durationToStart表示第一个采样点到区间头部的距离。</span></span><br><span class="line">        <span class="comment">// durationToEnd表示最后一个采样点到区间尾部的距离。</span></span><br><span class="line">        durationToStart := <span class="keyword">float64</span>(samples.Points[<span class="number">0</span>].T-rangeStart) / <span class="number">1000</span></span><br><span class="line">        durationToEnd := <span class="keyword">float64</span>(rangeEnd-samples.Points[<span class="built_in">len</span>(samples.Points)<span class="number">-1</span>].T) / <span class="number">1000</span></span><br><span class="line">        <span class="comment">// 采样序列的总时长。</span></span><br><span class="line">        sampledInterval := <span class="keyword">float64</span>(samples.Points[<span class="built_in">len</span>(samples.Points)<span class="number">-1</span>].T-samples.Points[<span class="number">0</span>].T) / <span class="number">1000</span></span><br><span class="line">        <span class="comment">// 采样序列的平均采样间隔，一般等于scrape interval。</span></span><br><span class="line">        averageDurationBetweenSamples := sampledInterval / <span class="keyword">float64</span>(<span class="built_in">len</span>(samples.Points)<span class="number">-1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> isCounter &amp;&amp; resultValue &gt; <span class="number">0</span> &amp;&amp; samples.Points[<span class="number">0</span>].V &gt;= <span class="number">0</span> &#123;</span><br><span class="line">            <span class="comment">// 由于counter不能为负数，这里对零点位置作一个线性估计，</span></span><br><span class="line">            <span class="comment">// 确保durationToStart不会超过durationToZero。</span></span><br><span class="line">            durationToZero := sampledInterval * (samples.Points[<span class="number">0</span>].V / resultValue)</span><br><span class="line">            <span class="keyword">if</span> durationToZero &lt; durationToStart &#123;</span><br><span class="line">                durationToStart = durationToZero</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// *************** extrapolation核心部分 *****************</span></span><br><span class="line">        <span class="comment">// 将平均sample间隔乘以1.1作为extrapolation的判断间隔。</span></span><br><span class="line">        extrapolationThreshold := averageDurationBetweenSamples * <span class="number">1.1</span></span><br><span class="line">        extrapolateToInterval := sampledInterval</span><br><span class="line">        <span class="comment">// 如果采样序列与用户请求的区间在头部的距离不超过阈值的话，直接补齐；</span></span><br><span class="line">        <span class="comment">// 如果超过阈值的话，只补齐一般的平均采样间隔。这里解决了上述的速率爆炸问题。</span></span><br><span class="line">        <span class="keyword">if</span> durationToStart &lt; extrapolationThreshold &#123;</span><br><span class="line">            <span class="comment">// 在scrape interval不发生变化、数据不缺失的情况下，</span></span><br><span class="line">            <span class="comment">// 基本都进入这个分支。</span></span><br><span class="line">            extrapolateToInterval += durationToStart</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 基本不会出现，除非scrape interval突然变很大，或者数据缺失。</span></span><br><span class="line">            extrapolateToInterval += averageDurationBetweenSamples / <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 同理，参上。</span></span><br><span class="line">        <span class="keyword">if</span> durationToEnd &lt; extrapolationThreshold &#123;</span><br><span class="line">            extrapolateToInterval += durationToEnd</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            extrapolateToInterval += averageDurationBetweenSamples / <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对增值进行等比放大。</span></span><br><span class="line">        resultValue = resultValue * (extrapolateToInterval / sampledInterval)</span><br><span class="line">        <span class="comment">// 如果是求解rate，除以总的时长。</span></span><br><span class="line">        <span class="keyword">if</span> isRate &#123;</span><br><span class="line">            resultValue = resultValue / ms.Range.Seconds()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        enh.out = <span class="built_in">append</span>(enh.out, Sample&#123;</span><br><span class="line">            Point: Point&#123;V: resultValue&#125;,</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> enh.out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>TBD</p>
 
       
     </div>
@@ -426,9 +402,7 @@ Try to do this in one pass.
       
         <div class="post-tags">
           
-            <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
-          
-            <a href="/tags/C-C/" rel="tag"># C/C++</a>
+            <a href="/tags/Prometheus/" rel="tag"># Prometheus</a>
           
         </div>
       
@@ -441,8 +415,8 @@ Try to do this in one pass.
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/24/LeetCode-18-4Sum/" rel="next" title="[LeetCode] 18. 4Sum">
-                <i class="fa fa-chevron-left"></i> [LeetCode] 18. 4Sum
+              <a href="/2018/08/05/大规模Kubernetes集群性能测试/" rel="next" title="使用kubemark进行大规模Kubernetes集群性能测试">
+                <i class="fa fa-chevron-left"></i> 使用kubemark进行大规模Kubernetes集群性能测试
               </a>
             
           </div>
@@ -450,10 +424,6 @@ Try to do this in one pass.
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/03/25/LeetCode-20-Valid-Parentheses/" rel="prev" title="[LeetCode] 20. Valid Parentheses">
-                [LeetCode] 20. Valid Parentheses <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -623,7 +593,7 @@ Try to do this in one pass.
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目："><span class="nav-number">1.</span> <span class="nav-text">题目：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签："><span class="nav-number">2.</span> <span class="nav-text">标签：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析："><span class="nav-number">3.</span> <span class="nav-text">分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码："><span class="nav-number">4.</span> <span class="nav-text">代码：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#设计初衷"><span class="nav-number">1.</span> <span class="nav-text">设计初衷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体实现"><span class="nav-number">2.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#native-method"><span class="nav-number">2.1.</span> <span class="nav-text">native method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#extrapolation-before-v0-16-1"><span class="nav-number">2.2.</span> <span class="nav-text">extrapolation (before v0.16.1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#extrapolation-after-v0-16-1"><span class="nav-number">2.3.</span> <span class="nav-text">extrapolation (after v0.16.1)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码解析"><span class="nav-number">3.</span> <span class="nav-text">源码解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>

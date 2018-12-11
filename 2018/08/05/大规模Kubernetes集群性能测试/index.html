@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
+<meta name="description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中、不成熟的状态，在">
 <meta name="keywords" content="Kubernetes,Kubemark,Benchmark">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用kubemark进行大规模Kubernetes集群性能测试">
 <meta property="og:url" content="https://ihac.xyz/2018/08/05/大规模Kubernetes集群性能测试/index.html">
 <meta property="og:site_name" content="Coding">
-<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
+<meta property="og:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中、不成熟的状态，在">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-08-07T14:28:13.202Z">
+<meta property="og:updated_time" content="2018-08-08T01:20:21.824Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用kubemark进行大规模Kubernetes集群性能测试">
-<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中">
+<meta name="twitter:description" content="本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试。 NOTE本次测试日期为2018-08-02，最新commit为Merge pull request #66671 from hanxiaoshuai/cleanup07261，release版本为v1.12.0-alpha.1.kubemark目前尚属开发中、不成熟的状态，在">
 
 
 
@@ -364,7 +364,7 @@
       
 
       
-        <p>本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试，最后附上测试报告。</p>
+        <p>本文主要介绍如何使用kubemark来模拟大规模Kubernetes集群（1000 node），并对其进行e2e性能测试。</p>
 <p><strong>NOTE</strong><br>本次测试日期为<em>2018-08-02</em>，最新commit为<em><a href="https://github.com/kubernetes/kubernetes/commit/0e9b1dd20f8c202d5118b8712c4a9dcfe67dbf4a" target="_blank" rel="noopener">Merge pull request #66671 from hanxiaoshuai/cleanup07261</a></em>，release版本为<em><a href="https://github.com/kubernetes/kubernetes/releases/tag/v1.12.0-alpha.1" target="_blank" rel="noopener">v1.12.0-alpha.1</a></em>.<br>kubemark目前尚属<code>开发中</code>、<code>不成熟</code>的状态，在之后的版本中可能会有大量代码改动，因此本文内容并不一定适用于更新或更老的Kubernetes版本，仅作为参考，切忌照搬。</p>
 <h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>以下是本文将用到的相关名词：</p>
 <ul>
@@ -427,6 +427,9 @@
 <li>如果遇到容器（比如apiserver）一启动就异常退出的问题，一个好的debug方法是，将manifest中的command字段替换为一段循环语句，比如<code>while true; do echo 123; sleep 1; done</code>，在容器正常运行以后，通过<code>docker exec</code>获取终端，然后手动运行原command，观察命令报错原因；</li>
 <li>保留GCE上的kubemark-master的好处在于，我们在搭建新的kubemark-master时，可以经常和正常运行的kubemark-master进行对比，找到自己出错的原因；</li>
 <li>在使用<code>pre-existing</code>模式时，脚本可能会报错，比如unbound variable或者函数未定义等等，这是kubemark代码对pre-existing支持不完善所致，对于unbound variable，我们可以随便赋值声明一下即可，对于未定义的函数，建议参照GCE模式下该函数的定义，自己重写一个；</li>
+<li>hollow node镜像需要上传到远端镜像仓库，这里建议使用DockerHub，在执行<code>start-kubemark.sh</code>脚本时传入环境变量<code>PROJECT=&quot;ihac&quot; CONTAINER_REGISTRY=&quot;docker.io&quot;</code>，其中PROJECT即用户名；</li>
+<li>e2e测试会尝试使用pprof工具来绘制profiling图，所以事先可以在工作机上安装pprof以及graphviz，这是可选项；</li>
+<li>所有使用到的脚本代码都在<code>test/kubemark</code>和<code>cluster</code>两个目录下，因此如果要检索某变量、某函数的定义位置，只需在这两个目录下使用grep搜索即可。</li>
 </ol>
 <h3 id="如何搭建kubemark-master？"><a href="#如何搭建kubemark-master？" class="headerlink" title="如何搭建kubemark-master？"></a>如何搭建kubemark-master？</h3><ol>
 <li>申请一台vm，用于搭建kubemark-master；</li>
@@ -445,6 +448,10 @@
 <li>使用GCE上保留的工作机来生成证书，即执行<code>start-kubemark.sh</code>中的<code>generate-pki-config</code>函数，并仿照<code>write-pki-config-to-master</code>函数将证书、token写到本地，注意需要跟踪到<code>create-certs</code>函数内部，将机器ip地址替换为新的kubemark-master的IP地址，否则证书无法在新机器中使用，最后将生成的所有文件按原目录结构拷贝到新master节点的<code>/etc/srv/kubernetes</code>目录下;</li>
 <li>根据生成的<code>known_tokens.csv</code>，修改<code>start-kubemark.sh</code>源码，修改hollow node中各组件的token，使其保持一致；</li>
 <li>仔细观察kubernetes组件的manifest文件中的command字段，修复其中留空的参数项（具体可以参照GCE中保留的原kubemark-master），否则这会导致组件启动失败。</li>
+</ol>
+<h3 id="FAQ-1"><a href="#FAQ-1" class="headerlink" title="FAQ"></a>FAQ</h3><ol>
+<li>具体使用的命令：<br> <strong>answer</strong>: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NUM_NODES=1000 CLOUD_PROVIDER=<span class="string">"pre-existing"</span> MASTER_IP=<span class="string">"192.168.3.184:443"</span> PROJECT=<span class="string">"ihac"</span> CONTAINER_REGISTRY=<span class="string">"docker.io"</span> KUBEMARK_IMAGE_MAKE_TARGET=<span class="string">"push"</span>  <span class="built_in">test</span>/kubemark/start-kubemark.sh</span><br><span class="line">MASTER_IP=<span class="string">"192.168.3.184"</span> <span class="built_in">test</span>/kubemark/run-e2e-tests.sh --ginkgo.focus=\[Feature:Performance\] --gather-metrics-at-teardown=<span class="literal">true</span> --output-print-type=json --report-dir=/root/report_1000node</span><br></pre></td></tr></table></figure>
+</li>
 </ol>
 <h3 id="个人体会"><a href="#个人体会" class="headerlink" title="个人体会"></a>个人体会</h3><p>个人认为，解决这类问题的最佳方法是<strong>对比实验</strong>：比如我不确定apiserver的参数项要怎么填，这时候我可以参照GCE上正常运行的kubemark-master；或是，我不知道该怎么生成证书、token，但我可以跟踪脚本在GCE上的证书生成流程，通过替换代码，直接运行脚本生成在本地可用的证书等等。<br>还有一个重要的点是，遇到问题，比如kubernetes组件无法启动、kubemark集群无法部署应用以及e2e测试失败（这些我都遇到过）等等，第一件事应该是查找日志或具体报错信息。比如我发现apiserver和controller manager两个容器始终无法启动，于是我按照上文提到的方法（参见<code>整体建议 -&gt; 8</code>）找到错误原因在于启动命令的参数存在留空；还有，kubemark集群搭建起来后，集群状态看似正常，但是e2e测试中的Density总会失败，于是我登录到apiserver容器内，查看日志发现有大量实时产生的认证失败信息，于是我猜测是hollow node的证书不对，果不其然，我忘记修改<code>start-kubemark.sh</code>源码（参见<code>如何搭建kubemark-master？ -&gt; 9</code>），hollow node组件的token仍然是随机生成的，将其替换为固定的token即可解决这一问题。</p>
 
@@ -490,6 +497,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/11/Prometheus-Extrapolation原理解析/" rel="prev" title="Prometheus Extrapolation原理解析">
+                Prometheus Extrapolation原理解析 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -570,7 +581,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -592,7 +603,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -659,7 +670,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun-kubemark"><span class="nav-number">5.</span> <span class="nav-text">Aliyun + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些说明"><span class="nav-number">5.1.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思路与流程"><span class="nav-number">5.2.</span> <span class="nav-text">基本思路与流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整体建议"><span class="nav-number">5.3.</span> <span class="nav-text">整体建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何搭建kubemark-master？"><span class="nav-number">5.4.</span> <span class="nav-text">如何搭建kubemark-master？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#个人体会"><span class="nav-number">5.5.</span> <span class="nav-text">个人体会</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致流程（原理）"><span class="nav-number">3.</span> <span class="nav-text">大致流程（原理）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCE-kubemark"><span class="nav-number">4.</span> <span class="nav-text">GCE + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">4.1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">4.2.</span> <span class="nav-text">FAQ</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Aliyun-kubemark"><span class="nav-number">5.</span> <span class="nav-text">Aliyun + kubemark</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一些说明"><span class="nav-number">5.1.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本思路与流程"><span class="nav-number">5.2.</span> <span class="nav-text">基本思路与流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整体建议"><span class="nav-number">5.3.</span> <span class="nav-text">整体建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何搭建kubemark-master？"><span class="nav-number">5.4.</span> <span class="nav-text">如何搭建kubemark-master？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ-1"><span class="nav-number">5.5.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#个人体会"><span class="nav-number">5.6.</span> <span class="nav-text">个人体会</span></a></li></ol></li></ol></div>
             
 
           </div>
