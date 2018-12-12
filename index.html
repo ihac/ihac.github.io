@@ -365,8 +365,7 @@
       
         
           
-          设计初衷Prometheus引入extrapolation机制的主要初衷在于解决align问题。
-当用户执行delta、increase或rate等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或
+          在使用Prometheus的过程中，我们可能遇到过这样的问题：PromQL的delta、increase函数计算一段时间内metric的增长量，返回的结果可能是小数，即便该metric所有的采样值都是整数。为了验证这一点，可以拿promhttp_metric_handler_requests_tot
           ...
           <!--noindex-->
           <div class="post-button text-center">
