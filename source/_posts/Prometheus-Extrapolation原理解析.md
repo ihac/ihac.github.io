@@ -4,9 +4,13 @@ date: 2018-12-11 19:32:03
 tags: [Prometheus]
 ---
 
+在使用Prometheus的过程中，我们可能遇到过这样的问题：PromQL的delta、increase函数计算一段时间内metric的增长量，返回的结果可能是小数，即便该metric所有的采样值都是整数。为了验证这一点，可以拿`promhttp_metric_handler_requests_total{code="200"}`做测试：使用increase对其求一段时间内的增长量，多次尝试，并调整时间窗口大小，很容易就能看到返回小数。
+
+如果我们查阅官方文档，可以发现delta、increase、rate函数的介绍中都有这么一段类似的话：*The delta is extrapolated to cover the full time range as specified in the range vector selector, so that it is possible to get a non-integer result even if the sample values are all integers*。这段话翻译过来主要有两层含义：首先，“对整数型metric求差值返回小数”是feature，不是bug；其次，产生小数的原因在于being extrapolated。不过，光从extrapolate的字面意思很难理解Prometheus的具体计算过程，本文主要根据源码以及社区讨论内容来对Prometheus extrapolation机制的原理进行剖析，并介绍delta、increase、rate函数的实际计算过程。
+
 ## 设计初衷
 
-Prometheus引入extrapolation机制的主要初衷在于解决[align问题][count_with_prometheus]。
+Prometheus引入extrapolation机制的主要初衷在于解决[align问题][count_with_prometheus]（或数据缺失问题，二者本质一样）。
 
 当用户执行`delta`、`increase`或`rate`等函数时，Prometheus需要对用户指定时间范围内的metric求增值或增长速率。从用户角度来看，metric应当是一条在时间维度上持续延展的曲线（或折线），因此对一段时间范围的增值（或速率）的求解是非常直观的：直接取区间两个端点对应的数值，相减（并除以区间长度）即可得到增值（速率）。然而，从设计角度上来看，Prometheus显然不可能将metric用一条曲线（折线）来表示，其一是没有足够大的空间来存储线上无数个点，其二是没有足够多的计算资源能够支撑对多个metric的实时收集上报。
 
@@ -142,4 +146,11 @@ func extrapolatedRate(vals []Value, args Expressions, enh *EvalNodeHelper, isCou
 
 ## 参考资料
 
-TBD
+1. Counting with Prometheus [I] - Brian Brazil, Robust Perception ([url](https://www.youtube.com/watch?v=67Ulrq6DxwA))
+2. Issue 581: rate and delta deal poorly with slow moving data ([url](https://github.com/prometheus/prometheus/issues/581))
+3. PR 1161: promql: Remove extrapolation from rate/increase/delta ([url](https://github.com/prometheus/prometheus/pull/1161))
+4. PR 1245: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1245))
+5. PR 1295: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1295))
+6. Issue 3746: rate()/increase() extrapolation considered harmful ([url](https://github.com/prometheus/prometheus/issues/3746))
+7. Issue 3806: Proposal for improving rate/increase ([url](https://github.com/prometheus/prometheus/issues/3806))
+
