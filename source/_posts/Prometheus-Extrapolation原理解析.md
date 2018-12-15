@@ -26,7 +26,7 @@ Prometheus引入extrapolation机制的主要初衷在于解决[align问题][coun
 
 举个例子，假设我们采取到的metric点有：{t=1, v[t]=10}、{t=6, v[t]=12}、{t=11, v[t]=13}，求解[2, 12]区间内的变化速率。根据上述思路，不难求得rate = (v[12] - v[2]) / (12 - 2) ≈ (v[11] - v[1]) / (12 - 2) = 0.3。
 
-看上去这种思路很符合我们的认知，但试想，如果我们要求[0,10]区间内的变化速率，得到的结果将是1.0（因为零点并没有采值，所以默认为0），这可能和实际速率（比如0.3）相差甚远。因此，在计算`rate`、`increase`或`delta`时，Prometheus并没有采取这种做法，而是通过估计的方法来求解。
+看上去这种思路很符合我们的认知，但试想，如果我们要求[0,10]区间内的变化速率，得到的结果将是1.2（因为零点并没有采值，所以默认为0），这可能和实际速率（比如0.3）相差甚远。因此，在计算`rate`、`increase`或`delta`时，Prometheus并没有采取这种做法，而是通过估计的方法来求解。
 
 ### extrapolation (before v0.16.1)
 
@@ -146,11 +146,10 @@ func extrapolatedRate(vals []Value, args Expressions, enh *EvalNodeHelper, isCou
 
 ## 参考资料
 
-1. Counting with Prometheus [I] - Brian Brazil, Robust Perception ([url](https://www.youtube.com/watch?v=67Ulrq6DxwA))
-2. Issue 581: rate and delta deal poorly with slow moving data ([url](https://github.com/prometheus/prometheus/issues/581))
-3. PR 1161: promql: Remove extrapolation from rate/increase/delta ([url](https://github.com/prometheus/prometheus/pull/1161))
-4. PR 1245: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1245))
-5. PR 1295: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1295))
-6. Issue 3746: rate()/increase() extrapolation considered harmful ([url](https://github.com/prometheus/prometheus/issues/3746))
-7. Issue 3806: Proposal for improving rate/increase ([url](https://github.com/prometheus/prometheus/issues/3806))
-
+[1] Counting with Prometheus [I] - Brian Brazil, Robust Perception ([url](https://www.youtube.com/watch?v=67Ulrq6DxwA))
+[2] Issue 581: rate and delta deal poorly with slow moving data ([url](https://github.com/prometheus/prometheus/issues/581))
+[3] PR 1161: promql: Remove extrapolation from rate/increase/delta ([url](https://github.com/prometheus/prometheus/pull/1161))
+[4] PR 1245: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1245))
+[5] PR 1295: promql: Limit extrapolation of delta/rate/increase ([url](https://github.com/prometheus/prometheus/pull/1295))
+[6] Issue 3746: rate()/increase() extrapolation considered harmful ([url](https://github.com/prometheus/prometheus/issues/3746))
+[7] Issue 3806: Proposal for improving rate/increase ([url](https://github.com/prometheus/prometheus/issues/3806))
